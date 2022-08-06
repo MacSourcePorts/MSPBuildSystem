@@ -1,3 +1,4 @@
 signing_values.local
 .DS_Store
 release*/
+*.p8

@@ -13,6 +13,14 @@ ASC_PASSWORD="@keychain:notarize-app"
 # ProviderShortname can be found with
 # xcrun altool --list-providers -u your@apple.id -p "@keychain:notarize-app"
 ASC_PROVIDER="XXXXXXXXX"
+
+# App Store Connect API info
+# https://appstoreconnect.apple.com/access/api
+# file path to the auth key from App Store Connect API
+AUTH_KEY_FILENAME="AuthKey_XXXXXXXXXX.p8"
+AUTH_KEY_ID="XXXXXXXXXX"
+AUTH_KEY_ISSUER_ID="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+
 # ****************************************************************************************
 
 source ../MSPScripts/signing_values.local
@@ -56,30 +64,34 @@ if [ "$1" == "notarize" ]; then
 
 	echo "submitting..."
 	# submit app for notarization
-	if xcrun altool --notarize-app --primary-bundle-id "$BUNDLE_ID" --asc-provider "$ASC_PROVIDER" --username "$ASC_USERNAME" --password "$ASC_PASSWORD" -f "$PRE_NOTARIZED_ZIP" > "$NOTARIZE_APP_LOG" 2>&1; then
-		cat "$NOTARIZE_APP_LOG"
-		RequestUUID=$(awk -F ' = ' '/RequestUUID/ {print $2}' "$NOTARIZE_APP_LOG")
+	xcrun notarytool submit "$PRE_NOTARIZED_ZIP" --wait --key "../../MSPBuildSystem/common/${AUTH_KEY_FILENAME}" --key-id "${AUTH_KEY_ID}" --issuer "${AUTH_KEY_ISSUER_ID}"
+	xcrun stapler staple "$WRAPPER_NAME"
 
-		# check status periodically
-		while sleep 60 && date; do
-			# check notarization status
-			if xcrun altool --notarization-info "$RequestUUID" --asc-provider "$ASC_PROVIDER" --username "$ASC_USERNAME" --password "$ASC_PASSWORD" > "$NOTARIZE_INFO_LOG" 2>&1; then
-				cat "$NOTARIZE_INFO_LOG"
 
-				# once notarization is complete, run stapler and exit
-				if ! grep -q "Status: in progress" "$NOTARIZE_INFO_LOG"; then
-					xcrun stapler staple "$WRAPPER_NAME"
-					break
-				fi
-			else
-				cat "$NOTARIZE_INFO_LOG" 1>&2
-				exit 1
-			fi
-		done
-	else
-		cat "$NOTARIZE_APP_LOG" 1>&2
-		exit 1
-	fi
+	# if xcrun altool --notarize-app --primary-bundle-id "$BUNDLE_ID" --asc-provider "$ASC_PROVIDER" --username "$ASC_USERNAME" --password "$ASC_PASSWORD" -f "$PRE_NOTARIZED_ZIP" > "$NOTARIZE_APP_LOG" 2>&1; then
+	# 	cat "$NOTARIZE_APP_LOG"
+	# 	RequestUUID=$(awk -F ' = ' '/RequestUUID/ {print $2}' "$NOTARIZE_APP_LOG")
+
+	# 	# check status periodically
+	# 	while sleep 60 && date; do
+	# 		# check notarization status
+	# 		if xcrun altool --notarization-info "$RequestUUID" --asc-provider "$ASC_PROVIDER" --username "$ASC_USERNAME" --password "$ASC_PASSWORD" > "$NOTARIZE_INFO_LOG" 2>&1; then
+	# 			cat "$NOTARIZE_INFO_LOG"
+
+	# 			# once notarization is complete, run stapler and exit
+	# 			if ! grep -q "Status: in progress" "$NOTARIZE_INFO_LOG"; then
+	# 				xcrun stapler staple "$WRAPPER_NAME"
+	# 				break
+	# 			fi
+	# 		else
+	# 			cat "$NOTARIZE_INFO_LOG" 1>&2
+	# 			exit 1
+	# 		fi
+	# 	done
+	# else
+	# 	cat "$NOTARIZE_APP_LOG" 1>&2
+	# 	exit 1
+	# fi
 
 	echo "notarized"
 	echo "zipping notarized..."
