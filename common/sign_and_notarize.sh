@@ -5,25 +5,20 @@
 # identity as specified in Keychain
 SIGNING_IDENTITY="Developer ID Application: Your Name (XXXXXXXXX)"
 
-ASC_USERNAME="your@apple.id"
-
-# signing password is app-specific (https://appleid.apple.com/account/manage) and stored in Keychain (as "notarize-app" in this case)
-ASC_PASSWORD="@keychain:notarize-app"
-
-# ProviderShortname can be found with
-# xcrun altool --list-providers -u your@apple.id -p "@keychain:notarize-app"
-ASC_PROVIDER="XXXXXXXXX"
-
 # App Store Connect API info
 # https://appstoreconnect.apple.com/access/api
-# file path to the auth key from App Store Connect API
-AUTH_KEY_FILENAME="AuthKey_XXXXXXXXXX.p8"
-AUTH_KEY_ID="XXXXXXXXXX"
-AUTH_KEY_ISSUER_ID="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
 
+# filename to the auth key from App Store Connect API
+AUTH_KEY_FILENAME="AuthKey_XXXXXXXXXX.p8"
+
+# auth key from App Store Connect API
+AUTH_KEY_ID="XXXXXXXXXX"
+
+# auth key issuer ID from App Store Connect API
+AUTH_KEY_ISSUER_ID="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
 # ****************************************************************************************
 
-source ../MSPScripts/signing_values.local
+source ../MSPBuildSystem/common/signing_values.local
 
 # Pre-notarized zip file (not what is shipped)
 PRE_NOTARIZED_ZIP="${PRODUCT_NAME}_prenotarized.zip"
@@ -46,52 +41,18 @@ if [ "$1" == "notarize" ]; then
     cd ${BUILT_PRODUCTS_DIR}
 
 	# notarize app
-	# script taken from https://github.com/rednoah/notarize-app
 
 	# create the zip to send to the notarization service
 	echo "zipping..."
 	ditto -c -k --sequesterRsrc --keepParent "${WRAPPER_NAME}" "${PRE_NOTARIZED_ZIP}"
 
-	# create temporary files
-	NOTARIZE_APP_LOG=$(mktemp -t notarize-app)
-	NOTARIZE_INFO_LOG=$(mktemp -t notarize-info)
-
-	# delete temporary files on exit
-	function finish {
-		rm "$NOTARIZE_APP_LOG" "$NOTARIZE_INFO_LOG"
-	}
-	trap finish EXIT
-
-	echo "submitting..."
 	# submit app for notarization
+	echo "submitting..."
 	xcrun notarytool submit "$PRE_NOTARIZED_ZIP" --wait --key "../../MSPBuildSystem/common/${AUTH_KEY_FILENAME}" --key-id "${AUTH_KEY_ID}" --issuer "${AUTH_KEY_ISSUER_ID}"
+
+	# once notarization is complete, run stapler and exit
+	echo "stapling..."
 	xcrun stapler staple "$WRAPPER_NAME"
-
-
-	# if xcrun altool --notarize-app --primary-bundle-id "$BUNDLE_ID" --asc-provider "$ASC_PROVIDER" --username "$ASC_USERNAME" --password "$ASC_PASSWORD" -f "$PRE_NOTARIZED_ZIP" > "$NOTARIZE_APP_LOG" 2>&1; then
-	# 	cat "$NOTARIZE_APP_LOG"
-	# 	RequestUUID=$(awk -F ' = ' '/RequestUUID/ {print $2}' "$NOTARIZE_APP_LOG")
-
-	# 	# check status periodically
-	# 	while sleep 60 && date; do
-	# 		# check notarization status
-	# 		if xcrun altool --notarization-info "$RequestUUID" --asc-provider "$ASC_PROVIDER" --username "$ASC_USERNAME" --password "$ASC_PASSWORD" > "$NOTARIZE_INFO_LOG" 2>&1; then
-	# 			cat "$NOTARIZE_INFO_LOG"
-
-	# 			# once notarization is complete, run stapler and exit
-	# 			if ! grep -q "Status: in progress" "$NOTARIZE_INFO_LOG"; then
-	# 				xcrun stapler staple "$WRAPPER_NAME"
-	# 				break
-	# 			fi
-	# 		else
-	# 			cat "$NOTARIZE_INFO_LOG" 1>&2
-	# 			exit 1
-	# 		fi
-	# 	done
-	# else
-	# 	cat "$NOTARIZE_APP_LOG" 1>&2
-	# 	exit 1
-	# fi
 
 	echo "notarized"
 	echo "zipping notarized..."
