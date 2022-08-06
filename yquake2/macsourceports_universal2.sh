@@ -72,11 +72,14 @@ lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/baseq2/game.dylib ${ARM64_
 
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
+#move app bundle to a subfolder
 mkdir -p ${BUILT_PRODUCTS_DIR}/source_folder
 mv ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME} ${BUILT_PRODUCTS_DIR}/source_folder
 
+#create DMG from that subfolder
 create-dmg \
   --volname "${PORT_NAME}" \
+  --volicon "../MSPBuildSystem/common/msp_dmg.icns" \
   --background "../MSPBuildSystem/common/msp_dmg_background.png" \
   --window-pos 200 120 \
   --window-size 750 400 \
@@ -88,7 +91,9 @@ create-dmg \
   "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.dmg" \
   "${BUILT_PRODUCTS_DIR}/source_folder"
 
+#move app bundle back to parent folder
 mv ${BUILT_PRODUCTS_DIR}/source_folder/${WRAPPER_NAME} ${BUILT_PRODUCTS_DIR}
+rm -rd ${BUILT_PRODUCTS_DIR}/source_folder
 
 if [ -d "../MSPBuildSystem/yquake2/release-${APP_VERSION}" ]; then
 	rm -rf "../MSPBuildSystem/yquake2/release-${APP_VERSION}" || exit 1;
