@@ -1,17 +1,18 @@
 # game/app specific values
 export APP_VERSION="8.10"
 export PRODUCT_NAME="yquake2"
-export ICONSFILENAME="quake2"
+export PROJECT_NAME="yquake2"
 export PORT_NAME="Yamagi Quake II"
+export ICONSFILENAME="quake2"
 export EXECUTABLE_NAME="quake2"
 export PKGINFO="APPLGYQ2"
 export GIT_TAG="QUAKE2_8_10"
 export GIT_DEFAULT_BRANCH="master"
 
-#constants
+# constants
 source ../common/constants.sh
 
-cd ../../${PRODUCT_NAME}
+cd ../../${PROJECT_NAME}
 
 # reset to the main branch
 echo git checkout ${GIT_DEFAULT_BRANCH}

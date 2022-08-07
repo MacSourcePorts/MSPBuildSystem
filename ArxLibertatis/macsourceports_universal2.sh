@@ -1,8 +1,9 @@
 # game/app specific values
 export APP_VERSION="1.2.1"
 export PRODUCT_NAME="ArxLibertatis"
-export ICONSFILENAME="arx-libertatis"
+export PROJECT_NAME="ArxLibertatis"
 export PORT_NAME="Arx Libertatis"
+export ICONSFILENAME="ArxLibertatis"
 export EXECUTABLE_NAME="arx"
 export PKGINFO="APPLARX"
 export GIT_TAG="1.2.1"
@@ -11,7 +12,7 @@ export GIT_DEFAULT_BRANCH="master"
 #constants
 source ../common/constants.sh
 
-cd ../../${PRODUCT_NAME}
+cd ../../${PROJECT_NAME}
 
 # reset to the main branch
 echo git checkout ${GIT_DEFAULT_BRANCH}

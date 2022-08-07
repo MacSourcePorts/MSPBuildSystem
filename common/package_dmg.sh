@@ -21,13 +21,17 @@ create-dmg \
 mv ${BUILT_PRODUCTS_DIR}/source_folder/${WRAPPER_NAME} ${BUILT_PRODUCTS_DIR}
 rm -rd ${BUILT_PRODUCTS_DIR}/source_folder
 
-if [ -d "../MSPBuildSystem/${PRODUCT_NAME}/release-${APP_VERSION}" ]; then
-	rm -rf "../MSPBuildSystem/${PRODUCT_NAME}/release-${APP_VERSION}" || exit 1;
+if [ "$1" != "skipdelete" ]; then
+  if [ -d "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}" ]; then
+    rm -rf "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}" || exit 1;
+  fi
+  mkdir -p "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}";
 fi
-mkdir -p "../MSPBuildSystem/${PRODUCT_NAME}/release-${APP_VERSION}";
 
-mv ${BUILT_PRODUCTS_DIR}/* "../MSPBuildSystem/${PRODUCT_NAME}/release-${APP_VERSION}"
+mv ${BUILT_PRODUCTS_DIR}/* "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}"
 
-rm -rf ${X86_64_BUILD_FOLDER}
-rm -rf ${ARM64_BUILD_FOLDER}
-rm -rf ${BUILT_PRODUCTS_DIR}
+if [ "$1" != "skipcleanup" ]; then
+  rm -rf ${X86_64_BUILD_FOLDER}
+  rm -rf ${ARM64_BUILD_FOLDER}
+  rm -rf ${BUILT_PRODUCTS_DIR}
+fi
