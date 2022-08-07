@@ -8,7 +8,7 @@ export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 export ICONSDIR="../MSPBuildSystem/${PRODUCT_NAME}"
 export ICONS="${ICONSFILENAME}.icns"
 export BUNDLE_ID="com.macsourceports.${PRODUCT_NAME}"
-export HIGH_RESOLUTION_CAPABLE="false"
+export HIGH_RESOLUTION_CAPABLE="true"
 
 # For parallel make on multicore boxes...
 export NCPU=`sysctl -n hw.ncpu`

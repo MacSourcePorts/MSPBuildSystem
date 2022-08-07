@@ -30,8 +30,6 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
 <dict>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>en</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIconFile</key>
@@ -46,29 +44,14 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
     <string>${APP_VERSION}</string>
-    <key>CFBundleSignature</key>
-    <string>????</string>
     <key>CFBundleVersion</key>
     <string>${APP_VERSION}</string>
-    <key>CGDisableCoalescedUpdates</key>
-    <true/>
     <key>LSMinimumSystemVersion</key>
     <string>10.7</string>
-    <key>LSMinimumSystemVersionByArchitecture</key>
-    <dict>
-        <key>x86_64</key>
-        <string>10.7</string>
-        <key>arm64</key>
-        <string>11.0</string>
-    </dict>
-	<key>NSHumanReadableCopyright</key>
-    <string>${COPYRIGHT_TEXT}</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSHighResolutionCapable</key>
     <${HIGH_RESOLUTION_CAPABLE}/>
-    <key>NSRequiresAquaSystemAppearance</key>
-    <false/>
 </dict>
 </plist>
 "

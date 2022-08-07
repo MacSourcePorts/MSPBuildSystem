@@ -5,14 +5,13 @@ export ICONSFILENAME="quake2"
 export PORT_NAME="Yamagi Quake II"
 export EXECUTABLE_NAME="quake2"
 export PKGINFO="APPLGYQ2"
-export COPYRIGHT_TEXT="Quake II Copyright © 1997-2012 id Software, Inc. All rights reserved."
 export GIT_TAG="QUAKE2_8_10"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
 
-cd ../../yquake2
+cd ../../${PRODUCT_NAME}
 
 # reset to the main branch
 echo git checkout ${GIT_DEFAULT_BRANCH}
