@@ -22,13 +22,13 @@ mv ${BUILT_PRODUCTS_DIR}/source_folder/${WRAPPER_NAME} ${BUILT_PRODUCTS_DIR}
 rm -rd ${BUILT_PRODUCTS_DIR}/source_folder
 
 if [ "$1" != "skipdelete" ]; then
-  if [ -d "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}" ]; then
-    rm -rf "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}" || exit 1;
+  if [ -d "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}" ]; then
+    rm -rf "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}" || exit 1;
   fi
-  mkdir -p "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}";
+  mkdir -p "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}";
 fi
 
-mv ${BUILT_PRODUCTS_DIR}/* "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}"
+mv ${BUILT_PRODUCTS_DIR}/* "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}"
 
 if [ "$1" != "skipcleanup" ]; then
   rm -rf ${X86_64_BUILD_FOLDER}
