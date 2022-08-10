@@ -14,7 +14,7 @@ create-dmg \
   --hide-extension "${WRAPPER_NAME}" \
   --app-drop-link 575 185 \
   --no-internet-enable \
-  "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.dmg" \
+  "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}-${APP_VERSION}${ARCH_SUFFIX}.dmg" \
   "${BUILT_PRODUCTS_DIR}/source_folder"
 
 #move app bundle back to parent folder
