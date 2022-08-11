@@ -27,6 +27,8 @@ echo git checkout tags/${GIT_TAG}
 git checkout tags/${GIT_TAG}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
+rm -rf ${X86_64_BUILD_FOLDER}
+rm -rf ${ARM64_BUILD_FOLDER}
 
 ARM64_CFLAGS="-I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include -mmacosx-version-min=10.9"
 ARM64_LDFLAGS="-L/opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -mmacosx-version-min=10.9"
