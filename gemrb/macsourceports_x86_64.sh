@@ -30,7 +30,10 @@ git pull
 
 # the latest release tag has issues on macOS that have since been fixed
 # until the next release we'll just use the latest
-#git checkout tags/${GIT_TAG}
+git checkout tags/${GIT_TAG}
+
+# fix glitch with 0.9.0's Info.plist template
+cp ../MSPBuildSystem/gemrb/Info.plist platforms/apple/osx/Info.plist
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}
