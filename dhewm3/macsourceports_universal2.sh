@@ -23,8 +23,9 @@ echo git pull
 git pull
 
 # check out the latest release tag
-echo git checkout tags/${GIT_TAG}
-git checkout tags/${GIT_TAG}
+# NOTE: skipping for now until I do a PR to search in the app bundle for the game files.
+# echo git checkout tags/${GIT_TAG}
+# git checkout tags/${GIT_TAG}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
