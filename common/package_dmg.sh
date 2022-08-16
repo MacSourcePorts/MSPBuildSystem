@@ -31,7 +31,9 @@ fi
 mv ${BUILT_PRODUCTS_DIR}/* "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}"
 
 if [ "$1" != "skipcleanup" ]; then
-  rm -rf ${X86_64_BUILD_FOLDER}
-  rm -rf ${ARM64_BUILD_FOLDER}
-  rm -rf ${BUILT_PRODUCTS_DIR}
+  if [ "$2" != "skipcleanup" ]; then
+    rm -rf ${X86_64_BUILD_FOLDER}
+    rm -rf ${ARM64_BUILD_FOLDER}
+    rm -rf ${BUILT_PRODUCTS_DIR}
+  fi
 fi
