@@ -23,7 +23,7 @@ The table below is a representation of the migration process.
 | jk2mv                       | ☑️        |                     | ☑️                        | Latest code                                  | Project does use tags, but not since 2018. Should do PR for Apple Silicon support. Also there's two repos since one is a submodule of the other.                                                                                 |
 | julius                      | ☑️        | ☑️                   |                          | Versioned project tags                       |                                                                                 |
 | Maelstrom                   | ☑️        |                     | ☑️                        | Latest code                                  | This one is fine to leave as our fork. It will rarely change                    |
-| OpenJK/OpenJO               |          |                     |                          |                                              |                                                                                 |
+| OpenJK/OpenJO               | ☑️        |                     |                          | Latest code                                  | Same deal as other id Tech 3 titles - needs a PR for ARM64 changes.                                                                                 |
 | OpenJKDF2                   | ☑️        |                     | ☑️                        | Versioned project tags                       | This one needs some attention before I can try and use the project's repo       |
 | OpenRCT2                    |          |                     |                          |                                              |                                                                                 |
 | OpenTyrian                  |          |                     |                          |                                              |                                                                                 |
@@ -36,3 +36,11 @@ The table below is a representation of the migration process.
 | The Ur-Quan Masters         |          |                     |                          |                                              |                                                                                 |
 | vkQuake                     |          |                     |                          |                                              |                                                                                 |
 | yquake2                     | ☑️        | ☑️                   |                          | Versioned project tags                       |                                                                                 |
+
+In the script:
+
+`PRODUCT_NAME` is the name given to the app bundle wraper (i.e., `PRODUCT_NAME.app`) and the dmg (i.e., `PRODUCT_NAME-1.0.dmg`)
+
+`PROJECT_NAME` is the name of the actual project and the directory it's cloned into. 
+
+`PORT_NAME` is the name of the source port, this one might have spaces, punctuation, etc., (i.e., `ArxLibertatis` versus `Arx Libertatis`)
