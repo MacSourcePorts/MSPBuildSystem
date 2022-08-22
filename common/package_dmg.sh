@@ -28,12 +28,13 @@ if [ "$1" != "skipdelete" ]; then
   mkdir -p "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}";
 fi
 
-mv ${BUILT_PRODUCTS_DIR}/* "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}"
+cp -a ${BUILT_PRODUCTS_DIR}/* "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}"
 
-if [ "$1" != "skipcleanup" ]; then
-  if [ "$2" != "skipcleanup" ]; then
+if [ "$1" != "skipcleanup" ] && [ "$2" != "skipcleanup" ]; then
+    echo "Cleaning up"
     rm -rf ${X86_64_BUILD_FOLDER}
     rm -rf ${ARM64_BUILD_FOLDER}
     rm -rf ${BUILT_PRODUCTS_DIR}
-  fi
+else 
+    echo "Skipping cleanup"
 fi
