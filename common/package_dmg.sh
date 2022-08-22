@@ -1,6 +1,6 @@
 #move app bundle to a subfolder
 mkdir -p ${BUILT_PRODUCTS_DIR}/source_folder
-mv ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME} ${BUILT_PRODUCTS_DIR}/source_folder
+mv "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}" ${BUILT_PRODUCTS_DIR}/source_folder
 
 #create DMG from that subfolder
 create-dmg \
@@ -18,7 +18,8 @@ create-dmg \
   "${BUILT_PRODUCTS_DIR}/source_folder"
 
 #move app bundle back to parent folder
-mv ${BUILT_PRODUCTS_DIR}/source_folder/${WRAPPER_NAME} ${BUILT_PRODUCTS_DIR}
+echo mv "${BUILT_PRODUCTS_DIR}/source_folder/${WRAPPER_NAME}" ${BUILT_PRODUCTS_DIR}
+mv "${BUILT_PRODUCTS_DIR}/source_folder/${WRAPPER_NAME}" ${BUILT_PRODUCTS_DIR}
 rm -rd ${BUILT_PRODUCTS_DIR}/source_folder
 
 if [ "$1" != "skipdelete" ]; then
