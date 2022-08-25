@@ -23,8 +23,8 @@ echo git pull
 git pull
 
 # check out the latest release tag
-echo git checkout tags/${GIT_TAG}
-git checkout tags/${GIT_TAG}
+#echo git checkout tags/${GIT_TAG}
+#git checkout tags/${GIT_TAG}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 

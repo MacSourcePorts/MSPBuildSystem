@@ -6,7 +6,7 @@ mv "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}" ${BUILT_PRODUCTS_DIR}/source_folder
 create-dmg \
   --volname "${PORT_NAME}" \
   --volicon "../MSPBuildSystem/common/msp_dmg.icns" \
-  --background "../MSPBuildSystem/common/msp_dmg_background.png" \
+  --background "../MSPBuildSystem/common/msp_dmg_background.tiff" \
   --window-pos 200 120 \
   --window-size 750 400 \
   --icon-size 100 \
