@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="1.5.0"
+export APP_VERSION="1.5.2"
 export PRODUCT_NAME="dhewm3"
 export PROJECT_NAME="dhewm3"
 export PORT_NAME="dhewm3"
