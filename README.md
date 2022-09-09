@@ -8,6 +8,7 @@ The table below is a representation of the migration process.
 
 |         Source Port         | Migrated | Uses Project's Repo | Uses MacSourcePorts Fork | Versioning Strategy                          |                                      Notes                                      |
 |:---------------------------:|:--------:|:-------------------:|:------------------------:|----------------------------------------------|:-------------------------------------------------------------------------------:|
+| abuse                       | ☑️        |                     | ☑️                        | Versioned project tags                       | Had to modify this one to save outside of the app bundle. Code rarely changes, we can keep this on our own fork.                                                                                |
 | ArxLibertatis               | ☑️        | ☑️                   |                          | Versioned project tags                       |                                                                                 |
 | augustus                    | ☑️        | ☑️                   |                          | Versioned project tags                       |                                                                                 |
 | CorsixTH                    | ☑️        | ☑️                   |                          | Versioned project tags, separate arch builds |                                                                                 |
