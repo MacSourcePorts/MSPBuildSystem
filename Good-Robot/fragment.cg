@@ -1,0 +1,16 @@
+#version 				120 
+
+#define TEX0			gl_TexCoord[0]
+#define SPRITE_GRID	    32
+uniform sampler2D       uni_texture;
+
+//#version 150 compatibility
+
+void main()
+{
+	gl_FragColor.rgba = texture2D (uni_texture, TEX0.xy)*gl_Color;
+	//gl_FragColor.rgba = vec4(1,1,0,1);
+}
+
+
+
