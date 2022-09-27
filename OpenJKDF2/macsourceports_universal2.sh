@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.2.0"
+export APP_VERSION="0.6.8"
 # this app does its own icons via packaging
 export PRODUCT_NAME="OpenJKDF2"
 export PROJECT_NAME="OpenJKDF2"
 export PORT_NAME="OpenJKDF2"
 export EXECUTABLE_NAME="OpenJKDF2"
 export PKGINFO="APPLJKDF2"
-export GIT_TAG="v0.4.4"
+export GIT_TAG="v0.6.8"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
@@ -32,10 +32,14 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 ./distpkg_macos.sh
 
 mkdir ${BUILT_PRODUCTS_DIR}
-mv ${PRODUCT_NAME}_universal.app ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}
+mv macos-debug.tar.gz ${BUILT_PRODUCTS_DIR}
+cd ${BUILT_PRODUCTS_DIR}
+tar -xvf macos-debug.tar.gz
+mv ${PRODUCT_NAME}_universal.app ${WRAPPER_NAME}
+cd ..
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
 #create dmg
-"../MSPBuildSystem/common/package_dmg.sh"
+"../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
