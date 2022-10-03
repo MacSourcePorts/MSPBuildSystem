@@ -8,6 +8,7 @@ export EXECUTABLE_NAME="wrath"
 export PKGINFO="APPLWRTH"
 export GIT_TAG="1.0"
 export GIT_DEFAULT_BRANCH="master"
+export ENTITLEMENTS_FILE="../MSPBuildSystem/wrathplaces/wrathplaces.entitlements"
 
 # constants
 source ../common/constants.sh
@@ -74,6 +75,7 @@ echo "bundle done."
 # we're doing things the hard way here because these aren't linked in but they need to be in the same dir
 cp /opt/homebrew/lib/libvorbis.dylib ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 cp /opt/homebrew/lib/libvorbisfile.dylib ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
+install_name_tool -change /opt/homebrew/Cellar/libvorbis/1.3.7/lib/libvorbis.0.dylib @executable_path/../Resources/libvorbis.dylib ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libvorbisfile.dylib
 cp /opt/homebrew/lib/libogg.dylib ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 cp /opt/homebrew/lib/libtheora.dylib ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 cp /opt/homebrew/lib/libvorbisenc.dylib ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
@@ -85,7 +87,7 @@ codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BU
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libvorbisenc.dylib
 
 # #sign and notarize
-"../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
+"../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
 # #create dmg
-# "../MSPBuildSystem/common/package_dmg.sh"
+"../MSPBuildSystem/common/package_dmg.sh"
