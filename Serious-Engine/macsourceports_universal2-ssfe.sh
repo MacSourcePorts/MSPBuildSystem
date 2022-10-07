@@ -70,6 +70,10 @@ lipo ${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libEntities.dyl
 lipo ${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGame.dylib ${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGame.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGame.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib ${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib" -create
 
+codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libEntities.dylib"
+codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGame.dylib"
+codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib"
+
 # lipo any app-specific libraries
 # we're doing things the hard way here because these aren't linked in but they need to be in the same dir
 lipo /usr/local/lib/libvorbis.dylib /opt/homebrew/lib/libvorbis.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libvorbis.dylib" -create

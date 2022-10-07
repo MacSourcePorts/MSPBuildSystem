@@ -48,3 +48,11 @@ In the script:
 `PROJECT_NAME` is the name of the actual project and the directory it's cloned into. 
 
 `PORT_NAME` is the name of the source port, this one might have spaces, punctuation, etc., (i.e., `ArxLibertatis` versus `Arx Libertatis`)
+
+If the notrarization fails get the submission GUID and run
+
+`xcrun notarytool log (GUID) --key "../../MSPBuildSystem/common/${AUTH_KEY_FILENAME}" --key-id "${AUTH_KEY_ID}" --issuer "${AUTH_KEY_ISSUER_ID}"`
+
+If you need to remove the quarantine from an app
+
+`sudo xattr -r -d com.apple.quarantine /path/to/MyApp.app`
