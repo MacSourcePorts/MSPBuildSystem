@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="0.33.1"
+export APP_VERSION="0.40.1"
 export PRODUCT_NAME="reflectionhle"
 export PROJECT_NAME="reflectionhle"
 export PORT_NAME="ReflectionHLE"
