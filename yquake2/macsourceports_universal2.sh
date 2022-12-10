@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="8.10"
+export APP_VERSION="8.20"
 export PRODUCT_NAME="yquake2"
 export PROJECT_NAME="yquake2"
 export PORT_NAME="Yamagi Quake II"
 export ICONSFILENAME="quake2"
 export EXECUTABLE_NAME="quake2"
 export PKGINFO="APPLGYQ2"
-export GIT_TAG="QUAKE2_8_10"
+export GIT_TAG="QUAKE2_8_20"
 export GIT_DEFAULT_BRANCH="master"
 
 # constants
