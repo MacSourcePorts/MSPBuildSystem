@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.12.2"
+export APP_VERSION="1.22.1"
 export PRODUCT_NAME="vkQuake"
 export PROJECT_NAME="vkquake"
 export PORT_NAME="vkQuake"
 export ICONSFILENAME="vkquake"
 export EXECUTABLE_NAME="vkquake"
 export PKGINFO="APPLVKQ1"
-export GIT_TAG="1.20.3"
+export GIT_TAG="1.22.1"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
@@ -23,9 +23,8 @@ echo git pull
 git pull
 
 # check out the latest release tag
-# As of 8/21/2022 the latest tagged release has issues on macOS, using latest code for now.
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+echo git checkout tags/${GIT_TAG}
+git checkout tags/${GIT_TAG}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
