@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="1.0"
+export APP_VERSION="0.8.0"
 export PRODUCT_NAME="NakedAVP"
 export PROJECT_NAME="NakedAVP"
 export PORT_NAME="NakedAVP"
