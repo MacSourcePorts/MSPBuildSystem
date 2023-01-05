@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.22.1"
+export APP_VERSION="1.22.3"
 export PRODUCT_NAME="vkQuake"
 export PROJECT_NAME="vkquake"
 export PORT_NAME="vkQuake"
 export ICONSFILENAME="vkquake"
 export EXECUTABLE_NAME="vkquake"
 export PKGINFO="APPLVKQ1"
-export GIT_TAG="1.22.1"
+export GIT_TAG="1.22.3"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
@@ -32,6 +32,8 @@ rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
+
+export MACOSX_DEPLOYMENT_TARGET=10.9
 
 export PATH=/usr/local/bin:$PATH
 export LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
