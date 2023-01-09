@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="0.8.5"
+export APP_VERSION="0.9.1"
 export PRODUCT_NAME="RigelEngine"
 export PROJECT_NAME="RigelEngine"
 export PORT_NAME="RigelEngine"
@@ -7,7 +7,7 @@ export ICONSFILENAME="RigelEngine"
 export EXECUTABLE_NAME="RigelEngine"
 export PKGINFO="APPLROTT"
 export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="v0.8.5"
+export GIT_TAG="v0.9.1"
 
 #constants
 source ../common/constants.sh
