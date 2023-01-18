@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="3.1.3"
+export APP_VERSION="3.2.0"
 export PRODUCT_NAME="CGenius"
 export PROJECT_NAME="Commander-Genius"
 export PORT_NAME="Commander Genius"
 export ICONSFILENAME="cglogo"
 export EXECUTABLE_NAME="CGeniusExe"
 export PKGINFO="APPLCKEN"
-export GIT_TAG="3.1.3"
+export GIT_TAG="3.2.0"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants

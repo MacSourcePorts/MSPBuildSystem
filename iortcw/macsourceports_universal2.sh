@@ -1,6 +1,6 @@
 # game/app specific values
 # note that for iortcw some of these values are not used since it handles bundling differently. 
-export APP_VERSION="1.0"
+export APP_VERSION="1.51d"
 export PRODUCT_NAME="iowolfsp"
 export PROJECT_NAME="iortcw"
 export PORT_NAME="iortcw"
