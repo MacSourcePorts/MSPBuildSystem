@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="3.6.5.2"
+export APP_VERSION="3.6.5.3"
 export PRODUCT_NAME="DOOM64EXPlus"
 export PROJECT_NAME="DOOM64EXPlus"
 export PORT_NAME="DOOM64EXPlus"
