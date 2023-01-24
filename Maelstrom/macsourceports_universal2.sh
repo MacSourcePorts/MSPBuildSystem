@@ -24,7 +24,7 @@ rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 
 make clean
-(ARCH=x86_64 INCLUDES="-I/usr/local/include/SDL2" LIBS="-L/usr/local/lib -lSDL2 -lSDL2_net" make -j$NCPU)
+(ARCH=x86_64 CFLAGS="-mmacosx-version-min=10.9" LDFLAGS="-mmacosx-version-min=10.9" INCLUDES="-I/usr/local/include/SDL2" LIBS="-L/usr/local/lib -lSDL2 -lSDL2_net" make -j$NCPU)
 mkdir -p ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
 cp "${EXECUTABLE_NAME}" ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
 mkdir -p "${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" || exit 1;
@@ -37,7 +37,7 @@ cp "Maelstrom_Sounds" ${X86_64_BUILD_FOLDER}/"${UNLOCALIZED_RESOURCES_FOLDER_PAT
 cp "Maelstrom_Sprites" ${X86_64_BUILD_FOLDER}/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 
 make clean
-(ARCH=arm64 INCLUDES="-I/opt/homebrew/include/SDL2" LIBS="-L/opt/homebrew/lib -lSDL2 -lSDL2_net" make -j$NCPU)
+(ARCH=arm64 CFLAGS="-mmacosx-version-min=10.9" LDFLAGS="-mmacosx-version-min=10.9" INCLUDES="-I/opt/homebrew/include/SDL2" LIBS="-L/opt/homebrew/lib -lSDL2 -lSDL2_net" make -j$NCPU)
 mkdir -p ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
 cp "${EXECUTABLE_NAME}" ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
 mkdir -p "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" || exit 1;
