@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.0.0"
+export APP_VERSION="1.0.2"
 export PRODUCT_NAME="fheroes2"
 export PROJECT_NAME="fheroes2"
 export PORT_NAME="fheroes2"
 export ICONSFILENAME="fheroes2"
 export EXECUTABLE_NAME="fheroes2"
 export PKGINFO="APPLFH2"
-export GIT_TAG="1.0.0"
+export GIT_TAG="1.0.2"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
