@@ -20,3 +20,5 @@ export X86_64_BUILD_FOLDER="build-x86_64"
 export X86_64_LIBS_FOLDER="libs-x86_64"
 
 export DATE_TIMESTAMP="$(date +'%Y-%m-%d')"
+
+set -e
