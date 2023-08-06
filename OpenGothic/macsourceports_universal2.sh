@@ -1,13 +1,13 @@
 # game/app specific values
-export APP_VERSION="0.69"
+export APP_VERSION="0.75"
 export PRODUCT_NAME="OpenGothic"
 export PROJECT_NAME="OpenGothic"
 export PORT_NAME="OpenGothic"
 export ICONSFILENAME="opengothic"
 export EXECUTABLE_NAME="Gothic2Notr"
 export PKGINFO="APPLOGw"
-export GIT_DEFAULT_BRANCH="main"
-export GIT_TAG="v0.6.0"
+export GIT_DEFAULT_BRANCH="master"
+export GIT_TAG="v0.75"
 
 #constants
 source ../common/constants.sh
@@ -16,12 +16,16 @@ source ../common/signing_values.local
 cd ../../${PROJECT_NAME}
 
 # reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
+echo git checkout ${GIT_DEFAULT_BRANCH}
+git checkout ${GIT_DEFAULT_BRANCH}
 
 # # fetch the latest 
 echo git pull
 git pull
+
+# check out the latest release tag
+# echo git checkout tags/${GIT_TAG}
+# git checkout tags/${GIT_TAG}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
