@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="3.2.0"
+export APP_VERSION="3.4.9"
 export PRODUCT_NAME="CGenius"
 export PROJECT_NAME="Commander-Genius"
 export PORT_NAME="Commander Genius"
 export ICONSFILENAME="cglogo"
 export EXECUTABLE_NAME="CGeniusExe"
 export PKGINFO="APPLCKEN"
-export GIT_TAG="3.2.0"
+export GIT_TAG="v3.4.9"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
@@ -21,6 +21,10 @@ git checkout ${GIT_DEFAULT_BRANCH}
 # # fetch the latest 
 echo git pull
 git pull
+
+# check out the latest release tag
+echo git checkout tags/${GIT_TAG}
+git checkout tags/${GIT_TAG}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
