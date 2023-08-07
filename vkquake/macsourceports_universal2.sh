@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.22.3"
+export APP_VERSION="1.30.1"
 export PRODUCT_NAME="vkQuake"
 export PROJECT_NAME="vkquake"
 export PORT_NAME="vkQuake"
 export ICONSFILENAME="vkquake"
 export EXECUTABLE_NAME="vkquake"
 export PKGINFO="APPLVKQ1"
-export GIT_TAG="1.22.3"
+export GIT_TAG="1.30.1"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
