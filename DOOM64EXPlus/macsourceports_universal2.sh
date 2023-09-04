@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="3.6.5.2"
+export APP_VERSION="3.6.5.8"
 export PRODUCT_NAME="DOOM64EXPlus"
 export PROJECT_NAME="DOOM64EXPlus"
 export PORT_NAME="DOOM64EXPlus"
@@ -28,10 +28,31 @@ POST_NOTARIZED_ZIP="${PRODUCT_NAME}_notarized_$(date +"%Y-%m-%d").zip"
 
 # dylibbundler -od -b -x "./DOOM64EXPlus.app/Contents/MacOS/DOOM64EXPlus" -d "./DOOM64EXPlus.app/Contents/MacOS/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
 
+rm "./DOOM64EXPlus.app/Contents/MacOS/libfluidsynth.3.2.1.dylib";
+
+if [ -d "./DOOM64EXPlus.app/Contents/MacOS/${X86_64_LIBS_FOLDER}/" ]; then
+rm -rf "./DOOM64EXPlus.app/Contents/MacOS/${X86_64_LIBS_FOLDER}/" || exit 1;
+fi
+mkdir -p "./DOOM64EXPlus.app/Contents/MacOS/${X86_64_LIBS_FOLDER}/";
+echo cp /usr/local/opt/fluid-synth/lib/libfluidsynth.3.dylib "./DOOM64EXPlus.app/Contents/MacOS/${X86_64_LIBS_FOLDER}/"
+cp /usr/local/opt/fluid-synth/lib/libfluidsynth.3.dylib "./DOOM64EXPlus.app/Contents/MacOS/${X86_64_LIBS_FOLDER}/"
+
+if [ -d "./DOOM64EXPlus.app/Contents/MacOS/${ARM64_LIBS_FOLDER}/" ]; then
+rm -rf "./DOOM64EXPlus.app/Contents/MacOS/${ARM64_LIBS_FOLDER}/" || exit 1;
+fi
+mkdir -p "./DOOM64EXPlus.app/Contents/MacOS/${ARM64_LIBS_FOLDER}/";
+echo cp /opt/homebrew/opt/fluid-synth/lib/libfluidsynth.3.dylib "./DOOM64EXPlus.app/Contents/MacOS/${ARM64_LIBS_FOLDER}/"
+cp /opt/homebrew/opt/fluid-synth/lib/libfluidsynth.3.dylib "./DOOM64EXPlus.app/Contents/MacOS/${ARM64_LIBS_FOLDER}/"
+
 install_name_tool -change /opt/local/lib/libz.1.dylib @executable_path/libz.1.dylib DOOM64EXPlus.app/Contents/MacOS/DOOM64EXPlus
 install_name_tool -change /opt/local/lib/libpng16.16.dylib @executable_path/libpng16.16.dylib DOOM64EXPlus.app/Contents/MacOS/DOOM64EXPlus
 install_name_tool -change /opt/local/lib/libSDL2_net-2.0.0.dylib @executable_path/libSDL2_net-2.0.0.dylib DOOM64EXPlus.app/Contents/MacOS/DOOM64EXPlus
 install_name_tool -change /opt/local/lib/libSDL2-2.0.0.dylib @executable_path/libSDL2-2.0.0.dylib DOOM64EXPlus.app/Contents/MacOS/DOOM64EXPlus
+install_name_tool -change /usr/local/opt/fluid-synth/lib/libfluidsynth.3.dylib @executable_path/${X86_64_LIBS_FOLDER}/libfluidsynth.3.dylib DOOM64EXPlus.app/Contents/MacOS/DOOM64EXPlus
+install_name_tool -change /opt/homebrew/opt/fluid-synth/lib/libfluidsynth.3.dylib @executable_path/${ARM64_LIBS_FOLDER}/libfluidsynth.3.dylib DOOM64EXPlus.app/Contents/MacOS/DOOM64EXPlus
+
+dylibbundler -b -x "./DOOM64EXPlus.app/Contents/MacOS/${X86_64_LIBS_FOLDER}/libfluidsynth.3.dylib" -d "./DOOM64EXPlus.app/Contents/MacOS/${X86_64_LIBS_FOLDER}/" -p @executable_path/${X86_64_LIBS_FOLDER}/
+dylibbundler -b -x "./DOOM64EXPlus.app/Contents/MacOS/${ARM64_LIBS_FOLDER}/libfluidsynth.3.dylib" -d "./DOOM64EXPlus.app/Contents/MacOS/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
 
 codesign --force --options runtime --deep --sign "${SIGNING_IDENTITY}" DOOM64EXPlus.app
 

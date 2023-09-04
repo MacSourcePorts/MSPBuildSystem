@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.4.0"
+export APP_VERSION="1.5.1"
 export PRODUCT_NAME="RBDoom3BFG"
 export PROJECT_NAME="RBDOOM-3-BFG"
 export PORT_NAME="RBDOOM-3-BFG"
 export EXECUTABLE_NAME="RBDoom3BFG"
 export ICONSFILENAME="RBDoom3BFG"
 export PKGINFO="APPLRBD3"
-export GIT_TAG="v1.4.0"
+export GIT_TAG="v1.5.1"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
@@ -42,7 +42,7 @@ cmake -G "Unix Makefiles" \
 -DBINKDEC=ON \
 -DOPENAL_LIBRARY=/usr/local/opt/openal-soft/lib/libopenal.dylib \
 -DOPENAL_INCLUDE_DIR=/usr/local/opt/openal-soft/include \
-../neo
+../neo \
 -Wno-dev
 
 cd ..

@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="0.66"
+export APP_VERSION="0.67"
 export PRODUCT_NAME="CorsixTH"
 export PROJECT_NAME="CorsixTH"
 export PORT_NAME="CorsixTH"
 export ICONSFILENAME="CorsixTH"
 export EXECUTABLE_NAME="CorsixTH"
 export PKGINFO="APPLCTH"
-export GIT_TAG="v0.66"
+export GIT_TAG="v0.67"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
@@ -70,4 +70,4 @@ codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BU
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
 #create dmg
-"../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
+"../MSPBuildSystem/common/package_dmg.sh" #"skipcleanup"

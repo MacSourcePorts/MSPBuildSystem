@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.4.1"
+export APP_VERSION="1.5.0"
 export PRODUCT_NAME="devilutionX"
 export PROJECT_NAME="devilutionX"
 export PORT_NAME="DevilutionX"
 export ICONSFILENAME="devilutionX"
 export EXECUTABLE_NAME="devilutionX"
 export PKGINFO="APPLEDVLX"
-export GIT_TAG="1.4.1"
+export GIT_TAG="1.5.0"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
