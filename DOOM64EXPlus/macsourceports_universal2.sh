@@ -1,3 +1,14 @@
+## TODO!!
+## TODO!!
+## TODO!!
+
+## Make things go to the right directories!
+## Until then make a copy of what Xcode releases, put it in the folder with this script, zip it up, then run it. Then delete that app and zip.
+
+## TODO!!
+## TODO!!
+## TODO!!
+
 # game/app specific values
 export APP_VERSION="3.6.5.8"
 export PRODUCT_NAME="DOOM64EXPlus"
