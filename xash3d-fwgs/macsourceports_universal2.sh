@@ -12,11 +12,72 @@ export ENTITLEMENTS_FILE="../MSPBuildSystem/xash3d-fwgs/xash3d-fwgs.entitlements
 #constants
 source ../common/constants.sh
 
-# first, we get to compile the SDK
+cd ../../${PROJECT_NAME}
 
-cd ../../hlsdk-portable
+# # reset to the main branch
+# echo git checkout ${GIT_DEFAULT_BRANCH}
+# git checkout ${GIT_DEFAULT_BRANCH}
 
-# todo: both archs
+# # fetch the latest 
+# echo git pull
+# git pull
+
+# Step 1: Xash3D-FWGS
+echo "Step 1: Xash3D-FWGS"
+
+rm -rf build
+rm -rf ${BUILT_PRODUCTS_DIR}
+
+rm -rf ${X86_64_BUILD_FOLDER}
+mkdir ${X86_64_BUILD_FOLDER}
+rm -rf ${ARM64_BUILD_FOLDER}
+mkdir ${ARM64_BUILD_FOLDER}
+
+TEMP_PATH="$PATH"
+
+echo TEMP_PATH = $TEMP_PATH
+
+# Step 1.1: Xash3D-FWGS - Apple Silicon (arm64)
+echo "Step 1.1: Xash3D-FWGS - Apple Silicon (arm64)"
+
+(PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release)
+echo PATH = $PATH
+./waf build
+./waf install --destdir=${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+./waf install --destdir=${ARM64_BUILD_FOLDER}/install
+
+mkdir ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/cl_dlls
+mkdir ${ARM64_BUILD_FOLDER}/install/cl_dlls
+mkdir ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+mkdir ${ARM64_BUILD_FOLDER}/install/dlls
+
+# Step 1.2: Xash3D-FWGS - Intel (amd64)
+echo "Step 1.2: Xash3D-FWGS - Intel (amd64)"
+
+(CC="clang -arch x86_64" CXX="clang++ -arch x86_64" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release)
+echo PATH = $PATH
+./waf build
+./waf install --destdir=${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+./waf install --destdir=${X86_64_BUILD_FOLDER}/install
+
+mkdir ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/cl_dlls
+mkdir ${X86_64_BUILD_FOLDER}/install/cl_dlls
+mkdir ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+mkdir ${X86_64_BUILD_FOLDER}/install/dlls
+
+# Step 2: HLSDK
+echo "Step 2: HLSDK"
+
+cd ../hlsdk-portable
+
+# Step 2.1 : HLSDK - Half-Life
+echo "Step 2.1 : HLSDK - Half-Life"
+
+git checkout master
+
+# Step 2.1.1 : HLSDK - Half-Life - Apple Silicon (arm64)
+echo "Step 2.1.1 : HLSDK - Half-Life - Apple Silicon (arm64)"
+
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
@@ -34,94 +95,226 @@ rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
 
-cd ../../${PROJECT_NAME}
+cp -a cl_dlls/* ../../${PROJECT_NAME}/${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/cl_dlls
+cp -a cl_dlls/* ../../${PROJECT_NAME}/${ARM64_BUILD_FOLDER}/install/cl_dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${ARM64_BUILD_FOLDER}/install/dlls
 
-# # reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
+cd ..
 
-# # fetch the latest 
-# echo git pull
-# git pull
+# Step 2.1.2 : HLSDK - Half-Life - Intel (amd64)
+echo "Step 2.1.2 : HLSDK - Half-Life - Intel (amd64)"
 
-rm -rf build
-rm -rf ${BUILT_PRODUCTS_DIR}
+rm -rf ${X86_64_BUILD_FOLDER}
+mkdir ${X86_64_BUILD_FOLDER}
+cd ${X86_64_BUILD_FOLDER}
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+make -j$NCPU
 
-# rm -rf ${X86_64_BUILD_FOLDER}
-# mkdir ${X86_64_BUILD_FOLDER}
+mv cl_dll cl_dlls
+mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+rm cl_dlls/cmake_install.cmake
+rm -rf cl_dlls/CMakeFiles
+rm cl_dlls/Makefile
+
+mv dlls/hl.dylib dlls/hl_amd64.dylib
+rm dlls/cmake_install.cmake
+rm -rf dlls/CMakeFiles
+rm dlls/Makefile
+
+cp -a cl_dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/cl_dlls
+cp -a cl_dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/install/cl_dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/install/dlls
+
+cd ..
+
+# Step 2.2 : HLSDK - Half-Life: Opposing Force
+echo "Step 2.2 : HLSDK - Half-Life: Opposing Force"
+
+git checkout opfor
+
+# Step 2.2.1 : HLSDK - Half-Life: Opposing Force - Apple Silicon (arm64)
+echo "Step 2.2.1 : HLSDK - Half-Life: Opposing Force - Apple Silicon (arm64)"
+
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
+cd ${ARM64_BUILD_FOLDER}
+cmake ..
+make -j$NCPU
 
-(PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$PATH" ./waf configure --64bits -T release)
-./waf build
-./waf install --destdir=${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
-./waf install --destdir=${ARM64_BUILD_FOLDER}/install
+mv cl_dll cl_dlls
+mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+rm cl_dlls/cmake_install.cmake
+rm -rf cl_dlls/CMakeFiles
+rm cl_dlls/Makefile
 
-mkdir ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/cl_dlls
-cp -a ../hlsdk-portable/${ARM64_BUILD_FOLDER}/cl_dlls/* ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/cl_dlls
+mv dlls/opfor.dylib dlls/opfor_arm64.dylib
+rm dlls/cmake_install.cmake
+rm -rf dlls/CMakeFiles
+rm dlls/Makefile
 
-mkdir ${ARM64_BUILD_FOLDER}/install/cl_dlls
-cp -a ../hlsdk-portable/${ARM64_BUILD_FOLDER}/cl_dlls/* ${ARM64_BUILD_FOLDER}/install/cl_dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${ARM64_BUILD_FOLDER}/install/dlls
 
-mkdir ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
-cp -a ../hlsdk-portable/${ARM64_BUILD_FOLDER}/dlls/* ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+cd ..
 
-mkdir ${ARM64_BUILD_FOLDER}/install/dlls
-cp -a ../hlsdk-portable/${ARM64_BUILD_FOLDER}/dlls/* ${ARM64_BUILD_FOLDER}/install/dlls
+# Step 2.2.2 : HLSDK - Half-Life: Opposing Force - Intel (amd64)
+echo "Step 2.2.2 : HLSDK - Half-Life: Opposing Force - Intel (amd64)"
 
-# echo cp -a /Users/tomkidd/.xash3d/valve/* ${ARM64_BUILD_FOLDER}/install/valve
-# cp -a /Users/tomkidd/.xash3d/valve/* ${ARM64_BUILD_FOLDER}/install/valve
+rm -rf ${X86_64_BUILD_FOLDER}
+mkdir ${X86_64_BUILD_FOLDER}
+cd ${X86_64_BUILD_FOLDER}
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+make -j$NCPU
 
-if [ ! -d "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" ]; then
-	mkdir -p "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" || exit 1;
-fi
-cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/valve ${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
+mv cl_dll cl_dlls
+mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+rm cl_dlls/cmake_install.cmake
+rm -rf cl_dlls/CMakeFiles
+rm cl_dlls/Makefile
 
-cp ../MSPBuildSystem/${PROJECT_NAME}/${ICONSFILENAME}.icns ${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
+mv dlls/opfor.dylib dlls/opfor_amd64.dylib
+rm dlls/cmake_install.cmake
+rm -rf dlls/CMakeFiles
+rm dlls/Makefile
 
-PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
-<plist version=\"1.0\">
-<dict>
-    <key>CFBundleExecutable</key>
-    <string>${EXECUTABLE_NAME}</string>
-    <key>CFBundleIconFile</key>
-    <string>${ICONSFILENAME}</string>
-    <key>CFBundleIdentifier</key>
-    <string>${BUNDLE_ID}</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>${PRODUCT_NAME}</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>${APP_VERSION}</string>
-    <key>CFBundleVersion</key>
-    <string>${APP_VERSION}</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>11.0</string>
-    <key>NSPrincipalClass</key>
-    <string>NSApplication</string>
-    <key>LSApplicationCategoryType</key>
-	<string>public.app-category.games</string>
-    <key>NSHighResolutionCapable</key>
-    <${HIGH_RESOLUTION_CAPABLE}/>
-</dict>
-</plist>
-"
-echo "${PLIST}" > "${ARM64_BUILD_FOLDER}/${CONTENTS_FOLDER_PATH}/Info.plist"
+cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/install/dlls
 
-export BUILT_PRODUCTS_DIR="build-arm64"
+cd ..
+
+# Step 2.3 : HLSDK - Half-Life: Blue Shift
+echo "Step 2.3 : HLSDK - Half-Life: Blue Shift"
+
+git checkout bshift
+
+# Step 2.3.1 : HLSDK - Half-Life: Blue Shift - Apple Silicon (arm64)
+echo "Step 2.3.1 : HLSDK - Half-Life: Blue Shift - Apple Silicon (arm64)"
+
+rm -rf ${ARM64_BUILD_FOLDER}
+mkdir ${ARM64_BUILD_FOLDER}
+cd ${ARM64_BUILD_FOLDER}
+cmake ..
+make -j$NCPU
+
+mv cl_dll cl_dlls
+mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+rm cl_dlls/cmake_install.cmake
+rm -rf cl_dlls/CMakeFiles
+rm cl_dlls/Makefile
+
+mv dlls/bshift.dylib dlls/bshift_arm64.dylib
+rm dlls/cmake_install.cmake
+rm -rf dlls/CMakeFiles
+rm dlls/Makefile
+
+cp -a dlls/* ../../${PROJECT_NAME}/${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${ARM64_BUILD_FOLDER}/install/dlls
+
+cd ..
+
+# Step 2.3.2 : HLSDK - Half-Life: Blue Shift - Intel (amd64)
+echo "Step 2.3.2 : HLSDK - Half-Life: Blue Shift - Intel (amd64)"
+
+rm -rf ${X86_64_BUILD_FOLDER}
+mkdir ${X86_64_BUILD_FOLDER}
+cd ${X86_64_BUILD_FOLDER}
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+make -j$NCPU
+
+mv cl_dll cl_dlls
+mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+rm cl_dlls/cmake_install.cmake
+rm -rf cl_dlls/CMakeFiles
+rm cl_dlls/Makefile
+
+mv dlls/bshift.dylib dlls/bshift_amd64.dylib
+rm dlls/cmake_install.cmake
+rm -rf dlls/CMakeFiles
+rm dlls/Makefile
+
+cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls
+cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/install/dlls
+
+# Step 3: Build the Universal 2 bundle
+cd ../../${PROJECT_NAME}
+
+# cp ../MSPBuildSystem/${PROJECT_NAME}/${ICONSFILENAME}.icns ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
+
+# PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+# <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+# <plist version=\"1.0\">
+# <dict>
+#     <key>CFBundleExecutable</key>
+#     <string>${EXECUTABLE_NAME}</string>
+#     <key>CFBundleIconFile</key>
+#     <string>${ICONSFILENAME}</string>
+#     <key>CFBundleIdentifier</key>
+#     <string>${BUNDLE_ID}</string>
+#     <key>CFBundleInfoDictionaryVersion</key>
+#     <string>6.0</string>
+#     <key>CFBundleName</key>
+#     <string>${PRODUCT_NAME}</string>
+#     <key>CFBundlePackageType</key>
+#     <string>APPL</string>
+#     <key>CFBundleShortVersionString</key>
+#     <string>${APP_VERSION}</string>
+#     <key>CFBundleVersion</key>
+#     <string>${APP_VERSION}</string>
+#     <key>LSMinimumSystemVersion</key>
+#     <string>11.0</string>
+#     <key>NSPrincipalClass</key>
+#     <string>NSApplication</string>
+#     <key>LSApplicationCategoryType</key>
+# 	<string>public.app-category.games</string>
+#     <key>NSHighResolutionCapable</key>
+#     <${HIGH_RESOLUTION_CAPABLE}/>
+# </dict>
+# </plist>
+# "
+# echo "${PLIST}" > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+
+# dylibbundler libxash
+dylibbundler -od -b -x ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -d ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
+dylibbundler -od -b -x ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -d ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
 
 # create the app bundle
 # export BUNDLE_ID="com.macsourceports.uqm"
-# "../MSPBuildSystem/common/build_app_bundle.sh"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
-cd ${BUILT_PRODUCTS_DIR}
-dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/libxash.dylib" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
-cd ..
+#create any app-specific directories
+if [ ! -d "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" ]; then
+	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" || exit 1;
+fi
 
+cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/valve ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/valve
+
+#lipo any app-specific things
+lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib" -create
+lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libmenu.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libmenu.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libmenu.dylib" -create
+lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib" -create
+lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib" -create
+lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib" -create
+
+#copy over game libraries
+if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/cl_dlls" ]; then
+	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/cl_dlls" || exit 1;
+fi
+
+cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/cl_dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/cl_dlls
+cp -a ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/cl_dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/cl_dlls
+
+if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls" ]; then
+	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls" || exit 1;
+fi
+
+cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls
+cp -a ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls
+
+# cd ${BUILT_PRODUCTS_DIR}
+# dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/libxash.dylib" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
+# cd ..
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
