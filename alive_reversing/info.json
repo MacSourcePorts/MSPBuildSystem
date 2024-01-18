@@ -1,0 +1,20 @@
+{
+	"portName": "R.E.L.I.V.E.",
+	"homepageURL": "https://aliveteam.github.io/",
+	"sourceCodeURL": "https://github.com/AliveTeam/alive_reversing",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned but outdated releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.0.4604",
+	"latestVersionDate": "9/1/2022",
+	"versionOnMSP": "1.0",
+	"outdated": false,
+	"activeBuildStatus": "Fails to build",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "oddworld-ae.icns"
+}

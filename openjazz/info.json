@@ -1,0 +1,20 @@
+{
+	"portName": "OpenJazz",
+	"homepageURL": "http://www.alister.eu/jazz/oj/",
+	"sourceCodeURL": "https://github.com/AlisterT/openjazz",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned but outdated releases",
+	"macSupportStatus": "No official Mac support",
+	"projectStatus": "",
+	"latestVersion": "20190106",
+	"latestVersionDate": "1/6/2019",
+	"versionOnMSP": "N/A",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "openjazz.icns"
+}

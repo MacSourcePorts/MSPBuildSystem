@@ -1,0 +1,20 @@
+{
+	"portName": "TenhauserGate",
+	"homepageURL": "https://gitlab.com/homeworldsdl/TenhauserGate",
+	"sourceCodeURL": "https://gitlab.com/homeworldsdl/TenhauserGate",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Verioned Releases",
+	"macSupportStatus": "Unofficial Mac Support",
+	"projectStatus": "Active",
+	"latestVersion": "1,12",
+	"latestVersionDate": "September 22, 2023",
+	"versionOnMSP": "0.9a",
+	"outdated": true,
+	"activeBuildStatus": "builds",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "TenhauserGate.icns"
+}

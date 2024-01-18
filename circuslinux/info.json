@@ -1,0 +1,20 @@
+{
+	"portName": "Circus Linux!",
+	"homepageURL": "http://www.newbreedsoftware.com/circus-linux/",
+	"sourceCodeURL": "https://tuxpaint.org/ftp/unix/x/circus-linux/src/circuslinux-1.0.3.tar.gz",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases from inactive project",
+	"macSupportStatus": "Unspecified platform support",
+	"projectStatus": "Inactive",
+	"latestVersion": "1.0.3",
+	"latestVersionDate": "Unknown",
+	"versionOnMSP": "1.0.3",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "No",
+	"notes": "",
+	"icon": "circuslinux.icns"
+}

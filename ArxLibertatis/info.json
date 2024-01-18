@@ -1,0 +1,20 @@
+{
+	"portName": "Arx Libertatis",
+	"homepageURL": "https://arx-libertatis.org",
+	"sourceCodeURL": "https://github.com/arx/ArxLibertatis",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "No official Mac support",
+	"projectStatus": "Active",
+	"latestVersion": "1.2.1",
+	"latestVersionDate": "4/10/2022",
+	"versionOnMSP": "1.2.1",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "Yes",
+	"notes": "",
+	"icon": "ArxLibertatis.icns"
+}

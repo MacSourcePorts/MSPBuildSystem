@@ -1,0 +1,20 @@
+{
+	"portName": "OpenRCT2",
+	"homepageURL": "https://openrct2.org/",
+	"sourceCodeURL": "https://github.com/OpenRCT2/OpenRCT2/",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project does Ad Hoc signed App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "0.4.5",
+	"latestVersionDate": "5/8/2023",
+	"versionOnMSP": "0.4.1",
+	"outdated": true,
+	"activeBuildStatus": "Fails to build, sprintf error? Also we may stop doing this one",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "OpenRCT2.icns"
+}

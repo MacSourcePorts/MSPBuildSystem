@@ -1,0 +1,20 @@
+{
+	"portName": "CorsixTH",
+	"homepageURL": "https://corsixth.com/",
+	"sourceCodeURL": "https://github.com/CorsixTH/CorsixTH",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project doesn't do Universal 2 App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "0.66",
+	"latestVersionDate": "6/26/2022",
+	"versionOnMSP": "0.66",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "Yes",
+	"notes": "",
+	"icon": "CorsixTH.icns"
+}

@@ -1,0 +1,20 @@
+{
+	"portName": "ReflectionHLE",
+	"homepageURL": "https://github.com/ReflectionHLE/ReflectionHLE",
+	"sourceCodeURL": "https://github.com/ReflectionHLE/ReflectionHLE",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned but outdated releases",
+	"macSupportStatus": "",
+	"projectStatus": "Active",
+	"latestVersion": "0.33.1",
+	"latestVersionDate": "8/24/2021",
+	"versionOnMSP": "0.40.1",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "ReflectionHLE.icns"
+}

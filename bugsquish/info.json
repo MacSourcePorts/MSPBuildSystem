@@ -1,0 +1,20 @@
+{
+	"portName": "Bug Squish",
+	"homepageURL": "http://www.newbreedsoftware.com/bugsquish/",
+	"sourceCodeURL": "https://tuxpaint.org/ftp/unix/x/bugsquish/src/bugsquish-0.0.6.tar.gz",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases from inactive project",
+	"macSupportStatus": "Unspecified platform support",
+	"projectStatus": "Inactive",
+	"latestVersion": "0.0.6",
+	"latestVersionDate": "Unknown",
+	"versionOnMSP": "0.0.6",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "No",
+	"notes": "",
+	"icon": "bugsquish.icns"
+}

@@ -1,0 +1,21 @@
+{
+	"portName": "ioQuake3",
+	"homepageURL": "https://www.ioquake3.org/",
+	"sourceCodeURL": "https://github.com/ioquake/ioq3",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn't do Universal 2 App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Releases based off latest code",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "N/A",
+	"latestVersionDate": "N/A",
+	"versionOnMSP": "N/A",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "No",
+	"notes": "",
+	"icon": "ioquake3.icns"
+}
+

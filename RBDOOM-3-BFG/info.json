@@ -1,0 +1,20 @@
+{
+	"portName": "RBDOOM-3-BFG",
+	"homepageURL": "https://github.com/RobertBeckebans/RBDOOM-3-BFG",
+	"sourceCodeURL": "https://github.com/RobertBeckebans/RBDOOM-3-BFG",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "",
+	"projectStatus": "Active",
+	"latestVersion": "1.5.1",
+	"latestVersionDate": "5/23/2023",
+	"versionOnMSP": "1.4.0",
+	"outdated": true,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "Project has added Vulkan, issues arise",
+	"icon": "RBDoom3BFG.icns"
+}

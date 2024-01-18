@@ -1,0 +1,20 @@
+{
+	"portName": "Xash3D-FWGS",
+	"homepageURL": "https://github.com/FWGS/xash3d-fwgs",
+	"sourceCodeURL": "https://github.com/FWGS/xash3d-fwgs",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "No releases",
+	"macSupportStatus": "No Mac support provided",
+	"projectStatus": "Active",
+	"latestVersion": "N/A",
+	"latestVersionDate": "N/A",
+	"versionOnMSP": "N/A",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "xash3d-fwgs.icns"
+}

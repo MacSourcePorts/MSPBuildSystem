@@ -11,6 +11,3 @@ void main()
 	gl_FragColor.rgba = texture2D (uni_texture, TEX0.xy)*gl_Color;
 	//gl_FragColor.rgba = vec4(1,1,0,1);
 }
-
-
-

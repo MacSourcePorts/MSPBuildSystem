@@ -1,0 +1,20 @@
+{
+	"portName": "EDuke32",
+	"homepageURL": "https://voidpoint.io/terminx/eduke32",
+	"sourceCodeURL": "https://voidpoint.io/terminx/eduke32",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Releases based off latest code",
+	"macSupportStatus": "No official Mac support",
+	"projectStatus": "Active",
+	"latestVersion": "N/A",
+	"latestVersionDate": "N/A",
+	"versionOnMSP": "2.0 ?",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "Builds off of an old commit",
+	"icon": "eduke32.icns"
+}

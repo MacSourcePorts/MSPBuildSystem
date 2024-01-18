@@ -1,0 +1,20 @@
+{
+	"portName": "JA2-Stracciatella",
+	"homepageURL": "https://ja2-stracciatella.github.io",
+	"sourceCodeURL": "https://github.com/ja2-stracciatella/ja2-stracciatella",
+	"buildType": "Mac Source Ports Build /Third Party Build",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project does signed/notarized App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "0.20.0",
+	"latestVersionDate": "11/4/2022",
+	"versionOnMSP": "0.16.1 / 0.19.1",
+	"outdated": true,
+	"activeBuildStatus": "Building but I can’t remember exactly why we only do Apple Silicon. Maybe the “one executable launches another” thing?",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "ja2-stracciatella.icns"
+}

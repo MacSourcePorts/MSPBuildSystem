@@ -1,0 +1,20 @@
+{
+	"portName": "rottexpr",
+	"homepageURL": "https://github.com/LTCHIPS/rottexpr",
+	"sourceCodeURL": "https://github.com/LTCHIPS/rottexpr",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Dated releases from inactive project",
+	"macSupportStatus": "",
+	"projectStatus": "Inactive",
+	"latestVersion": "N/A",
+	"latestVersionDate": "1/19/2021",
+	"versionOnMSP": "N/A",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "rottexpr.icns"
+}

@@ -1,0 +1,20 @@
+{
+	"portName": "OpenTyrian",
+	"homepageURL": "https://github.com/opentyrian/opentyrian/wiki",
+	"sourceCodeURL": "https://github.com/opentyrian/opentyrian",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "No official Mac support",
+	"projectStatus": "Active",
+	"latestVersion": "v2.1.20221123",
+	"latestVersionDate": "11/23/2022",
+	"versionOnMSP": "v2.1.20220318",
+	"outdated": true,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "Has a tweak for SDL 2.0.24 and also uses msputil unnecessarily",
+	"icon": "opentyrian.icns"
+}

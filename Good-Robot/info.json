@@ -1,0 +1,20 @@
+{
+	"portName": "Good Robot",
+	"homepageURL": "https://pyrodactyl.com/good-robot/",
+	"sourceCodeURL": "https://github.com/arvindrajayadav/Good-Robot",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "No releases",
+	"macSupportStatus": "No Mac support provided",
+	"projectStatus": "Inactive",
+	"latestVersion": "1.1",
+	"latestVersionDate": "N/A",
+	"versionOnMSP": "1.1",
+	"outdated": false,
+	"activeBuildStatus": "Not building - can’t find glew?",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "Good-Robot.icns"
+}

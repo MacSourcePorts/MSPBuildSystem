@@ -1,0 +1,20 @@
+{
+	"portName": "dhewm3",
+	"homepageURL": "https://dhewm3.org/",
+	"sourceCodeURL": "https://github.com/dhewm/dhewm3",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Project uses our builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.5.2",
+	"latestVersionDate": "6/12/2022",
+	"versionOnMSP": "1.5.2",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "doom3.icns"
+}

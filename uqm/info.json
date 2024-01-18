@@ -1,0 +1,20 @@
+{
+	"portName": "The Ur-Quan Masters",
+	"homepageURL": "http://sc2.sourceforge.net/",
+	"sourceCodeURL": "http://sc2.sourceforge.net/downloads.php",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases from inactive project",
+	"macSupportStatus": "",
+	"projectStatus": "Inactive",
+	"latestVersion": "0.8.0",
+	"latestVersionDate": "?",
+	"versionOnMSP": "0.8.0",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "uqm.icns"
+}

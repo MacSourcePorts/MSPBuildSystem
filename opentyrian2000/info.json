@@ -1,0 +1,20 @@
+{
+	"portName": "OpenTyrian2000",
+	"homepageURL": "https://github.com/KScl/opentyrian2000",
+	"sourceCodeURL": "https://github.com/KScl/opentyrian2000",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned but outdated releases",
+	"macSupportStatus": "No official Mac support",
+	"projectStatus": "Inactive",
+	"latestVersion": "v2000.20200917",
+	"latestVersionDate": "9/17/2020",
+	"versionOnMSP": "3.0 ?",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "opentyrian2000.icns"
+}

@@ -1,0 +1,20 @@
+{
+	"portName": "Mad Bomber",
+	"homepageURL": "http://www.newbreedsoftware.com/madbomber/",
+	"sourceCodeURL": "https://tuxpaint.org/ftp/unix/x/madbomber/src/madbomber-0.2.5.tar.gz",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases from inactive project",
+	"macSupportStatus": "Unspecified platform support",
+	"projectStatus": "Inactive",
+	"latestVersion": "0.2.5",
+	"latestVersionDate": "Unknown",
+	"versionOnMSP": "0.2.5",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "madbomber.icns"
+}

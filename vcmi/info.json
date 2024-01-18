@@ -1,0 +1,20 @@
+{
+	"portName": "VCMI",
+	"homepageURL": "https://vcmi.eu",
+	"sourceCodeURL": "https://github.com/vcmi/vcmi",
+	"buildType": "Third Party Build",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project does Ad Hoc signed App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.2.1",
+	"latestVersionDate": "4/28/2023",
+	"versionOnMSP": "1.2.1",
+	"outdated": false,
+	"activeBuildStatus": "N/A",
+	"fetchingByGITTag": "N/A",
+	"notes": "",
+	"icon": "vcmi.icns"
+}

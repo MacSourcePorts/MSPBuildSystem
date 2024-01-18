@@ -1,0 +1,20 @@
+{
+	"portName": "OpenJK",
+	"homepageURL": "https://github.com/JACoders/OpenJK",
+	"sourceCodeURL": "https://github.com/JACoders/OpenJK",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn't do Universal 2 App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Releases based off latest code",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "N/A",
+	"latestVersionDate": "4/30/2023",
+	"versionOnMSP": "N/A",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "OpenJK.icns"
+}

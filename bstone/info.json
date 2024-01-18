@@ -1,0 +1,20 @@
+{
+	"portName": "bstone",
+	"homepageURL": "https://bibendovsky.github.io/bstone/",
+	"sourceCodeURL": "https://github.com/bibendovsky/bstone",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Official Mac support, no builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.2.12-2",
+	"latestVersionDate": "9/17/2022",
+	"versionOnMSP": "1.2.11",
+	"outdated": true,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "No",
+	"notes": "Latest code has build issues",
+	"icon": "bstone.icns"
+}

@@ -1,0 +1,20 @@
+{
+	"portName": "Julius",
+	"homepageURL": "https://github.com/bvschaik/julius",
+	"sourceCodeURL": "https://github.com/bvschaik/julius",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Recreated Source Code",
+	"projectBuildStrategy": "Project doesn't do Universal 2 App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned but outdated releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.7.0",
+	"latestVersionDate": "10/14/2021",
+	"versionOnMSP": "1.7.0",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "julius.icns"
+}

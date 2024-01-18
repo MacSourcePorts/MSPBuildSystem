@@ -1,0 +1,20 @@
+{
+	"portName": "jk2mv",
+	"homepageURL": "https://jk2mv.org/",
+	"sourceCodeURL": "https://github.com/mvdevs/jk2mv",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn't do Universal 2 App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned but outdated releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.4.1",
+	"latestVersionDate": "2/15/2018",
+	"versionOnMSP": "N/A",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "jk2mv.icns"
+}

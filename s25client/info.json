@@ -1,0 +1,20 @@
+{
+	"portName": "Return to the Roots",
+	"homepageURL": "https://www.siedler25.org",
+	"sourceCodeURL": "https://github.com/Return-To-The-Roots/s25client",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project doesn't do Universal 2 App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned but outdated releases",
+	"macSupportStatus": "",
+	"projectStatus": "Active",
+	"latestVersion": "0.9.5",
+	"latestVersionDate": "2/28/2022",
+	"versionOnMSP": "0.9.5",
+	"outdated": false,
+	"activeBuildStatus": "Fails to build",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "s25client.icns"
+}

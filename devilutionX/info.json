@@ -1,0 +1,20 @@
+{
+	"portName": "DevilutionX",
+	"homepageURL": "https://github.com/diasurgical/devilutionX",
+	"sourceCodeURL": "https://github.com/diasurgical/devilutionX",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Recreated Source Code",
+	"projectBuildStrategy": "Project doesn't do Universal 2 App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.5.0",
+	"latestVersionDate": "6/13/2023",
+	"versionOnMSP": "1.4.1",
+	"outdated": true,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "Yes",
+	"notes": "Latest code has build issues",
+	"icon": "devilutionX.icns"
+}

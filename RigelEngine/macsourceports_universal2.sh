@@ -24,10 +24,7 @@ git pull
 
 # check out the latest release tag
 echo git checkout tags/${GIT_TAG}
-git checkout tags/${GIT_TAG}
-
-
-rm -rf ${BUILT_PRODUCTS_DIR}
+git checkout tags/${GIT_TAG}rm -rf ${BUILT_PRODUCTS_DIR}
 
 # create makefiles with cmake, perform builds with make
 rm -rf ${X86_64_BUILD_FOLDER}

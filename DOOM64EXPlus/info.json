@@ -1,0 +1,20 @@
+{
+	"portName": "Doom 64 EX+",
+	"homepageURL": "https://github.com/atsb/Doom64EX-Plus",
+	"sourceCodeURL": "https://github.com/atsb/Doom64EX-Plus",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "No official Mac support",
+	"projectStatus": "Active",
+	"latestVersion": "3.6.5.8",
+	"latestVersionDate": "6/22/2023",
+	"versionOnMSP": "3.6.5.8",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "Required changes",
+	"icon": "doom64ex-plus.icns"
+}

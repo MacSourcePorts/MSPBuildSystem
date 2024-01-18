@@ -1,0 +1,20 @@
+{
+	"portName": "iortcw",
+	"homepageURL": "https://github.com/iortcw/iortcw",
+	"sourceCodeURL": "https://github.com/iortcw/iortcw",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn't do Universal 2 App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned but outdated releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.51c",
+	"latestVersionDate": "3/16/2019",
+	"versionOnMSP": "1.51c",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "iortcwsp.icns"
+}

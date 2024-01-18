@@ -1,0 +1,20 @@
+{
+	"portName": "Extractor",
+	"homepageURL": "https://www.macsourceports.com/utility/extractor",
+	"sourceCodeURL": "https://github.com/tomkidd/Extractor",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project does signed/notarized App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.0",
+	"latestVersionDate": "12/6/2022",
+	"versionOnMSP": "1.0",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "extractor.icns"
+}

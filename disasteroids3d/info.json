@@ -1,0 +1,20 @@
+{
+	"portName": "Disasteroids 3D",
+	"homepageURL": "http://www.lmnopc.com/disasteroids3d/",
+	"sourceCodeURL": "https://github.com/MacSourcePorts/disasteroids3d",
+	"buildType": "Mac Source Ports Fork",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Releases based off latest code",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Inactive",
+	"latestVersion": "N/A",
+	"latestVersionDate": "N/A",
+	"versionOnMSP": "N/A",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "disasteroids3d.icns"
+}

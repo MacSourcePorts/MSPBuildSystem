@@ -1,0 +1,20 @@
+{
+	"portName": "DXX-Rebirth",
+	"homepageURL": "https://www.dxx-rebirth.com/",
+	"sourceCodeURL": "https://github.com/dxx-rebirth/dxx-rebirth",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "No releases",
+	"macSupportStatus": "No official Mac support",
+	"projectStatus": "Unclear",
+	"latestVersion": "0.60 beta 2",
+	"latestVersionDate": "4/15/2018",
+	"versionOnMSP": "0.6.0",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "d1x-rebirth.icns"
+}

@@ -1,0 +1,20 @@
+{
+	"portName": "OpenXcom",
+	"homepageURL": "https://openxcom.org/",
+	"sourceCodeURL": "https://github.com/OpenXcom/OpenXcom/",
+	"buildType": "Mac Source Ports Build",
+	"portType": "Reverse Engineered Source Code",
+	"projectBuildStrategy": "Project doesn’t do Mac builds",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Releases based off latest code",
+	"macSupportStatus": "",
+	"projectStatus": "Active",
+	"latestVersion": "N/A",
+	"latestVersionDate": "N/A",
+	"versionOnMSP": "N/A",
+	"outdated": false,
+	"activeBuildStatus": "Fails to build - dylibbundler?",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "OpenXcom.icns"
+}

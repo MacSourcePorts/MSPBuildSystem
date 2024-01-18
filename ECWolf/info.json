@@ -1,0 +1,20 @@
+{
+	"portName": "ECWolf",
+	"homepageURL": "https://maniacsvault.net/ecwolf/",
+	"sourceCodeURL": "https://bitbucket.org/ecwolf/ecwolf",
+	"buildType": "Third Party Build",
+	"portType": "Original Source Code",
+	"projectBuildStrategy": "Project does signed/notarized App Bundles",
+	"sourceCodeStrategy": "Source available",
+	"releaseStrategy": "Versioned releases",
+	"macSupportStatus": "Official Mac support and builds",
+	"projectStatus": "Active",
+	"latestVersion": "1.4.1",
+	"latestVersionDate": "2/2/2023",
+	"versionOnMSP": "1.4.1",
+	"outdated": false,
+	"activeBuildStatus": "N/A",
+	"fetchingByGITTag": "N/A",
+	"notes": "Used to build this one, then the author started making signed builds so we link to those.",
+	"icon": "ECWolf.icns"
+}
