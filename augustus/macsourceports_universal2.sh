@@ -1,11 +1,11 @@
 # game/app specific values
-export APP_VERSION="3.2.0"
+export APP_VERSION="4.0.0"
 export PRODUCT_NAME="augustus"
 export PROJECT_NAME="augustus"
 export PORT_NAME="Augustus"
 export ICONSFILENAME="augustus"
 export EXECUTABLE_NAME="augustus"
-export GIT_TAG="v3.2.0"
+export GIT_TAG="v4.0.0"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
