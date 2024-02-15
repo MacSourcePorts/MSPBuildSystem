@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="1.2.11"
+export APP_VERSION="1.2.12"
 export PRODUCT_NAME="bstone"
 export PROJECT_NAME="bstone"
 export PORT_NAME="bstone"
@@ -37,6 +37,7 @@ cmake \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 -DCMAKE_PREFIX_PATH=/usr/local \
 -DCMAKE_INSTALL_PREFIX=/usr/local \
+-DCMAKE_CXX_STANDARD=11 \
 ..
 make -j$NCPU
 cp src/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
@@ -52,6 +53,7 @@ cmake  \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 -DCMAKE_PREFIX_PATH=/opt/Homebrew \
 -DCMAKE_INSTALL_PREFIX=/opt/Homebrew \
+-DCMAKE_CXX_STANDARD=11 \
 ..
 make -j$NCPU
 cp src/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
