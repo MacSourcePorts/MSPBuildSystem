@@ -1,4 +1,7 @@
 if [ "$1" != "skiplipo" ]; then
+    # temp fix for SDL issue in ARM64 - 2/16/2024\
+    install_name_tool -change @loader_path/../Frameworks/libSDL2.dylib /opt/homebrew/lib/libSDL2.dylib "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+
     # bundle arch-specific libraries
     cd ${X86_64_BUILD_FOLDER}
     dylibbundler -of -cd -b -x "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -d "./${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/" -p @executable_path/${X86_64_LIBS_FOLDER}/
