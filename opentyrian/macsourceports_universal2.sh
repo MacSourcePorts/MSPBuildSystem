@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="2.1.20220318"
+export APP_VERSION="2.1.20221123"
 export PRODUCT_NAME="opentyrian"
 export PROJECT_NAME="opentyrian"
 export PORT_NAME="OpenTyrian"
 export ICONSFILENAME="opentyrian"
 export EXECUTABLE_NAME="opentyrian"
 export PKGINFO="APPLTYR"
-export GIT_TAG="v2.1.20220318"
+export GIT_TAG="v2.1.20221123"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
@@ -40,11 +40,13 @@ mkdir -p "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data"
 make clean
 (ARCH=x86_64 PKG_CONFIG=/usr/local/bin/pkg-config make -j8)
 mv ${EXECUTABLE_NAME} "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}"
+# install_name_tool -change @loader_path/../Frameworks/libSDL2.dylib /usr/local/lib/libSDL2.dylib "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 cp -a "data/." "${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data"
 
 make clean
 (ARCH=arm64 PKG_CONFIG=/opt/homebrew/bin/pkg-config make -j8)
 mv ${EXECUTABLE_NAME} "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}"
+install_name_tool -change @loader_path/../Frameworks/libSDL2.dylib /opt/homebrew/lib/libSDL2.dylib "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 cp -a "data/." "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data"
 
 # create the app bundle
