@@ -2,7 +2,7 @@
 # As of right now the game has issues on Apple Silicon
 
 # game/app specific values
-export APP_VERSION="0.16.1"
+export APP_VERSION="0.21.0"
 export PRODUCT_NAME="ja2-stracciatella"
 export PROJECT_NAME="ja2-stracciatella"
 export PORT_NAME="JA2 Stracciatella"
@@ -11,6 +11,7 @@ export EXECUTABLE_NAME="ja2-launcher"
 export PKGINFO="APPLJA2"
 export GIT_DEFAULT_BRANCH="master"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/Serious-Engine/Serious-Engine.entitlements"
+export GIT_TAG="v0.21.0"
 
 #constants
 source ../common/constants.sh
@@ -21,16 +22,16 @@ export HIGH_RESOLUTION_CAPABLE="true"
 cd ../../${PROJECT_NAME}
 
 # # reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
+echo git checkout ${GIT_DEFAULT_BRANCH}
+git checkout ${GIT_DEFAULT_BRANCH}
 
 # # fetch the latest 
-# echo git pull
-# git pull
+echo git pull
+git pull
 
 # # check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+echo git checkout tags/${GIT_TAG}
+git checkout tags/${GIT_TAG}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}
@@ -93,6 +94,8 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <string>NSApplication</string>
     <key>NSHighResolutionCapable</key>
     <${HIGH_RESOLUTION_CAPABLE}/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.games</string>
 </dict>
 </plist>
 "
