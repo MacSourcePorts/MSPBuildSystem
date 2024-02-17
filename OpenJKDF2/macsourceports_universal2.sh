@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="0.6.8"
+export APP_VERSION="0.9.1"
 # this app does its own icons via packaging
 export PRODUCT_NAME="OpenJKDF2"
 export PROJECT_NAME="OpenJKDF2"
 export PORT_NAME="OpenJKDF2"
 export EXECUTABLE_NAME="OpenJKDF2"
 export PKGINFO="APPLJKDF2"
-export GIT_TAG="v0.6.8"
+export GIT_TAG="v0.9.1"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
