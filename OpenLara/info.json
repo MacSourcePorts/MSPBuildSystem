@@ -1,0 +1,14 @@
+{
+	"portName": "OpenLara",
+	"homepageURL": "http://xproger.info/projects/OpenLara/",
+	"sourceCodeURL": "https://github.com/XProger/OpenLara",
+	"buildType": "MSPBuild",
+	"latestVersion": "1.0",
+	"latestVersionDate": "2/24/2024",
+	"versionOnMSP": "1.0",
+	"outdated": false,
+	"activeBuildStatus": "Building",
+	"fetchingByGITTag": "",
+	"notes": "Required changes",
+	"icon": "OpenLara.icns"
+}
