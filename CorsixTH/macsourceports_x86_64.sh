@@ -3,7 +3,7 @@ export APP_VERSION="0.67"
 export PRODUCT_NAME="CorsixTH"
 export PROJECT_NAME="CorsixTH"
 export PORT_NAME="CorsixTH"
-export ICONSFILENAME="CorsixTH"
+export ICONSFILENAME="Icon"
 export EXECUTABLE_NAME="CorsixTH"
 export PKGINFO="APPLCTH"
 export GIT_TAG="v0.67"
@@ -16,11 +16,14 @@ source ../common/signing_values.local
 export ENTITLEMENTS_FILE="CorsixTH.entitlements"
 export HIGH_RESOLUTION_CAPABLE="true"
 export ARCH_FOLDER="/x86_64"
+export ARCH_SUFFIX="-x86_64"
 
 cd ../../${PROJECT_NAME}
 SCRIPT_DIR=$PWD
 
 # reset to the main branch
+echo git restore .
+git restore .
 echo git checkout ${GIT_DEFAULT_BRANCH}
 git checkout ${GIT_DEFAULT_BRANCH}
 
@@ -35,6 +38,8 @@ git checkout tags/${GIT_TAG}
 # hotfix for issue with luarocks script
 echo cp -rf "../MSPBuildSystem/CorsixTH/macos_luarocks" "scripts"
 cp -rf "../MSPBuildSystem/CorsixTH/macos_luarocks" "scripts"
+echo cp -rf "../MSPBuildSystem/CorsixTH/CMakeLists.txt" "CorsixTH"
+cp -rf "../MSPBuildSystem/CorsixTH/CMakeLists.txt" "CorsixTH"
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}
@@ -58,6 +63,42 @@ make install
 
 cd ..
 
+PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>${EXECUTABLE_NAME}</string>
+    <key>CFBundleIconFile</key>
+    <string>${ICONSFILENAME}</string>
+    <key>CFBundleIdentifier</key>
+    <string>${BUNDLE_ID}</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>${PRODUCT_NAME}</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>${APP_VERSION}</string>
+    <key>CFBundleVersion</key>
+    <string>${APP_VERSION}</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.7</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSHighResolutionCapable</key>
+    <${HIGH_RESOLUTION_CAPABLE}/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.games</string>
+</dict>
+</plist>
+"
+echo "${PLIST}" > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+
+cd ${BUILT_PRODUCTS_DIR}
+dylibbundler -of -cd -b -x "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -d "./${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/" -p @executable_path/${X86_64_LIBS_FOLDER}/
+cd ..
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/ssl.so
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/lpeg.so
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/lfs.so
