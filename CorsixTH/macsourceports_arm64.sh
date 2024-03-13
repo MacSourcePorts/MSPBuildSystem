@@ -3,7 +3,7 @@ export APP_VERSION="0.67"
 export PRODUCT_NAME="CorsixTH"
 export PROJECT_NAME="CorsixTH"
 export PORT_NAME="CorsixTH"
-export ICONSFILENAME="Icon"
+export ICONSFILENAME="CorsixTH"
 export EXECUTABLE_NAME="CorsixTH"
 export PKGINFO="APPLCTH"
 export GIT_TAG="v0.67"
@@ -94,6 +94,7 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </plist>
 "
 echo "${PLIST}" > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 
 cd ${BUILT_PRODUCTS_DIR}
 dylibbundler -of -cd -b -x "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
