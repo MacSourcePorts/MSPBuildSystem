@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.02"
+export APP_VERSION="1.12"
 export PRODUCT_NAME="wrathplaces"
 export PROJECT_NAME="wrathplaces"
 export PORT_NAME="wrathplaces"
 export ICONSFILENAME="wrathplaces"
 export EXECUTABLE_NAME="wrath"
 export PKGINFO="APPLWRTH"
-export GIT_TAG="1.02"
+export GIT_TAG="1.12"
 export GIT_DEFAULT_BRANCH="master"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/wrathplaces/wrathplaces.entitlements"
 
