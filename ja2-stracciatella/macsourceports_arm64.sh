@@ -43,7 +43,7 @@ mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
 mkdir -p ${EXECUTABLE_FOLDER_PATH}
 mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
-cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-macos.cmake  -DCPACK_GENERATOR=Bundle ..
+cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-macos.cmake  -DCPACK_GENERATOR=Bundle -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 ..
 make
 
 cd ..
