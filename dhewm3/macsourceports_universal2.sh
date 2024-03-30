@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.5.2"
+export APP_VERSION="1.5.3"
 export PRODUCT_NAME="dhewm3"
 export PROJECT_NAME="dhewm3"
 export PORT_NAME="dhewm3"
 export ICONSFILENAME="doom3"
 export EXECUTABLE_NAME="dhewm3"
 export PKGINFO="APPLDHM3"
-export GIT_TAG="1.5.2"
+export GIT_TAG="1.5.3"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
