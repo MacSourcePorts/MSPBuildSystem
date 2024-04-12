@@ -53,6 +53,7 @@ cd ${X86_64_BUILD_FOLDER}
 -DDISABLE_WERROR=1 \
 -DCMAKE_OSX_ARCHITECTURES=x86_64  \
 -DCMAKE_INSTALL_PREFIX=${SCRIPT_DIR}/${BUILT_PRODUCTS_DIR} \
+-DCMAKE_PREFIX_PATH=/Users/tomkidd/Downloads/libs/x86_64 \
 -DWITH_LUAROCKS=on \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
 -DLUA_LIBRARY=/usr/local/lib/liblua.5.4.dylib \
@@ -98,6 +99,7 @@ echo "${PLIST}" > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 
 cd ${BUILT_PRODUCTS_DIR}
+install_name_tool -change @rpath/libSDL2_mixer-2.0.801.0.0.dylib /Users/tomkidd/Downloads/libs/x86_64/lib/libSDL2_mixer-2.0.801.0.0.dylib "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 dylibbundler -of -cd -b -x "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -d "./${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/" -p @executable_path/${X86_64_LIBS_FOLDER}/
 cd ..
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/ssl.so
