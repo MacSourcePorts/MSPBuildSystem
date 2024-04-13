@@ -1,12 +1,11 @@
 # game/app specific values
 export APP_VERSION="2.0"
-export PRODUCT_NAME="EDuke32"
-export PROJECT_NAME="EDuke32"
+export PRODUCT_NAME="eduke32"
+export PROJECT_NAME="eduke32"
 export PORT_NAME="EDuke32"
 export ICONSFILENAME="eduke32"
 export EXECUTABLE_NAME="eduke32"
 export PKGINFO="APPLED32"
-export COPYRIGHT_TEXT="Eduke32 © 2022 EDuke32 Project."
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
