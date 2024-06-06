@@ -1,15 +1,50 @@
-if [ "$1" != "skiplipo" ]; then
-    # bundle arch-specific libraries
-    cd ${X86_64_BUILD_FOLDER}
-    dylibbundler -of -cd -b -x "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -d "./${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/" -p @executable_path/${X86_64_LIBS_FOLDER}/
+# game/app specific values
+export APP_VERSION="1.2.12"
+export PRODUCT_NAME="bstone"
+export PROJECT_NAME="bstone"
+export PORT_NAME="bstone"
+export ICONSFILENAME="bstone"
+export EXECUTABLE_NAME="bstone"
+export PKGINFO="APPLROTT"
+export GIT_DEFAULT_BRANCH="develop"
 
-    cd ..
-    cd ${ARM64_BUILD_FOLDER}
-    dylibbundler -of -cd -b -x "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
+#constants
+source ../common/constants.sh
 
-    cd ..
-fi
+# this port is not HiDPI aware
+export HIGH_RESOLUTION_CAPABLE="false"
 
+cd ../../${PROJECT_NAME}
+
+# reset to the main branch
+# echo git checkout ${GIT_DEFAULT_BRANCH}
+# git checkout ${GIT_DEFAULT_BRANCH}
+
+# # fetch the latest 
+# echo git pull
+# git pull
+
+# create makefiles with cmake, perform builds with make
+rm -rf ${BUILT_PRODUCTS_DIR}
+mkdir ${BUILT_PRODUCTS_DIR}
+mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+cd ${BUILT_PRODUCTS_DIR}
+cmake \
+-DMACOS_APP_BUNDLE=ON \
+-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
+-DCMAKE_PREFIX_PATH=/usr/local \
+-DCMAKE_INSTALL_PREFIX=/usr/local \
+-DCMAKE_CXX_STANDARD=11 \
+..
+make -j$NCPU
+install_name_tool -add_rpath @executable_path/. src/${EXECUTABLE_NAME}
+cp src/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+cp /usr/local/lib/libSDL2-2.0.0.dylib ${EXECUTABLE_FOLDER_PATH}
+
+cd ..
+
+# create the app bundle
 # make the app bundle directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" || exit 1;
@@ -54,21 +89,12 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 "
 echo "${PLIST}" > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 
-if [ "$1" != "skiplipo" ]; then
-    #lipo the executable
-    lipo "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
-
-    #copy resources
-    mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
-    cp -a "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
-
-    mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
-    cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
-
-    cp -a "${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/." "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
-fi
-
 # doing the icons last in case we need to overwrite theirs
 cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 
 echo "bundle done."
+# #sign and notarize
+"../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
+
+# #create dmg
+"../MSPBuildSystem/common/package_dmg.sh"

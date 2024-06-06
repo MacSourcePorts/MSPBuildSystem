@@ -1,0 +1,14 @@
+Get CMAKE from here
+https://cmake.org/download/#latest
+
+Make it command line this way
+sudo "/Applications/CMake.app/Contents/bin/cmake-gui" --install
+
+https://stackoverflow.com/a/47101578
+
+
+dylibbundler (we may not need this going forward)
+https://github.com/auriamg/macdylibbundler
+
+create-dmg
+https://github.com/create-dmg/create-dmg 
