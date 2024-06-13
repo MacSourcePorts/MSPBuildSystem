@@ -23,15 +23,31 @@ mkdir ${X86_64_BUILD_FOLDER}
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 
+# Intel is the same for both local and build server
 make clean
-(ARCH=x86_64 CFLAGS="-mmacosx-version-min=10.9" LDFLAGS="-mmacosx-version-min=10.9" INCLUDES="-I/usr/local/include/SDL2" LIBS="-L/usr/local/lib -lSDL2 -lSDL2_net" make -j$NCPU)
+(ARCH=x86_64 AM_CPPFLAGS="-mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" INCLUDES="-I/usr/local/include/SDL2" LIBS="-L/usr/local/lib -lSDL2 -lSDL2_net" make -j$NCPU)
 mkdir -p ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
 cp "${EXECUTABLE_NAME}" ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
 
-make clean
-(ARCH=arm64 CFLAGS="-mmacosx-version-min=10.9" LDFLAGS="-mmacosx-version-min=10.9" INCLUDES="-I/opt/homebrew/include/SDL2" LIBS="-L/opt/homebrew/lib -lSDL2 -lSDL2_net" make -j$NCPU)
-mkdir -p ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
-cp "${EXECUTABLE_NAME}" ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+# Apple Silicon location different for build server
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    make clean
+    (ARCH=arm64 AM_CPPFLAGS="-mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" INCLUDES="-I/usr/local/include/SDL2" LIBS="-L/usr/local/lib -lSDL2 -lSDL2_net" make -j$NCPU)
+    mkdir -p ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+    cp "${EXECUTABLE_NAME}" ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+
+    # TODO: figure out how if/to factor out lipo step
+    mkdir -p ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
+    lipo "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
+    install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+    cp /usr/local/lib/libSDL2-2.0.0.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    cp /usr/local/lib/libSDL2_net-2.0.1.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+else
+    make clean
+    (ARCH=arm64 AM_CPPFLAGS="-mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" INCLUDES="-I/opt/homebrew/include/SDL2" LIBS="-L/opt/homebrew/lib -lSDL2 -lSDL2_net" make -j$NCPU)
+    mkdir -p ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+    cp "${EXECUTABLE_NAME}" ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+fi
 
 mkdir -p "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" || exit 1;
 mkdir -p "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Images" || exit 1;
@@ -43,7 +59,11 @@ cp "Maelstrom_Sounds" ${BUILT_PRODUCTS_DIR}/"${UNLOCALIZED_RESOURCES_FOLDER_PATH
 cp "Maelstrom_Sprites" ${BUILT_PRODUCTS_DIR}/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+else
+    "../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
 #sign and notarize (with entitlements)
 export ENTITLEMENTS_FILE="Maelstrom.entitlements"
