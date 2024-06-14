@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="1.2.12"
+export APP_VERSION="1.2.13-wip+2153f8b4"
 export PRODUCT_NAME="bstone"
 export PROJECT_NAME="bstone"
 export PORT_NAME="bstone"
