@@ -12,3 +12,30 @@ https://github.com/auriamg/macdylibbundler
 
 create-dmg
 https://github.com/create-dmg/create-dmg 
+
+
+pkg-config
+https://gitlab.freedesktop.org/pkg-config/pkg-config
+
+Needs a tweak for modern Macs
+https://gist.github.com/jl/9e5ebbc9ccf44f3c804e
+
+CFLAGS="-Wno-int-conversion" CXXFLAGS="-Wno-int-conversion" ./configure --prefix="$3" --with-pc-path="$3/lib/pkgconfig" --with-internal-glib
+
+LDFLAGS="-framework CoreFoundation -framework Carbon" ./configure --with-internal-glib
+CFLAGS="-Wno-int-conversion" CXXFLAGS="-Wno-int-conversion" LDFLAGS="-framework CoreFoundation -framework Carbon" ./configure --with-internal-glib
+make
+sudo make install
+
+
+
+
+FOR REFERENCE:
+Curl Docs: https://curl.se/docs/tutorial.html
+https://stackoverflow.com/questions/16261100/cant-download-github-project-with-curl-command/66286953#66286953
+
+
+
+
+
+cmake /Users/tomkidd/Downloads/ogg-master "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" -DBUILD_SHARED_LIBS=ON
