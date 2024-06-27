@@ -28,6 +28,15 @@ make
 sudo make install
 
 
+m4
+http://ftp.gnu.org/gnu/m4/m4-latest.tar.xz 
+
+autoconf/automake
+https://gist.github.com/phpisciuneri/dce744f3cb0e407963b5
+
+libtool
+https://ftp.gnu.org/gnu/libtool/libtool-2.4.7.tar.gz
+https://gist.github.com/byronmansfield/e972caf0f423af1c84e5b57975ccca3d
 
 
 FOR REFERENCE:
