@@ -40,7 +40,12 @@ https://gist.github.com/byronmansfield/e972caf0f423af1c84e5b57975ccca3d
 
 gmu-sed
 https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz
---disable-dependency-tracking --program-prefix=g
+--disable-dependency-tracking --program-prefix=g\
+use like this: /usr/local/bin/gsed
+
+python
+Just the latest from here (3.12 at time of writing)
+https://www.python.org/downloads/
 
 
 FOR REFERENCE:
