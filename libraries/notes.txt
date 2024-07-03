@@ -38,6 +38,10 @@ libtool
 https://ftp.gnu.org/gnu/libtool/libtool-2.4.7.tar.gz
 https://gist.github.com/byronmansfield/e972caf0f423af1c84e5b57975ccca3d
 
+gmu-sed
+https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz
+--disable-dependency-tracking --program-prefix=g
+
 
 FOR REFERENCE:
 Curl Docs: https://curl.se/docs/tutorial.html

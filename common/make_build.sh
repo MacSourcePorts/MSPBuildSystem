@@ -14,6 +14,8 @@ else
 fi
 cd ${SOURCE_FILE}
 
+/usr/local/bin/gsed -i '/lame_init_old/d' include/libmp3lame.sym
+
 ./autogen.sh
 
 echo ./configure CC="clang -arch arm64 -arch x86_64" \
