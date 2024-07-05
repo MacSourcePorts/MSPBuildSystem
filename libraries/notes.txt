@@ -48,6 +48,11 @@ Just the latest from here (3.12 at time of writing)
 https://www.python.org/downloads/
 
 
+meson and ninja
+
+After installing python3:
+pip3 install meson ninja packaging
+
 FOR REFERENCE:
 Curl Docs: https://curl.se/docs/tutorial.html
 https://stackoverflow.com/questions/16261100/cant-download-github-project-with-curl-command/66286953#66286953
