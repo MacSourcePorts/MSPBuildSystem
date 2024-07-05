@@ -21,7 +21,7 @@ mkdir build-arm64 build-x86_64 build-universal2
 
 # Build for arm64
 cd build-arm64
-../configure ${MAKE_ARGS} CFLAGS="-arch arm64" LDFLAGS="-arch arm64" --host=arm-apple-darwin
+../configure ${MAKE_ARGS} CFLAGS="-arch arm64" LDFLAGS="-arch arm64" --host=aarch64-apple-darwin
 make  -j$NCPU
 cd ..
 
@@ -31,7 +31,7 @@ cd build-x86_64
 make  -j$NCPU
 cd ..
 
-cp -r build-arm64/* build-universal2
+cp -r build-arm64/. build-universal2
 
 cd build-arm64
 for i in `find . -name "*.dylib" -type f`; do
