@@ -68,7 +68,9 @@ if [ "$1" != "skiplipo" ]; then
     cp -a "${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/." "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 fi
 
-# doing the icons last in case we need to overwrite theirs
+# doing the icons last to overwrite theirs
+# deleting their icon first to eliminate case insensivity issues
+rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}";
 cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 
 echo "bundle done."
