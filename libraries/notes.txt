@@ -47,6 +47,13 @@ python
 Just the latest from here (3.12 at time of writing)
 https://www.python.org/downloads/
 
+yasm
+for vpx, apparently
+https://yasm.tortall.net 
+https://github.com/yasm/yasm
+./configure --disable-debug --disable-python
+make
+sudo make install
 
 meson and ninja
 

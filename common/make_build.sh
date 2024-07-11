@@ -1,5 +1,8 @@
 export MACOSX_DEPLOYMENT_TARGET="10.7"
-SOURCE_FILE=${SOURCE_URL##*/}
+
+if [ -z "${SOURCE_FILE}" ]; then
+    SOURCE_FILE=${SOURCE_URL##*/}
+fi
 
 rm -rf source
 mkdir source

@@ -1,3 +1,5 @@
+# TODO: This is a one-off for vpx. Figure out if we can merge it with the original.
+
 export MACOSX_DEPLOYMENT_TARGET="10.7"
 export NCPU=`sysctl -n hw.ncpu`
 
@@ -24,13 +26,15 @@ mkdir build-arm64 build-x86_64 build-universal2
 
 # Build for arm64
 cd build-arm64
-../configure ${MAKE_ARGS} CFLAGS="-arch arm64" LDFLAGS="-arch arm64" --host=aarch64-apple-darwin
+# ../configure ${MAKE_ARGS} CFLAGS="-arch arm64" LDFLAGS="-arch arm64" --host=aarch64-apple-darwin
+../configure ${MAKE_ARGS} --target=arm64-darwin23-gcc
 make  -j$NCPU
 cd ..
 
 # Build for x86_64
 cd build-x86_64
-../configure ${MAKE_ARGS} CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" --host=x86_64-apple-darwin
+# ../configure ${MAKE_ARGS} CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" --host=x86_64-apple-darwin
+../configure ${MAKE_ARGS} --target=x86_64-darwin23-gcc
 make  -j$NCPU
 cd ..
 
