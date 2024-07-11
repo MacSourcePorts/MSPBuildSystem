@@ -28,7 +28,6 @@ git checkout tags/${GIT_TAG}
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    # create makefiles with cmake, perform builds with make
     mkdir ${BUILT_PRODUCTS_DIR}
     cd ${BUILT_PRODUCTS_DIR}
     cmake "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" ..

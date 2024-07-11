@@ -28,26 +28,43 @@ export HIGH_RESOLUTION_CAPABLE="true"
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-rm -rf ${X86_64_BUILD_FOLDER}
-mkdir ${X86_64_BUILD_FOLDER}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    mkdir ${BUILT_PRODUCTS_DIR}
+    cd platform
+    ./osxbuild.sh --buildppc=0 --build86=0 --build64=1 --buildarm64=1 --debug=0 --main=1 --tools=0 --pack=0
+    cd ..
+    mv package/${PRODUCT_NAME}.app ${BUILT_PRODUCTS_DIR}
+    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    cp /usr/local/lib/libSDL2-2.0.0.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    cp /usr/local/lib/libFLAC.12.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    cp /usr/local/lib/libvpx.9.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    cp /usr/local/lib/libogg.0.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+else
+    rm -rf ${X86_64_BUILD_FOLDER}
+    mkdir ${X86_64_BUILD_FOLDER}
 
-cd platform
-./osxbuild.sh --buildppc=0 --build86=0 --build64=1 --buildarm64=0 --debug=0 --main=1 --tools=0 --pack=0
-cd ..
+    cd platform
+    ./osxbuild.sh --buildppc=0 --build86=0 --build64=1 --buildarm64=0 --debug=0 --main=1 --tools=0 --pack=0
+    cd ..
 
-mv package/${PRODUCT_NAME}.app ${X86_64_BUILD_FOLDER}
+    mv package/${PRODUCT_NAME}.app ${X86_64_BUILD_FOLDER}
 
-rm -rf ${ARM64_BUILD_FOLDER}
-mkdir ${ARM64_BUILD_FOLDER}
+    rm -rf ${ARM64_BUILD_FOLDER}
+    mkdir ${ARM64_BUILD_FOLDER}
 
-cd platform
-./osxbuild.sh --buildppc=0 --build86=0 --build64=0 --buildarm64=1 --debug=0 --main=1 --tools=0 --pack=0
-cd ..
+    cd platform
+    ./osxbuild.sh --buildppc=0 --build86=0 --build64=0 --buildarm64=1 --debug=0 --main=1 --tools=0 --pack=0
+    cd ..
 
-mv package/${PRODUCT_NAME}.app ${ARM64_BUILD_FOLDER}
+    mv package/${PRODUCT_NAME}.app ${ARM64_BUILD_FOLDER}
+fi
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+else
+    "../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
