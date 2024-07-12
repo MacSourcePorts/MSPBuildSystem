@@ -15,7 +15,13 @@ else
     tar -xzvf ${SOURCE_FILE}
     SOURCE_FILE=${SOURCE_FILE%.*.*}
 fi
-cd ${SOURCE_FILE}
+
+if [ -z "${SOURCE_FOLDER}" ]; then
+    cd ${SOURCE_FILE}
+else
+    cd ${SOURCE_FOLDER}
+fi
+
 
 /usr/local/bin/gsed -i '/lame_init_old/d' include/libmp3lame.sym
 
