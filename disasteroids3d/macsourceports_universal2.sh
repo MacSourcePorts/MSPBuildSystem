@@ -18,24 +18,42 @@ cd ../../${PROJECT_NAME}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-# create folders for make
-rm -rf ${X86_64_BUILD_FOLDER}
-mkdir ${X86_64_BUILD_FOLDER}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	# create folders for make
+	rm -rf ${BUILT_PRODUCTS_DIR}
+	mkdir ${BUILT_PRODUCTS_DIR}
 
-rm -rf ${ARM64_BUILD_FOLDER}
-mkdir ${ARM64_BUILD_FOLDER}
+	# perform builds with make
+	(ARCH="arm64 -arch x86_64" OUTPUT_FOLDER=release SDL2_INCLUDE=/usr/local/include/SDL2 SDL2_LIB=/usr/local/lib make -j$NCPU)
+	mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+	mv ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    cp /usr/local/lib/libSDL2-2.0.0.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    cp /usr/local/lib/libSDL2_mixer-2.0.801.0.0.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+else
+	# create folders for make
+	rm -rf ${X86_64_BUILD_FOLDER}
+	mkdir ${X86_64_BUILD_FOLDER}
 
-# perform builds with make
-(ARCH=x86_64 SDL2_INCLUDE=/usr/local/include/SDL2 SDL2_LIB=/usr/local/lib make -j$NCPU)
-mkdir -p ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
-mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_NAME} ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+	rm -rf ${ARM64_BUILD_FOLDER}
+	mkdir ${ARM64_BUILD_FOLDER}
 
-(ARCH=arm64 SDL2_INCLUDE=/opt/homebrew/include/SDL2 SDL2_LIB=/opt/homebrew/lib make -j$NCPU)
-mkdir -p ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
-mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+	# perform builds with make
+	(ARCH=x86_64 OUTPUT_FOLDER=build-x86_64 SDL2_INCLUDE=/usr/local/include/SDL2 SDL2_LIB=/usr/local/lib make -j$NCPU)
+	mkdir -p ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+	mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_NAME} ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+
+	(ARCH=arm64 OUTPUT_FOLDER=build-arm64 SDL2_INCLUDE=/opt/homebrew/include/SDL2 SDL2_LIB=/opt/homebrew/lib make -j$NCPU)
+	mkdir -p ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+	mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+fi
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+else
+    "../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
 #create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Res" ]; then
