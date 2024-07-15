@@ -3,3 +3,5 @@ export SOURCE_URL="https://github.com/lz4/lz4/releases/download/v1.9.4/lz4-1.9.4
 export MAKE_ARGS=""
 
 "../common/make_build2.sh"
+
+sudo install_name_tool -id "@rpath/liblz4.1.9.4.dylib" /usr/local/lib/liblz4.1.9.4.dylib
