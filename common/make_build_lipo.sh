@@ -1,22 +1,7 @@
 export MACOSX_DEPLOYMENT_TARGET="10.7"
 export NCPU=`sysctl -n hw.ncpu`
 
-if [ -z "${SOURCE_FILE}" ]; then
-    SOURCE_FILE=${SOURCE_URL##*/}
-fi
-
-rm -rf source
-mkdir source
-cd source
-curl -JLO ${SOURCE_URL}
-if [[ ${SOURCE_URL} == *.zip ]]; then
-    unzip ${SOURCE_FILE}
-    SOURCE_FILE=${SOURCE_FILE%.*}
-else
-    tar -xzvf ${SOURCE_FILE}
-    SOURCE_FILE=${SOURCE_FILE%.*.*}
-fi
-cd ${SOURCE_FILE}
+cd source/${SOURCE_FOLDER}
 
 ./autogen.sh
 

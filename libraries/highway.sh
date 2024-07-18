@@ -2,4 +2,5 @@ export SOURCE_URL="https://github.com/google/highway/archive/refs/tags/1.2.0.tar
 export SOURCE_FILE="highway-1.2.0.tar.gz"
 export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON -DHWY_ENABLE_TESTS=OFF -DHWY_ENABLE_EXAMPLES=OFF"
 
-"../common/cmake_build.sh"
+source "../common/get_source.sh"
+source "../common/cmake_build.sh"

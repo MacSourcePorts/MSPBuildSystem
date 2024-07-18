@@ -1,34 +1,13 @@
 export MACOSX_DEPLOYMENT_TARGET="10.7"
 export NCPU=`sysctl -n hw.ncpu`
 
-if [ -z "${SOURCE_FILE}" ]; then
-    SOURCE_FILE=${SOURCE_URL##*/}
-fi
-
-rm -rf source
-mkdir source
-cd source
-curl -JLO ${SOURCE_URL}
-
-if [[ ${SOURCE_URL} == *.zip ]]; then
-    unzip ${SOURCE_FILE}
-    if [ -z "${SOURCE_FOLDER}" ]; then
-        SOURCE_FOLDER=${SOURCE_FILE%.*}
-    fi
-else
-    tar -xzvf ${SOURCE_FILE}
-    if [ -z "${SOURCE_FOLDER}" ]; then
-        SOURCE_FOLDER=${SOURCE_FILE%.*.*}
-    fi
-fi
-
-cd ..
 rm -rf build
 mkdir build
 cd build
 
 mkdir build-x86_64
 cd build-x86_64
+echo cmake ../../source/${SOURCE_FOLDER} "-DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_INSTALL_PREFIX=/usr/local" ${CMAKE_ARGS}
 cmake ../../source/${SOURCE_FOLDER} "-DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_INSTALL_PREFIX=/usr/local" ${CMAKE_ARGS}
 cmake --build . --parallel $NCPU
 
@@ -37,7 +16,6 @@ mkdir build-arm64
 cd build-arm64
 cmake ../../source/${SOURCE_FOLDER} "-DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_INSTALL_PREFIX=/usr/local" ${CMAKE_ARGS}
 cmake --build . --parallel $NCPU
-
 
 # Building this a THIRD time just to have the things in the right place
 # is the dumbest thing in the world but for now it works. 
