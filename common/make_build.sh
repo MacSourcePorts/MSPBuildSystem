@@ -7,6 +7,7 @@ else
 fi
 
 ./autogen.sh
+./bootstrap
 
 echo ./configure CC="clang -arch arm64 -arch x86_64" \
     CXX="clang++ -arch arm64 -arch x86_64" \
