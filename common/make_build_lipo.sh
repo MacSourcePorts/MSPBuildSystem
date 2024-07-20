@@ -10,13 +10,13 @@ mkdir build-arm64 build-x86_64 build-universal2
 # Build for arm64
 cd build-arm64
 ../configure ${MAKE_ARGS} CFLAGS="-arch arm64" LDFLAGS="-arch arm64" --host=aarch64-apple-darwin
-make  -j$NCPU
+make  #-j$NCPU
 cd ..
 
 # Build for x86_64
 cd build-x86_64
 ../configure ${MAKE_ARGS} CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" --host=x86_64-apple-darwin
-make  -j$NCPU
+make  #-j$NCPU
 cd ..
 
 cp -r build-arm64/. build-universal2
