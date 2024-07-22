@@ -6,7 +6,7 @@ else
     cd source/${SOURCE_FOLDER}
 fi
 
-./configure
+./configure ${MAKE_ARGS}
 
 (CFLAGS="-arch arm64 -arch x86_64" CPPFLAGS="-arch arm64 -arch x86_64" LDFLAGS="-arch arm64 -arch x86_64" make)
 sudo make install
