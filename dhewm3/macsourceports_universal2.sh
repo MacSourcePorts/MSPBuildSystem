@@ -32,7 +32,7 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	mkdir ${BUILT_PRODUCTS_DIR}
 	cd ${BUILT_PRODUCTS_DIR}
-	cmake -G "Unix Makefiles" "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 -DSDL2=ON -DOPENAL_LIBRARY=/usr/local/lib/libopenal.dylib -DOPENAL_INCLUDE_DIR=/usr/local/include ../neo -Wno-dev
+	cmake -G "Unix Makefiles" "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 -DSDL2=ON -DOPENAL_LIBRARY=/usr/local/lib/libopenal.dylib -DOPENAL_INCLUDE_DIR=/usr/local/include ../neo -Wno-dev
     cmake --build . --parallel $NCPU
     install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 	cp /usr/local/lib/libSDL2-2.0.0.dylib ${EXECUTABLE_FOLDER_PATH}
