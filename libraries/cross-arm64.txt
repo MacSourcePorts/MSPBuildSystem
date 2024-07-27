@@ -7,6 +7,10 @@ objc = '/usr/bin/clang'
 objcpp = '/usr/bin/clang++'
 pkgconfig = 'pkg-config'
 cmake = 'cmake'
+exe_wrapper = ''  # Not needed for Universal builds as both architectures are native
+
+[properties]
+needs_exe_wrapper = false
 
 [built-in options]
 c_args = ['-arch', 'arm64']
