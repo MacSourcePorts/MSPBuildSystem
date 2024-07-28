@@ -33,6 +33,7 @@ http://ftp.gnu.org/gnu/m4/m4-latest.tar.xz
 
 autoconf/automake
 https://gist.github.com/phpisciuneri/dce744f3cb0e407963b5
+https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz <-- latest
 
 libtool
 https://ftp.gnu.org/gnu/libtool/libtool-2.4.7.tar.gz
