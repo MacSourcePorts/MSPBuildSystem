@@ -3,4 +3,3 @@ export MAKE_ARGS="--disable-dependency-tracking --enable-shared"
 
 source "../common/get_source.sh"
 source "../common/make_build.sh"
-# make check
