@@ -19,7 +19,7 @@ cd build-x86_64
 make  #-j$NCPU
 cd ..
 
-cp -r build-arm64/. build-universal2
+cp -a build-arm64/. build-universal2
 
 cd build-arm64
 for i in `find . -name "*.dylib" -type f`; do

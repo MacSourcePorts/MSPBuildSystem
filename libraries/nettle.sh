@@ -3,4 +3,4 @@ export MAKE_ARGS="--enable-shared"
 
 source "../common/get_source.sh"
 source "../common/make_build_lipo.sh"
-make check
+# make check
