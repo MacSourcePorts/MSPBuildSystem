@@ -1,0 +1,13 @@
+# cross_file.txt
+[binaries]
+c = '/usr/bin/clang'
+cpp = '/usr/bin/clang++'
+ar = '/usr/bin/ar'
+strip = '/usr/bin/strip'
+pkgconfig = 'pkg-config'
+
+[properties]
+c_args = ['-arch', 'x86_64', '-arch', 'arm64', '-mmacosx-version-min=10.7']
+cpp_args = ['-arch', 'x86_64', '-arch', 'arm64', '-mmacosx-version-min=10.7']
+c_link_args = ['-arch', 'x86_64', '-arch', 'arm64', '-mmacosx-version-min=10.7']
+cpp_link_args = ['-arch', 'x86_64', '-arch', 'arm64', '-mmacosx-version-min=10.7']
