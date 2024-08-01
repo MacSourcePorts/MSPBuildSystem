@@ -61,10 +61,14 @@ meson and ninja
 After installing python3:
 pip3 install meson ninja packaging
 
+
+rust / cargo
+https://www.rust-lang.org/tools/install 
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
 FOR REFERENCE:
 Curl Docs: https://curl.se/docs/tutorial.html
 https://stackoverflow.com/questions/16261100/cant-download-github-project-with-curl-command/66286953#66286953
-
 
 
 
