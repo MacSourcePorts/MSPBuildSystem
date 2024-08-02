@@ -1,4 +1,6 @@
-export MACOSX_DEPLOYMENT_TARGET="10.7"
+if [ -z "${MACOSX_DEPLOYMENT_TARGET}" ]; then
+    export MACOSX_DEPLOYMENT_TARGET="10.7"
+fi
 export NCPU=`sysctl -n hw.ncpu`
 
 rm -rf build
