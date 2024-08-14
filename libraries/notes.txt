@@ -56,11 +56,10 @@ https://github.com/yasm/yasm
 make
 sudo make install
 
-meson and ninja and lit
+meson and ninja and lit and scons
 
 After installing python3:
-pip3 install meson ninja packaging lit
-
+pip3 install meson ninja packaging lit SCons
 
 rust / cargo
 https://www.rust-lang.org/tools/install 
