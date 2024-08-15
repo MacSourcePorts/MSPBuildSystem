@@ -1,5 +1,5 @@
 export SOURCE_URL="https://downloads.sourceforge.net/project/mad/libmad/0.15.1b/libmad-0.15.1b.tar.gz"
-export MAKE_ARGS="-disable-debugging --enable-fpm=64bit"
+export CONFIGURE_ARGS="-disable-debugging --enable-fpm=64bit"
 export CFLAGS=""
 export LDFLAGS=""
 

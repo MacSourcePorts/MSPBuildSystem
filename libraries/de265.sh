@@ -1,5 +1,5 @@
 export SOURCE_URL="https://github.com/strukturag/libde265/releases/download/v1.0.15/libde265-1.0.15.tar.gz"
-export MAKE_ARGS="--disable-dependency-tracking --disable-silent-rules --disable-sherlock265 --disable-dec265"
+export CONFIGURE_ARGS="--disable-dependency-tracking --disable-silent-rules --disable-sherlock265 --disable-dec265"
 
 source "../common/get_source.sh"
 

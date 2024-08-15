@@ -1,5 +1,5 @@
 export SOURCE_URL="https://github.com/libsdl-org/SDL_net/releases/download/release-2.2.0/SDL2_net-2.2.0.zip"
-export MAKE_ARGS="--disable-dependency-tracking --disable-sdltest"
+export CONFIGURE_ARGS="--disable-dependency-tracking --disable-sdltest"
 
 source "../common/get_source.sh"
 source "../common/make_build.sh"

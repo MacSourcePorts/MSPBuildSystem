@@ -1,5 +1,5 @@
 export SOURCE_URL="https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2"
-export MAKE_ARGS="--disable-dependency-tracking --disable-oggtest --disable-vorbistest --disable-examples"
+export CONFIGURE_ARGS="--disable-dependency-tracking --disable-oggtest --disable-vorbistest --disable-examples"
 
 source "../common/get_source.sh"
 

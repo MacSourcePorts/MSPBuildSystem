@@ -1,4 +1,4 @@
-export MAKE_ARGS="--disable-lsmash --disable-swscale --disable-ffms --enable-shared --enable-static --enable-strip"
+export CONFIGURE_ARGS="--disable-lsmash --disable-swscale --disable-ffms --enable-shared --enable-static --enable-strip"
 export SOURCE_FOLDER="x264"
 
 rm -rf source

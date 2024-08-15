@@ -12,11 +12,11 @@ fi
 echo ./configure CC="clang -arch arm64 -arch x86_64" \
     CXX="clang++ -arch arm64 -arch x86_64" \
     CPP="clang -E" CXXCPP="clang -E" \
-    ${MAKE_ARGS}
+    ${CONFIGURE_ARGS}
 
 ./configure CC="clang -arch arm64 -arch x86_64" \
     CXX="clang++ -arch arm64 -arch x86_64" \
     CPP="clang -E" CXXCPP="clang -E" \
-    ${MAKE_ARGS}
+    ${CONFIGURE_ARGS}
 make
 sudo make install

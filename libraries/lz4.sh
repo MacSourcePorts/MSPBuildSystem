@@ -1,5 +1,5 @@
 export SOURCE_URL="https://github.com/lz4/lz4/releases/download/v1.9.4/lz4-1.9.4.tar.gz"
-export MAKE_ARGS=""
+export CONFIGURE_ARGS=""
 
 source "../common/get_source.sh"
 source "../common/make_build2.sh"

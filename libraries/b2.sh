@@ -1,5 +1,5 @@
 export SOURCE_URL="https://github.com/BLAKE2/libb2/releases/download/v0.98.1/libb2-0.98.1.tar.gz"
-export MAKE_ARGS="--disable-dependency-tracking --disable-silent-rule"
+export CONFIGURE_ARGS="--disable-dependency-tracking --disable-silent-rule"
 
 source "../common/get_source.sh"
 

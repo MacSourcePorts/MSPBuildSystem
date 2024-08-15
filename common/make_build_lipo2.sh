@@ -18,7 +18,7 @@ export CFLAGS="-arch x86_64"
 export LDFLAGS="-arch x86_64"
 
 cd build-x86_64
-../configure ${MAKE_ARGS} ${MAKE_X86_64_ARGS}
+../configure ${CONFIGURE_ARGS} ${CONFIGURE_X86_64_ARGS}
 make  -j$NCPU
 cd ..
 
@@ -30,7 +30,7 @@ export CFLAGS="-arch arm64"
 export LDFLAGS="-arch arm64"
 
 cd build-arm64
-../configure ${MAKE_ARGS} ${MAKE_ARM64_ARGS}
+../configure ${CONFIGURE_ARGS} ${CONFIGURE_ARM64_ARGS}
 make  -j$NCPU
 cd ..
 

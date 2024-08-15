@@ -1,5 +1,5 @@
 export SOURCE_URL="https://zlib.net/zlib-1.3.1.tar.gz"
-export MAKE_ARGS=""
+export CONFIGURE_ARGS=""
 
 source "../common/get_source.sh"
 export CFLAGS="-arch arm64 -arch x86_64"
