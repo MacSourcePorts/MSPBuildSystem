@@ -25,3 +25,6 @@ sudo install_name_tool -id "@rpath/libogg.0.dylib" /usr/local/lib/libogg.0.dylib
 sudo install_name_tool -id "@rpath/libvorbis.0.4.9.dylib" /usr/local/lib/libvorbis.0.4.9.dylib
 sudo install_name_tool -id "@rpath/libvorbisenc.2.0.12.dylib" /usr/local/lib/libvorbisenc.2.0.12.dylib
 sudo install_name_tool -id "@rpath/libvorbisfile.3.3.8.dylib" /usr/local/lib/libvorbisfile.3.3.8.dylib
+
+sudo install_name_tool -id "@rpath/libSDL2_image-2.0.0.dylib" /usr/local/lib/libSDL2_image-2.0.0.dylib
+sudo install_name_tool -id "@rpath/libSDL2_ttf-2.0.0.dylib" /usr/local/lib/libSDL2_ttf-2.0.0.dylib
