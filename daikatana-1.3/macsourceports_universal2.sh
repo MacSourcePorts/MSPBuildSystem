@@ -85,7 +85,7 @@ cd ../..
 # create the app bundle
 # since daikatana is all special I'm telling it to skip the lipo/dylibbundler parts
 # (really it's that I don't want to spend the time to figure out how to shove it into the workflow)
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 #create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" ]; then

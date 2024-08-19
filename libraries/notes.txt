@@ -106,3 +106,9 @@ Changing install name from /usr/local/lib/engines-3/padlock.dylib (architecture 
 Changing install name from /usr/local/lib/ossl-modules/legacy.dylib (architecture arm64): to @rpath/legacy.dylib (architecture arm64):...
 Changing install name from /usr/local/lib/p11-kit-trust.dylib (architecture arm64): to @rpath/p11-kit-trust.dylib (architecture arm64):...
 Changing install name from /usr/local/lib/pkcs11/p11-kit-trust.dylib: to @rpath/p11-kit-trust.dylib:...
+
+
+Three things
+- separate out the dylibbundler and lipo steps into two different arguments, not both under "skiplipo"
+- make it to where it doesn't do the x86_64/arm64 folders for buildserver builds
+- make it reverse compatible to the non-buildserver versions/paths of the existing scripts

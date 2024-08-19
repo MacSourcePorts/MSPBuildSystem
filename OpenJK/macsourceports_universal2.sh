@@ -62,7 +62,7 @@ mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk_sp.arm64  ${ARM64_BUIL
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 #lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
@@ -119,7 +119,7 @@ echo mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.arm64  ${ARM64_BU
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 #lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
@@ -186,7 +186,7 @@ mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjo_sp.arm64  ${ARM64_BUIL
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 #lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create

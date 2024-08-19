@@ -45,7 +45,7 @@ make -j$NCPU install
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 # this is similar to what their create-macos-universal thing does
 

@@ -65,7 +65,7 @@ cd ..
 
 # create the app bundle
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 else
     "../MSPBuildSystem/common/build_app_bundle.sh"
 fi
