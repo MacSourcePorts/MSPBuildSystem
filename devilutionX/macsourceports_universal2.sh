@@ -37,7 +37,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
     -DVERSION_NUM=${APP_VERSION}  \
     -DCMAKE_BUILD_TYPE=Release  \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12  \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7  \
     ..  \
     -Wno-dev
 
@@ -56,7 +56,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_OSX_ARCHITECTURES="arm64" \
     -DVERSION_NUM=${APP_VERSION}  \
     -DCMAKE_BUILD_TYPE=Release  \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12  \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7  \
     ..  \
     -Wno-dev
 
