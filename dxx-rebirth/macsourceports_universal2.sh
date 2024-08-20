@@ -25,15 +25,23 @@ git pull
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
+mkdir ${BUILT_PRODUCTS_DIR}
+
 #because this port does so much of the work itself all we need to do is 
 #run the build command twice for the two platforms
-rm -rf ${X86_64_BUILD_FOLDER}
-/usr/local/bin/scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${X86_64_BUILD_FOLDER} PKG_CONFIG=/usr/local/bin/pkg-config --config=force CPPFLAGS=-mmacosx-version-min=10.13 CXXFLAGS=-mmacosx-version-min=10.13 LINKFLAGS=-mmacosx-version-min=10.13 -j$NCPU
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    rm -rf ${X86_64_BUILD_FOLDER}
+    scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${X86_64_BUILD_FOLDER} --config=force CPPFLAGS="-mmacosx-version-min=10.13 -arch x86_64" CXXFLAGS="-mmacosx-version-min=10.13 -arch x86_64" LINKFLAGS="-mmacosx-version-min=10.13 -arch x86_64" -j$NCPU
 
-rm -rf ${ARM64_BUILD_FOLDER}
-scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${ARM64_BUILD_FOLDER} --config=force CPPFLAGS=-mmacosx-version-min=10.13 CXXFLAGS=-mmacosx-version-min=10.13 LINKFLAGS=-mmacosx-version-min=10.13 -j$NCPU
+    rm -rf ${ARM64_BUILD_FOLDER}
+    scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${ARM64_BUILD_FOLDER} --config=force CPPFLAGS="-mmacosx-version-min=10.13 -arch arm64" CXXFLAGS="-mmacosx-version-min=10.13 -arch arm64" LINKFLAGS="-mmacosx-version-min=10.13 -arch arm64" -j$NCPU
+else
+    rm -rf ${X86_64_BUILD_FOLDER}
+    /usr/local/bin/scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${X86_64_BUILD_FOLDER} PKG_CONFIG=/usr/local/bin/pkg-config --config=force CPPFLAGS=-mmacosx-version-min=10.13 CXXFLAGS=-mmacosx-version-min=10.13 LINKFLAGS=-mmacosx-version-min=10.13 -j$NCPU
 
-mkdir ${BUILT_PRODUCTS_DIR}
+    rm -rf ${ARM64_BUILD_FOLDER}
+    scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${ARM64_BUILD_FOLDER} --config=force CPPFLAGS=-mmacosx-version-min=10.13 CXXFLAGS=-mmacosx-version-min=10.13 LINKFLAGS=-mmacosx-version-min=10.13 -j$NCPU
+fi 
 
 #descent1 values
 export PRODUCT_NAME="D1X-Rebirth"
@@ -51,7 +59,16 @@ export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 export ICONS="${ICONSFILENAME}.icns"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+    
+    cd ${BUILT_PRODUCTS_DIR}
+    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    cd ..
+else
+    "../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
@@ -75,7 +92,16 @@ export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 export ICONS="${ICONSFILENAME}.icns"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+    
+    cd ${BUILT_PRODUCTS_DIR}
+    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    cd ..
+else
+    "../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
