@@ -1,0 +1,16 @@
+118,124c118,124
+< 	add_custom_target(
+< 		run_dylibbundler
+< 		ALL
+< 		COMMAND dylibbundler -od -b -x ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/MacOS/${PROJECT_NAME} -d ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/libs
+< 		DEPENDS fheroes2 app_bundle_h2d_files app_bundle_translations
+< 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+< 		)
+---
+> #	add_custom_target(
+> #		run_dylibbundler
+> #		ALL
+> #		COMMAND dylibbundler -od -b -x ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/MacOS/${PROJECT_NAME} -d ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/libs
+> #		DEPENDS fheroes2 app_bundle_h2d_files app_bundle_translations
+> #		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+> #		)
