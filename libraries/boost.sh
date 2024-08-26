@@ -1,8 +1,8 @@
-export SOURCE_URL="https://github.com/boostorg/boost/releases/download/boost-1.85.0/boost-1.85.0-b2-nodocs.tar.xz"
-export SOURCE_DIR="boost-1.85.0"
+export SOURCE_URL="https://github.com/boostorg/boost/releases/download/boost-1.86.0/boost-1.86.0-b2-nodocs.tar.xz"
+export SOURCE_DIR="boost-1.86.0"
 INSTALL_PREFIX="universal2"
 
-export MACOSX_DEPLOYMENT_TARGET="10.7"
+export MACOSX_DEPLOYMENT_TARGET="10.8"
 export NCPU=`sysctl -n hw.ncpu`
 
 if [ -z "${SOURCE_FILE}" ]; then
