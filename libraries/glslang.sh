@@ -5,3 +5,5 @@ export MACOSX_DEPLOYMENT_TARGET="10.15"
 
 source "../common/get_source.sh"
 source "../common/cmake_build.sh"
+
+sudo install_name_tool -add_rpath /usr/local/lib/. /usr/local/bin/glslang
