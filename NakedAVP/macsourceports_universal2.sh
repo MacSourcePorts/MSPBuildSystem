@@ -43,7 +43,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cmake \
     -DCMAKE_C_FLAGS="-Wno-error=incompatible-function-pointer-types -I/usr/local/include/" \
     -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
     -DCMAKE_PREFIX_PATH=/usr/local \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     ..
