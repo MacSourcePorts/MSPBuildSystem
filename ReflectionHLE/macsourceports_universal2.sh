@@ -23,34 +23,51 @@ cd ../../${PROJECT_NAME}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-# create makefiles with cmake, perform builds with make
-rm -rf ${X86_64_BUILD_FOLDER}
-mkdir ${X86_64_BUILD_FOLDER}
-cd ${X86_64_BUILD_FOLDER}
-cmake \
--DCMAKE_OSX_ARCHITECTURES=x86_64 \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=/usr/local \
--DCMAKE_INSTALL_PREFIX=/usr/local \
-..
-make -j$NCPU
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    mkdir ${BUILT_PRODUCTS_DIR}
+    cd ${BUILT_PRODUCTS_DIR}
+    cmake \
+    -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+    -DCMAKE_PREFIX_PATH=/usr/local \
+    -DCMAKE_INSTALL_PREFIX=/usr/local \
+    ..
+    cmake --build . --parallel $NCPU
+    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+    rm -rf ${X86_64_BUILD_FOLDER}
+    mkdir ${X86_64_BUILD_FOLDER}
+    cd ${X86_64_BUILD_FOLDER}
+    cmake \
+    -DCMAKE_OSX_ARCHITECTURES=x86_64 \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+    -DCMAKE_PREFIX_PATH=/usr/local \
+    -DCMAKE_INSTALL_PREFIX=/usr/local \
+    ..
+    make -j$NCPU
 
-cd ..
-rm -rf ${ARM64_BUILD_FOLDER}
-mkdir ${ARM64_BUILD_FOLDER}
-cd ${ARM64_BUILD_FOLDER}
-cmake  \
--DCMAKE_OSX_ARCHITECTURES=arm64 \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=/opt/Homebrew \
--DCMAKE_INSTALL_PREFIX=/opt/Homebrew \
-..
-make -j$NCPU
+    cd ..
+    rm -rf ${ARM64_BUILD_FOLDER}
+    mkdir ${ARM64_BUILD_FOLDER}
+    cd ${ARM64_BUILD_FOLDER}
+    cmake  \
+    -DCMAKE_OSX_ARCHITECTURES=arm64 \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+    -DCMAKE_PREFIX_PATH=/opt/Homebrew \
+    -DCMAKE_INSTALL_PREFIX=/opt/Homebrew \
+    ..
+    make -j$NCPU
+fi
 
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+else
+    "../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
 # #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
