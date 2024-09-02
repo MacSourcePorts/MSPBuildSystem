@@ -28,22 +28,41 @@ mkdir ${X86_64_BUILD_FOLDER}
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 
-cd src
-make clean
-(CFLAGS="-I/opt/homebrew/include/ -arch arm64 -mmacosx-version-min=10.9" LDFLAGS="-L/opt/homebrew/lib/ -mmacosx-version-min=10.9" make -j$NCPU) || exit 1;
-cd ..
-mkdir -p ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
-mv src/"${EXECUTABLE_NAME}" ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    mkdir ${BUILT_PRODUCTS_DIR}
+    mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 
-cd src
-make clean
-(CFLAGS="-I/usr/local/include/ -arch x86_64 -mmacosx-version-min=10.9" LDFLAGS="-L/usr/local/lib/ -mmacosx-version-min=10.9" make -j$NCPU) || exit 1;
-cd ..
-mkdir -p ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
-mv src/"${EXECUTABLE_NAME}" ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+    cd src
+    make clean
+    (RANLIB=/usr/bin/ranlib AR=/usr/bin/ar CFLAGS="-I/usr/local/include/ -arch arm64 -arch x86_64 -mmacosx-version-min=10.9" LDFLAGS="-L/usr/local/lib/ -mmacosx-version-min=10.9" make) || exit 1;
+    cd ..
+    mkdir -p ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
+    mv src/"${EXECUTABLE_NAME}" ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
+    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    # cp /usr/local/lib/libmodplug.1.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+else
+    cd src
+    make clean
+    (CFLAGS="-I/opt/homebrew/include/ -arch arm64 -mmacosx-version-min=10.9" LDFLAGS="-L/opt/homebrew/lib/ -mmacosx-version-min=10.9" make) || exit 1;
+    cd ..
+    mkdir -p ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+    mv src/"${EXECUTABLE_NAME}" ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+
+    cd src
+    make clean
+    (CFLAGS="-I/usr/local/include/ -arch x86_64 -mmacosx-version-min=10.9" LDFLAGS="-L/usr/local/lib/ -mmacosx-version-min=10.9" make) || exit 1;
+    cd ..
+    mkdir -p ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+    mv src/"${EXECUTABLE_NAME}" ${ARM64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}"
+fi
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+else
+    "../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
