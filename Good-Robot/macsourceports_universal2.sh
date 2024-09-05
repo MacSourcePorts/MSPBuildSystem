@@ -33,7 +33,7 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DOPENAL_LIBRARY=/opt/homebrew/opt/openal-soft/lib/libopenal.dylib -DOPENAL_INCLUDE_DIR=/opt/homebrew/opt/openal-soft/include -Wno-dev -DSDL2_LIBRARIES=/opt/homebrew/lib/libSDL2.dylib -DSDL2_LDFLAGS="-L/opt/homebrew/lib/libSDL2.dylib;-lSDL2" -DGLEW_LIBRARIES=/opt/homebrew/lib/libGLEW.dylib  ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DOPENAL_LIBRARY=/opt/homebrew/opt/openal-soft/lib/libopenal.dylib -DOPENAL_INCLUDE_DIR=/opt/homebrew/opt/openal-soft/include -Wno-dev -DSDL2_LIBRARIES=/opt/homebrew/lib/libSDL2.dylib -DSDL2_LDFLAGS="-L/opt/homebrew/lib/libSDL2.dylib;-lSDL2" -DGLEW_LIBRARIES=/opt/homebrew/lib/libGLEW.dylib -DGLEW_LIBRARY_DEBUG=/opt/homebrew/lib/libGLEW.dylib -DGLEW_LIBRARY_RELEASE=/opt/homebrew/lib/libGLEW.dylib ..
 mkdir -p ${EXECUTABLE_FOLDER_PATH}
 # mkdir "core"
 # cp -a ../../MSPBuildSystem/Good-Robot/core/* "core"
@@ -45,7 +45,7 @@ cd ..
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-/usr/local/bin/cmake -G "Unix Makefiles" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DOPENAL_LIBRARY=/usr/local/opt/openal-soft/lib/libopenal.dylib -DOPENAL_INCLUDE_DIR=/usr/local/opt/openal-soft/include -Wno-dev -DSDL2_LIBRARIES=/usr/local/lib/libSDL2.dylib -DSDL2_LDFLAGS="-L/usr/local/lib/libSDL2.dylib;-lSDL2" -DGLEW_LIBRARIES=/usr/local/lib/libGLEW.dylib -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config -DBoost_DIR=/usr/local/lib/cmake/Boost-1.79.0 ..
+/usr/local/bin/cmake -G "Unix Makefiles" -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DOPENAL_LIBRARY=/usr/local/opt/openal-soft/lib/libopenal.dylib -DOPENAL_INCLUDE_DIR=/usr/local/opt/openal-soft/include -Wno-dev -DSDL2_LIBRARIES=/usr/local/lib/libSDL2.dylib -DSDL2_LDFLAGS="-L/usr/local/lib/libSDL2.dylib;-lSDL2" -DGLEW_LIBRARIES=/usr/local/lib/libGLEW.dylib -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config -DBoost_DIR=/usr/local/lib/cmake/Boost-1.79.0 -DGLEW_LIBRARY_DEBUG=/opt/homebrew/lib/libGLEW.dylib -DGLEW_LIBRARY_RELEASE=/opt/homebrew/lib/libGLEW.dylib ..
 mkdir -p ${EXECUTABLE_FOLDER_PATH}
 # # mkdir "core"
 # # cp -a ../../MSPBuildSystem/Good-Robot/core/* "core"
