@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="0.67"
+export APP_VERSION="0.68.0-beta1"
 export PRODUCT_NAME="CorsixTH"
 export PROJECT_NAME="CorsixTH"
 export PORT_NAME="CorsixTH"
 export ICONSFILENAME="CorsixTH"
 export EXECUTABLE_NAME="CorsixTH"
 export PKGINFO="APPLCTH"
-export GIT_TAG="v0.67"
+export GIT_TAG="v0.68.0-beta1"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
@@ -102,11 +102,11 @@ cd ${BUILT_PRODUCTS_DIR}
 install_name_tool -change @rpath/libSDL2_mixer-2.0.801.0.0.dylib /Users/tomkidd/Downloads/libs/x86_64/lib/libSDL2_mixer-2.0.801.0.0.dylib "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 dylibbundler -of -cd -b -x "./${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -d "./${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/" -p @executable_path/${X86_64_LIBS_FOLDER}/
 cd ..
-codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/ssl.so
+# codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/ssl.so
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/lpeg.so
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/lfs.so
-codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/mime/core.so
-codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/socket/core.so
+# codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/mime/core.so
+# codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/socket/core.so
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
