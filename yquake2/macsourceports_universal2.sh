@@ -10,6 +10,7 @@ export GIT_TAG="QUAKE2_8_41"
 export GIT_DEFAULT_BRANCH="master"
 export GIT_TAG_XATRIX="XATRIX_2_13"
 export GIT_TAG_ROGUE="ROGUE_2_12"
+export GIT_TAG_CTF="CTF_1_10"
 
 # constants
 source ../common/constants.sh
@@ -67,6 +68,32 @@ git pull
 # check out the latest release tag
 echo git checkout tags/${GIT_TAG_ROGUE}
 git checkout tags/${GIT_TAG_ROGUE}
+
+(YQ2_ARCH=x86_64 make clean) || exit 1;
+(YQ2_ARCH=x86_64 CFLAGS=$x86_64_CFLAGS  LDFLAGS=$x86_64_LDFLAGS make -j$NCPU) || exit 1;
+mkdir -p ${X86_64_BUILD_FOLDER}
+mv release/* ${X86_64_BUILD_FOLDER}
+rm -rd release
+
+(YQ2_ARCH=arm64 make clean) || exit 1;
+(YQ2_ARCH=arm64 CFLAGS=$ARM64_CFLAGS  LDFLAGS=$ARM64_LDFLAGS make -j$NCPU) || exit 1;
+mkdir -p ${ARM64_BUILD_FOLDER}
+mv release/* ${ARM64_BUILD_FOLDER}
+rm -rd release
+
+# ThreeWave Capture the Flag (CTF)
+cd ../ctf
+# reset to the main branch
+echo git checkout ${GIT_DEFAULT_BRANCH}
+git checkout ${GIT_DEFAULT_BRANCH}
+
+# fetch the latest 
+echo git pull
+git pull
+
+# check out the latest release tag
+echo git checkout tags/${GIT_TAG_CTF}
+git checkout tags/${GIT_TAG_CTF}
 
 (YQ2_ARCH=x86_64 make clean) || exit 1;
 (YQ2_ARCH=x86_64 CFLAGS=$x86_64_CFLAGS  LDFLAGS=$x86_64_LDFLAGS make -j$NCPU) || exit 1;
@@ -139,6 +166,10 @@ if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rogue" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rogue" || exit 1;
 fi
 
+if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ctf" ]; then
+	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ctf" || exit 1;
+fi
+
 #lipo any app-specific things
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib" -create
@@ -146,6 +177,7 @@ lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_soft.dylib ${ARM64_BUI
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/baseq2/game.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/baseq2/game.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/baseq2/game.dylib" -create
 lipo ../xatrix/${X86_64_BUILD_FOLDER}/game.dylib ../xatrix/${ARM64_BUILD_FOLDER}/game.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/xatrix/game.dylib" -create
 lipo ../rogue/${X86_64_BUILD_FOLDER}/game.dylib ../rogue/${ARM64_BUILD_FOLDER}/game.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rogue/game.dylib" -create
+lipo ../ctf/${X86_64_BUILD_FOLDER}/game.dylib ../ctf/${ARM64_BUILD_FOLDER}/game.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ctf/game.dylib" -create
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	cd ${BUILT_PRODUCTS_DIR}
