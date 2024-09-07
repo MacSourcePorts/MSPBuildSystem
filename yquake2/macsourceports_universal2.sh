@@ -1,29 +1,29 @@
 # game/app specific values
-export APP_VERSION="8.30"
+export APP_VERSION="8.41"
 export PRODUCT_NAME="yquake2"
 export PROJECT_NAME="yquake2"
 export PORT_NAME="Yamagi Quake II"
 export ICONSFILENAME="quake2"
 export EXECUTABLE_NAME="quake2"
 export PKGINFO="APPLGYQ2"
-export GIT_TAG="QUAKE2_8_30"
+export GIT_TAG="QUAKE2_8_41"
 export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG_XATRIX="XATRIX_2_12"
-export GIT_TAG_ROGUE="ROGUE_2_11"
+export GIT_TAG_XATRIX="XATRIX_2_13"
+export GIT_TAG_ROGUE="ROGUE_2_12"
 
 # constants
 source ../common/constants.sh
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	ARM64_CFLAGS="-mmacosx-version-min=10.9"
-	ARM64_LDFLAGS="-mmacosx-version-min=10.9"
-	x86_64_CFLAGS="-mmacosx-version-min=10.9"
-	x86_64_LDFLAGS="-mmacosx-version-min=10.9"
+	ARM64_CFLAGS="-mmacosx-version-min=10.7"
+	ARM64_LDFLAGS="-mmacosx-version-min=10.7"
+	x86_64_CFLAGS="-mmacosx-version-min=10.7"
+	x86_64_LDFLAGS="-mmacosx-version-min=10.7"
 else
-	ARM64_CFLAGS="-I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include -mmacosx-version-min=10.9"
-	ARM64_LDFLAGS="-L/opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -mmacosx-version-min=10.9"
-	x86_64_CFLAGS="-mmacosx-version-min=10.9"
-	x86_64_LDFLAGS="-mmacosx-version-min=10.9"
+	ARM64_CFLAGS="-I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include -mmacosx-version-min=10.7"
+	ARM64_LDFLAGS="-L/opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -mmacosx-version-min=10.7"
+	x86_64_CFLAGS="-mmacosx-version-min=10.7"
+	x86_64_LDFLAGS="-mmacosx-version-min=10.7"
 fi
 
 # build the expansion pack libraries first
