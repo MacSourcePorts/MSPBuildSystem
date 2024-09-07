@@ -109,6 +109,20 @@ Changing install name from /usr/local/lib/pkcs11/p11-kit-trust.dylib: to @rpath/
 
 
 Three things
-- separate out the dylibbundler and lipo steps into two different arguments, not both under "skiplipo"
+- separate out the dylibbundler and lipo steps into two different arguments, not both under "skiplipo" <-- DONE
 - make it to where it doesn't do the x86_64/arm64 folders for buildserver builds
 - make it reverse compatible to the non-buildserver versions/paths of the existing scripts
+
+
+OVERALL GAME PLAN:
+1. Make Universal 2 versions of the libraries going as far back as possible with macOS (10.7, etc.)
+   --- this is 45/59 complete
+2. Make Universal 2 versions of the source ports using new libraries and going as far back as possible with macOS (10.7, etc.)
+   --- this is 23/48 complete
+3. For every project which is a fork
+   -- Bring fork up to latest code
+   -- Minimize changes
+   -- Make PR to original project
+   -- If original project does not accept changes, attempt to have script modify code
+4. Get Buildbot working
+5. Get everything automated on Mac mini
