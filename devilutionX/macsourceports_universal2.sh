@@ -35,16 +35,12 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cmake  \
     -DBUILD_TESTING=OFF  \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DVERSION_NUM=${APP_VERSION}  \
     -DCMAKE_BUILD_TYPE=Release  \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7  \
     ..  \
     -Wno-dev
 
     cmake --build . --parallel $NCPU
-
-    # install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    # "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 
     cd ..
 
@@ -54,16 +50,12 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cmake  \
     -DBUILD_TESTING=OFF  \
     -DCMAKE_OSX_ARCHITECTURES="arm64" \
-    -DVERSION_NUM=${APP_VERSION}  \
     -DCMAKE_BUILD_TYPE=Release  \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7  \
     ..  \
     -Wno-dev
 
     cmake --build . --parallel $NCPU
-    
-    # install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    # "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 else
     # create makefiles with cmake
     rm -rf ${X86_64_BUILD_FOLDER}
@@ -74,7 +66,6 @@ else
     sodium_LIBRARY_RELEASE=/usr/local/lib/libsodium.dylib
     /usr/local/bin/cmake -G "Unix Makefiles" \
     -DBUILD_TESTING=OFF  \
-    -DVERSION_NUM=${APP_VERSION}  \
     -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
     -DCMAKE_C_FLAGS_RELEASE="-arch x86_64"  \
     -DCMAKE_BUILD_TYPE=Release  \
@@ -94,7 +85,6 @@ else
     cd ${ARM64_BUILD_FOLDER}
     cmake -G "Unix Makefiles"  \
     -DBUILD_TESTING=OFF  \
-    -DVERSION_NUM=${APP_VERSION}  \
     -DCMAKE_BUILD_TYPE=Release  \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12  \
     ..  \
@@ -111,6 +101,12 @@ else
 fi
 
 cd ..
+
+export EXTRA_INFO_PLIST_ENTRIES="
+    <key>CFBundleDisplayName</key>
+	<string>DevilutionX</string>
+    <key>SDL_FILESYSTEM_BASE_DIR_TYPE</key>
+	<string>parent</string>"
 
 # create the app bundle
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
