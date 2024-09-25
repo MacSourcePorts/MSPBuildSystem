@@ -3,3 +3,7 @@ signing_values.local
 release*/
 *.p8
 Good-Robot/core/
+buildbot/buildmaster/http.log
+/buildbot/buildmaster/*-workdir
+buildbot/buildmaster/state.sqlite
+twistd.*
