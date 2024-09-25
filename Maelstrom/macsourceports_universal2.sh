@@ -40,8 +40,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     mkdir -p ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
     lipo "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
     install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-    cp /usr/local/lib/libSDL2-2.0.0.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
-    cp /usr/local/lib/libSDL2_net-2.0.1.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 else
     make clean
     (ARCH=arm64 AM_CPPFLAGS="-mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" INCLUDES="-I/opt/homebrew/include/SDL2" LIBS="-L/opt/homebrew/lib -lSDL2 -lSDL2_net" make -j$NCPU)

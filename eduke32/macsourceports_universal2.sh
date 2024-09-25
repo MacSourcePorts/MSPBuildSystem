@@ -35,10 +35,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cd ..
     mv package/${PRODUCT_NAME}.app ${BUILT_PRODUCTS_DIR}
     install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    cp /usr/local/lib/libSDL2-2.0.0.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
-    cp /usr/local/lib/libFLAC.12.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
-    cp /usr/local/lib/libvpx.9.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
-    cp /usr/local/lib/libogg.0.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 else
     rm -rf ${X86_64_BUILD_FOLDER}
     mkdir ${X86_64_BUILD_FOLDER}
