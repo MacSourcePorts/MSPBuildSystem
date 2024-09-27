@@ -20,3 +20,10 @@ buildbot-worker start worker1
 
 Then go to 
 http://localhost:8010
+
+
+TODO:
+- Figure out how to pass in latest release tag into build script (where applicable)
+- Figure out how to limit changes/builds to latest release tag (where applicable)
+- Figure out if we want BuildBot to do the git work on checking out the latest release tag or if we want the build script to keep doing it
+- 
