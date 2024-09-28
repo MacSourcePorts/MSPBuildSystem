@@ -15,21 +15,29 @@ source ../common/signing_values.local
 
 cd ../../${PROJECT_NAME}
 
-# because we do a patch, we need to reset any changes
-echo git reset --hard
-git reset --hard
+if [ -n "$3" ]; then
+	echo "Setting version / tag to : " "$3"
+	export APP_VERSION="$3"
+	export GIT_TAG="$3"
+else
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+	# because we do a patch, we need to reset any changes
+	echo git reset --hard
+	git reset --hard
 
-# fetch the latest 
-echo git pull
-git pull
+	# reset to the main branch
+	echo git checkout ${GIT_DEFAULT_BRANCH}
+	git checkout ${GIT_DEFAULT_BRANCH}
 
-# check out the latest release tag
-echo git checkout tags/${GIT_TAG}
-git checkout tags/${GIT_TAG}
+	# fetch the latest 
+	echo git pull
+	git pull
+
+	# check out the latest release tag
+	echo git checkout tags/${GIT_TAG}
+	git checkout tags/${GIT_TAG}
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
