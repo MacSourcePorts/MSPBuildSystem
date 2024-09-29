@@ -7,3 +7,4 @@ buildbot/buildmaster/http.log
 buildbot/buildmaster/state.sqlite
 twistd.*
 /buildbot/workdirs
+/buildbot/buildmaster/projects/__pycache__

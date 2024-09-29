@@ -16,13 +16,21 @@ export HIGH_RESOLUTION_CAPABLE="false"
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
+if [ -n "$3" ]; then
+	echo "Setting version / tag to : " "$3"
+	export APP_VERSION="$3"
+	export GIT_TAG="$3"
+else
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
 
-# # fetch the latest 
-# echo git pull
-# git pull
+    # reset to the main branch
+    # echo git checkout ${GIT_DEFAULT_BRANCH}
+    # git checkout ${GIT_DEFAULT_BRANCH}
+
+    # # fetch the latest 
+    # echo git pull
+    # git pull
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -39,9 +47,9 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_CXX_STANDARD=11 \
     ..
     make -j$NCPU
-    install_name_tool -add_rpath @executable_path/. src/${EXECUTABLE_NAME}
-    cp src/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
-    cp /usr/local/lib/libSDL2-2.0.0.dylib ${EXECUTABLE_FOLDER_PATH}
+    install_name_tool -add_rpath @executable_path/. src/${EXECUTABLE_NAME}/${EXECUTABLE_NAME}
+    cp src/${EXECUTABLE_NAME}/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 else
     rm -rf ${X86_64_BUILD_FOLDER}
     mkdir ${X86_64_BUILD_FOLDER}
