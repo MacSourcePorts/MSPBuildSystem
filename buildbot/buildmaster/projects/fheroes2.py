@@ -11,7 +11,7 @@ change_source_list = [
         repourl='https://github.com/ihhub/fheroes2',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/fheroes2"),
         project="fheroes2",
-        branches=True,
+        only_tags=True,
         pollInterval=300  # Poll every 5 minutes
     )
 ]
@@ -22,7 +22,7 @@ fheroes2_factory.addStep(steps.Git(
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/fheroes2"),
-    name="Git Pull Latest fheroes2 Code",
+    name="Git Pull Latest fheroes2 Code",   
     haltOnFailure=True
 ))
 fheroes2_factory.addStep(steps.SetPropertyFromCommand(

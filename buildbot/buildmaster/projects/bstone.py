@@ -11,7 +11,7 @@ change_source_list = [
         repourl='https://github.com/bibendovsky/bstone',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/bstone"),
         project="bstone",
-        branches=True,
+        only_tags=True,
         pollInterval=300  # Poll every 5 minutes
     )
 ]
