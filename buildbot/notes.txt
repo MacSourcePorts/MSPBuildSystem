@@ -22,8 +22,26 @@ Then go to
 http://localhost:8010
 
 
+Copy
+
+com.buildbot.master.plist
+
+to 
+
+~/Library/LaunchAgents/
+
+(may need to create LaunchAgents folder)
+
+And launch it
+
+launchctl load ~/Library/LaunchAgents/com.buildbot.buildmaster.plist
+
+(this makes it run at system startup)
+
+
 TODO:
 - Figure out how to pass in latest release tag into build script (where applicable) DONE
 - Figure out how to limit changes/builds to latest release tag (where applicable) DONE? (remains to be tested)
 - Figure out if we want buildbot to do the git work on checking out the latest release tag or if we want the build script to keep doing it DONE, buildbot
 - 
+
