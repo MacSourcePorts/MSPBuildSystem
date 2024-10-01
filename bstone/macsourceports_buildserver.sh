@@ -1,1 +1,0 @@
-./macsourceports_universal2.sh "notarize" "buildserver" $1
