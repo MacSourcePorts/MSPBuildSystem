@@ -1,4 +1,7 @@
 # bstone
+
+# Project where we build based off of release tags from the project
+
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 
