@@ -14,19 +14,25 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ -n "$3" ]; then
+	echo "Setting version / tag to : " "$3"
+	export APP_VERSION="$3"
+	export GIT_TAG="$3"
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
 
-# check out the latest release tag
-echo git checkout tags/${GIT_TAG}
-git checkout tags/${GIT_TAG}
+    # check out the latest release tag
+    echo git checkout tags/${GIT_TAG}
+    git checkout tags/${GIT_TAG}
 
-rm -rf ${BUILT_PRODUCTS_DIR}
+    rm -rf ${BUILT_PRODUCTS_DIR}
+fi
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     rm -rf ${X86_64_BUILD_FOLDER}
