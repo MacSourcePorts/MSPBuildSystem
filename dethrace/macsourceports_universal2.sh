@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="0.6.0"
+export APP_VERSION="0.7.1"
 export PRODUCT_NAME="dethrace"
 export PROJECT_NAME="dethrace"
 export PORT_NAME="dethrace"
@@ -7,24 +7,30 @@ export ICONSFILENAME="dethrace"
 export EXECUTABLE_NAME="dethrace"
 export PKGINFO="APPLROTT"
 export GIT_DEFAULT_BRANCH="main"
-export GIT_TAG="v0.6.0"
+export GIT_TAG="v0.7.1"
 
 #constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ -n "$3" ]; then
+	echo "Setting version / tag to : " "$3"
+	export APP_VERSION="$3"
+	export GIT_TAG="$3"
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
 
-# check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+    # check out the latest release tag
+    # echo git checkout tags/${GIT_TAG}
+    # git checkout tags/${GIT_TAG}
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -32,13 +38,14 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     # mkdir ${BUILT_PRODUCTS_DIR}
     mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
     cd ${BUILT_PRODUCTS_DIR}
-    cmake "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" ..
+    cmake \
+    -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+    ..
     cmake --build . --parallel $NCPU
-    echo cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
     cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
     install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    cp /usr/local/lib/libSDL2-2.0.0.dylib ${EXECUTABLE_FOLDER_PATH}
-    # cp /usr/local/lib/libfmt.11.dylib ${EXECUTABLE_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 else
     # create makefiles with cmake, perform builds with make
     rm -rf ${X86_64_BUILD_FOLDER}
