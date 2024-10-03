@@ -13,13 +13,20 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+# If we're on the build server, then we assume we have the latest
+# code and we need to copy over our build tweaks
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    cp "../MSPBuildSystem/EDuke32/Common.mak" .
+    cp "../MSPBuildSystem/EDuke32/osxbuild.sh" ./platform
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
+fi
 
 # skipping the checkout bit until the EDuke32 project builds latest on Mac
 
@@ -35,7 +42,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cd ..
     mv package/${PRODUCT_NAME}.app ${BUILT_PRODUCTS_DIR}
     install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 else
     rm -rf ${X86_64_BUILD_FOLDER}
     mkdir ${X86_64_BUILD_FOLDER}
