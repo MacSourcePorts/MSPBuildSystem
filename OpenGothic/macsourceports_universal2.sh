@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="0.75"
+export APP_VERSION="0.80"
 export PRODUCT_NAME="OpenGothic"
 export PROJECT_NAME="OpenGothic"
 export PORT_NAME="OpenGothic"
@@ -7,7 +7,7 @@ export ICONSFILENAME="opengothic"
 export EXECUTABLE_NAME="Gothic2Notr"
 export PKGINFO="APPLOGw"
 export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="v0.75"
+export GIT_TAG="v0.80"
 
 #constants
 source ../common/constants.sh
@@ -15,17 +15,26 @@ source ../common/signing_values.local
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+# For now (because the Phoenix submodule clones into the ZenKit dir from tag 0.80)
+# just build latest
 
-# # fetch the latest 
-echo git pull
-git pull
+# if [ -n "$3" ]; then
+# 	export APP_VERSION="${3/v/}"
+# 	export GIT_TAG="$3"
+# 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+# else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+    # # fetch the latest 
+    echo git pull
+    git pull
+
+    # check out the latest release tag
+#     echo git checkout tags/${GIT_TAG}
+#     git checkout tags/${GIT_TAG}
+# fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
