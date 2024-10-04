@@ -15,9 +15,9 @@ source ../common/constants.sh
 cd ../../${PROJECT_NAME}
 
 if [ -n "$3" ]; then
-	echo "Setting version / tag to : " "$3"
-	export APP_VERSION="$3"
+	export APP_VERSION="${3/v/}"
 	export GIT_TAG="$3"
+	echo "Setting version / tag to : " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
 
