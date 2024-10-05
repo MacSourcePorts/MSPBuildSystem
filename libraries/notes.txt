@@ -11,28 +11,30 @@ dylibbundler (we may not need this going forward)
 https://github.com/auriamg/macdylibbundler
 
 create-dmg
-https://github.com/create-dmg/create-dmg 
+https://github.com/create-dmg/create-dmg
 
 
 pkg-config
-https://gitlab.freedesktop.org/pkg-config/pkg-config
+https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz
 
 Needs a tweak for modern Macs
 https://gist.github.com/jl/9e5ebbc9ccf44f3c804e
 
 CFLAGS="-Wno-int-conversion" CXXFLAGS="-Wno-int-conversion" ./configure --prefix="$3" --with-pc-path="$3/lib/pkgconfig" --with-internal-glib
-
 LDFLAGS="-framework CoreFoundation -framework Carbon" ./configure --with-internal-glib
+
+(use these:)
 CFLAGS="-Wno-int-conversion" CXXFLAGS="-Wno-int-conversion" LDFLAGS="-framework CoreFoundation -framework Carbon" ./configure --with-internal-glib
 make
 sudo make install
-
 
 m4
 http://ftp.gnu.org/gnu/m4/m4-latest.tar.xz 
 
 autoconf/automake
 https://gist.github.com/phpisciuneri/dce744f3cb0e407963b5
+http://ftpmirror.gnu.org/autoconf/autoconf-latest.tar.gz
+
 https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz <-- latest
 
 libtool
@@ -42,6 +44,7 @@ https://gist.github.com/byronmansfield/e972caf0f423af1c84e5b57975ccca3d
 gmu-sed
 https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz
 --disable-dependency-tracking --program-prefix=g\
+./configure --disable-dependency-tracking --program-prefix=g
 use like this: /usr/local/bin/gsed
 
 python
@@ -50,8 +53,8 @@ https://www.python.org/downloads/
 
 yasm
 for vpx, apparently
-https://yasm.tortall.net 
-https://github.com/yasm/yasm
+https://yasm.tortall.net
+http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz
 ./configure --disable-debug --disable-python
 make
 sudo make install
@@ -62,7 +65,7 @@ After installing python3:
 pip3 install meson ninja packaging lit SCons
 
 rust / cargo
-https://www.rust-lang.org/tools/install 
+https://www.rust-lang.org/tools/install
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 FOR REFERENCE:
