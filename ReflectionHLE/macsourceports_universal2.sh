@@ -13,13 +13,20 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
+if [ -n "$3" ]; then
+	# turns release-20240926 into 20240926
+	export APP_VERSION="${3/release-/}"
+	export GIT_TAG="$3"
+	echo "Setting version / tag to : " "$APP_VERSION" / "$GIT_TAG"
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# # fetch the latest 
-# echo git pull
-# git pull
+    # # fetch the latest 
+    echo git pull
+    git pull
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
