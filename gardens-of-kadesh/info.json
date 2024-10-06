@@ -1,0 +1,14 @@
+{
+	"portName": "gardens-of-kadesh",
+	"homepageURL": "https://gitlab.com/homeworldsdl/gardens-of-kadesh",
+	"sourceCodeURL": "https://gitlab.com/homeworldsdl/gardens-of-kadesh",
+	"buildType": "MSPBuild",
+	"latestVersion": "1.2.0",
+	"latestVersionDate": "September 30, 2024",
+	"versionOnMSP": "1.2.0",
+	"outdated": true,
+	"activeBuildStatus": "builds",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "gardens-of-kadesh.icns"
+}

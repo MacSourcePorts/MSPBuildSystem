@@ -3,3 +3,6 @@ signing_values.local
 release*/
 *.p8
 Good-Robot/core/
+/gardens-of-kadesh/Gardens of Kadesh.app
+gardens-of-kadesh/*.zip
+gardens-of-kadesh/*.dmg
