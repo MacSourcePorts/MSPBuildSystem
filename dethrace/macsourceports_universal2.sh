@@ -1,13 +1,13 @@
 # game/app specific values
-export APP_VERSION="0.6.0"
+export APP_VERSION="0.8.0"
 export PRODUCT_NAME="dethrace"
 export PROJECT_NAME="dethrace"
 export PORT_NAME="dethrace"
 export ICONSFILENAME="dethrace"
 export EXECUTABLE_NAME="dethrace"
-export PKGINFO="APPLROTT"
+export PKGINFO="APPLDETH"
 export GIT_DEFAULT_BRANCH="main"
-export GIT_TAG="v0.6.0"
+export GIT_TAG="v0.8.0"
 
 #constants
 source ../common/constants.sh
@@ -15,12 +15,12 @@ source ../common/constants.sh
 cd ../../${PROJECT_NAME}
 
 # reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+# echo git checkout ${GIT_DEFAULT_BRANCH}
+# git checkout ${GIT_DEFAULT_BRANCH}
 
 # # fetch the latest 
-echo git pull
-git pull
+# echo git pull
+# git pull
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
