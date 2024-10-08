@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="0.68.0-rc2"
+export APP_VERSION="0.68.0"
 export PRODUCT_NAME="CorsixTH"
 export PROJECT_NAME="CorsixTH"
 export PORT_NAME="CorsixTH"
 export ICONSFILENAME="CorsixTH"
 export EXECUTABLE_NAME="CorsixTH"
 export PKGINFO="APPLCTH"
-export GIT_TAG="v0.68.0-rc2"
+export GIT_TAG="v0.68.0"
 export GIT_DEFAULT_BRANCH="master"
 
 #constants
