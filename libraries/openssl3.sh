@@ -10,7 +10,7 @@ rm -rf source
 mkdir source
 cd source
 
-curl -O https://www.openssl.org/source/openssl-3.0.0.tar.gz
+curl -JLO https://www.openssl.org/source/openssl-3.0.0.tar.gz
 tar -xzvf openssl-3.0.0.tar.gz
 cd openssl-3.0.0
 
