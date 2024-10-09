@@ -24,7 +24,8 @@ http://localhost:8010
 
 Copy
 
-com.buildbot.master.plist
+com.buildbot.buildmaster.plist
+com.buildbot.worker1.plist
 
 to 
 
@@ -35,6 +36,7 @@ to
 And launch it
 
 launchctl load ~/Library/LaunchAgents/com.buildbot.buildmaster.plist
+launchctl load ~/Library/LaunchAgents/com.buildbot.worker1.plist
 
 (this makes it run at system startup)
 
