@@ -14,7 +14,7 @@ source "../common/get_source.sh"
 
 source "../common/make_build_lipo2.sh"
 
-cd ../..
+cd ../../..
 sudo lipo -create -output /usr/local/lib/libpostproc.58.1.100.dylib source/${SOURCE_FOLDER}/build-arm64/libpostproc/libpostproc.58.dylib source/${SOURCE_FOLDER}/build-x86_64/libpostproc/libpostproc.58.dylib
 sudo lipo -create -output /usr/local/lib/libavfilter.10.1.100.dylib source/${SOURCE_FOLDER}/build-arm64/libavfilter/libavfilter.10.dylib source/${SOURCE_FOLDER}/build-x86_64/libavfilter/libavfilter.10.dylib
 sudo lipo -create -output /usr/local/lib/libavdevice.61.1.100.dylib source/${SOURCE_FOLDER}/build-arm64/libavdevice/libavdevice.61.dylib source/${SOURCE_FOLDER}/build-x86_64/libavdevice/libavdevice.61.dylib

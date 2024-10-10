@@ -12,7 +12,7 @@ project_list = [
 change_source_list = [
     changes.GitPoller(
         repourl='https://gitlab.com/Dringgstein/Commander-Genius',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/CommanderGenius"),
+        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Commander-Genius"),
         project="CommanderGenius",
         only_tags=True,
         pollInterval=300  # Poll every 5 minutes
@@ -24,20 +24,20 @@ CommanderGenius_factory.addStep(steps.Git(
     repourl='https://gitlab.com/Dringgstein/Commander-Genius',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/CommanderGenius"),
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Commander-Genius"),
     name="Git Pull Latest CommanderGenius Code",
     haltOnFailure=True
 ))
 CommanderGenius_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/CommanderGenius"),
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Commander-Genius"),
     property="CommanderGenius_latest_tag",
     name="Fetch Latest CommanderGenius Tag",
     haltOnFailure=True
 ))
 CommanderGenius_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('CommanderGenius_latest_tag')],
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/CommanderGenius"),
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Commander-Genius"),
     name="Checkout Latest Tag",
     haltOnFailure=True
 ))
