@@ -8,13 +8,13 @@ mkdir build-arm64 build-x86_64 build-universal2
 
 # Build for arm64
 cd build-arm64
-../configure ${CONFIGURE_ARGS} CFLAGS="-arch arm64" CXXFLAGS="-arch arm64" LDFLAGS="-arch arm64" --host=aarch64-apple-darwin
+../configure ${CONFIGURE_ARGS} CFLAGS="-arch arm64" CXXFLAGS="-arch arm64" LDFLAGS="-arch arm64" --host=aarch64-apple-darwin ${CONFIGURE_ARM64_ARGS}
 make ${MAKE_ARGS}
 cd ..
 
 # Build for x86_64
 cd build-x86_64
-../configure ${CONFIGURE_ARGS} CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" --host=x86_64-apple-darwin
+../configure ${CONFIGURE_ARGS} CFLAGS="-arch x86_64" CXXFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" --host=x86_64-apple-darwin ${CONFIGURE_X86_64_ARGS}
 make ${MAKE_ARGS}
 cd ..
 

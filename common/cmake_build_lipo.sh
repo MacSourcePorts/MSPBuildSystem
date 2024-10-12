@@ -14,8 +14,8 @@ cmake --build . --parallel $NCPU
 cd ..
 mkdir build-arm64
 cd build-arm64
-echo cmake ../../source/${SOURCE_FOLDER} -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_INSTALL_PREFIX=/usr/local ${CMAKE_ARGS} ${CCONFIGURE_ARM64_ARGS}
-cmake ../../source/${SOURCE_FOLDER} -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_INSTALL_PREFIX=/usr/local ${CMAKE_ARGS} ${CCONFIGURE_ARM64_ARGS}
+echo cmake ../../source/${SOURCE_FOLDER} -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_INSTALL_PREFIX=/usr/local ${CMAKE_ARGS} ${CONFIGURE_ARM64_ARGS}
+cmake ../../source/${SOURCE_FOLDER} -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_INSTALL_PREFIX=/usr/local ${CMAKE_ARGS} ${CONFIGURE_ARM64_ARGS}
 cmake --build . --parallel $NCPU
 
 # Building this a THIRD time just to have the things in the right place
