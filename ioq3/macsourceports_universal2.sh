@@ -1,6 +1,5 @@
 # game/app specific values
 # note that for ioq3 some of these values are not used since it handles bundling differently. 
-export APP_VERSION=`grep '^VERSION=' Makefile | sed -e 's/.*=\(.*\)/\1/'`
 export PRODUCT_NAME="ioquake3"
 export PROJECT_NAME="ioq3"
 export PORT_NAME="ioquake3"
@@ -16,15 +15,21 @@ cd ../../${PROJECT_NAME}
 
 export APP_VERSION=`grep '^VERSION=' Makefile | sed -e 's/.*=\(.*\)/\1/'`
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	echo "Skipping git because we're on the build server"
+	
+	export RANLIB=/usr/bin/ranlib
+else
+	# reset to the main branch
+	echo git checkout ${GIT_DEFAULT_BRANCH}
+	git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+	# fetch the latest 
+	echo git pull
+	git pull
 
-# skipping checkout since we just use the latest on this one
+	# skipping checkout since we just use the latest on this one
+fi
 
 # ioq3 has everything scripted out so we just need to delete the last build
 # and fire off a script. Formerly the MSP build script recreated portions of
