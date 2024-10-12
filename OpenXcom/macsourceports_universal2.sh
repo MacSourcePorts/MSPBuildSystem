@@ -12,67 +12,97 @@ export GIT_DEFAULT_BRANCH="master"
 #constants
 source ../common/constants.sh
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
-
-# fetch the latest 
-echo git pull
-git pull
-
-# because this project has not done a release or tag since 2018
-# we're just doing the latest to get the latest code and improvements
+cd ../../${PROJECT_NAME}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-cd ../../${PROJECT_NAME}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    # tweak one file
+    gsed -i 's|postprocess_bundle|# postprocess_bundle|' src/CMakeLists.txt
 
-# create makefiles with cmake, perform builds with make
-# I think it has to be done in the root because of the bin folder
-rm -rf ${X86_64_BUILD_FOLDER}
-mkdir ${X86_64_BUILD_FOLDER}
-/usr/local/bin/cmake \
--DCMAKE_BUILD_TYPE=Debug \
--DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
--DYAMLCPP_INCLUDE_DIR=/usr/local/opt/yaml-cpp/include \
--DYAMLCPP_LIBRARY=/usr/local/opt/yaml-cpp/lib/libyaml-cpp.dylib \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 -\
-B ${X86_64_BUILD_FOLDER} .
-cmake --build ${X86_64_BUILD_FOLDER} -j$NCPU
+    mkdir ${BUILT_PRODUCTS_DIR}
 
-rm -rf ${ARM64_BUILD_FOLDER}
-mkdir ${ARM64_BUILD_FOLDER}
-cmake \
--DCMAKE_BUILD_TYPE=Debug \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 -\
-B ${ARM64_BUILD_FOLDER} .
-cmake --build ${ARM64_BUILD_FOLDER} -j$NCPU
+    cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
+    -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+    -B ${BUILT_PRODUCTS_DIR} .
+
+    cmake --build ${BUILT_PRODUCTS_DIR} -j$NCPU
+
+    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
+
+    # fetch the latest 
+    echo git pull
+    git pull
+
+    # because this project has not done a release or tag since 2018
+    # we're just doing the latest to get the latest code and improvements
+
+    # create makefiles with cmake, perform builds with make
+    # I think it has to be done in the root because of the bin folder
+    rm -rf ${X86_64_BUILD_FOLDER}
+    mkdir ${X86_64_BUILD_FOLDER}
+    /usr/local/bin/cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
+    -DYAMLCPP_INCLUDE_DIR=/usr/local/opt/yaml-cpp/include \
+    -DYAMLCPP_LIBRARY=/usr/local/opt/yaml-cpp/lib/libyaml-cpp.dylib \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 -\
+    B ${X86_64_BUILD_FOLDER} .
+    cmake --build ${X86_64_BUILD_FOLDER} -j$NCPU
+
+    rm -rf ${ARM64_BUILD_FOLDER}
+    mkdir ${ARM64_BUILD_FOLDER}
+    cmake \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 -\
+    B ${ARM64_BUILD_FOLDER} .
+    cmake --build ${ARM64_BUILD_FOLDER} -j$NCPU
+
+fi
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#lipo the executable
-lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
+    # copy over sdl2 manually as shim for sdl12-compat
+    cp /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
+else
+    "../MSPBuildSystem/common/build_app_bundle.sh"
 
-# we only do one Frameworks folder since the ones OpenRCT2 supplies are Universal 2 already
-mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" || exit 1;
-#for some reason libFLAC is only referenced by libSDL_mixer for arm64 so we copy it instead of lipo'ing it
-cp -a ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libFLAC.8.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libjpeg.8.2.2.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libjpeg.8.2.2.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libjpeg.8.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libmikmod.3.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libmikmod.3.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libmikmod.3.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libogg.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libogg.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libogg.0.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libpng16.16.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libpng16.16.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libpng16.16.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_gfx.15.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_gfx.15.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL_gfx.15.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_image-1.2.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_image-1.2.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL_image-1.2.0.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_mixer-1.2.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_mixer-1.2.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL_mixer-1.2.0.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL-1.2.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL-1.2.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL-1.2.0.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libtiff.5.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libtiff.5.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libtiff.5.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libvorbis.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libvorbis.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libvorbis.0.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libvorbisfile.3.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libvorbisfile.3.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libvorbisfile.3.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libwebp.7.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libwebp.7.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.7.dylib" -create
-lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libyaml-cpp.0.7.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libyaml-cpp.0.7.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libyaml-cpp.0.7.0.dylib" -create
-cp -a ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libyaml-cpp.0.7.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-cp -a "${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/." "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+    #lipo the executable
+    lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
+
+    # we only do one Frameworks folder since the ones OpenRCT2 supplies are Universal 2 already
+    mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" || exit 1;
+    #for some reason libFLAC is only referenced by libSDL_mixer for arm64 so we copy it instead of lipo'ing it
+    cp -a ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libFLAC.8.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libjpeg.8.2.2.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libjpeg.8.2.2.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libjpeg.8.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libmikmod.3.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libmikmod.3.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libmikmod.3.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libogg.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libogg.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libogg.0.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libpng16.16.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libpng16.16.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libpng16.16.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_gfx.15.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_gfx.15.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL_gfx.15.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_image-1.2.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_image-1.2.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL_image-1.2.0.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_mixer-1.2.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL_mixer-1.2.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL_mixer-1.2.0.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL-1.2.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL-1.2.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL-1.2.0.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libtiff.5.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libtiff.5.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libtiff.5.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libvorbis.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libvorbis.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libvorbis.0.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libvorbisfile.3.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libvorbisfile.3.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libvorbisfile.3.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libwebp.7.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libwebp.7.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.7.dylib" -create
+    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libyaml-cpp.0.7.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libyaml-cpp.0.7.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libyaml-cpp.0.7.0.dylib" -create
+    cp -a ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libyaml-cpp.0.7.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    cp -a "${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/." "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+
+    # copy over sdl2 manually as shim for sdl12-compat
+    cp /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
+    cp /opt/homebrew/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
+fi
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
