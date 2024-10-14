@@ -8,3 +8,4 @@ buildbot/buildmaster/state.sqlite
 twistd.*
 /buildbot/workdirs
 /buildbot/buildmaster/projects/__pycache__
+/buildbot/buildmaster/secrets

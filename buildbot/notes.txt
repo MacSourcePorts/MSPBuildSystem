@@ -5,6 +5,18 @@ python3 -m ensurepip --upgrade
 To install buildbot
 
 pip3 install 'buildbot[bundle]'
+pip3 install 'buildbot[tls]'
+
+Get smtpUser / smtpPassword files from another box (or just use the username and app-specific password from gmail or whatnot and put them in text files)
+
+Put them in ~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster/secrets/
+
+(may need to make that directory)
+
+Then run chmod on them to make them "secret" as per buildbot's demands:
+
+chmod 400 ~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster/secrets/smtpUser
+chmod 400 ~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster/secrets/smtpPassword
 
 To create master/worker (but these we've created and committed):
 
