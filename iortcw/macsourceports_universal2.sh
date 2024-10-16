@@ -24,8 +24,15 @@ git pull
 
 # skipping checkout since we just use the latest on this one
 
-X86_64_MACOSX_VERSION_MIN="10.9"
-ARM64_MACOSX_VERSION_MIN="11.0"
+# iortcw has everything scripted out so we just need to delete the last build
+# and fire off a script. Formerly the MSP build script recreated portions of
+# iortcw's script and we evolved from there. Today this is no longer necessary. 
+
+# For now, copying over the new ub2 script manually
+cp "../MSPBuildSystem/iortcw/make-macosx-ub2.sh" SP
+cp "../MSPBuildSystem/iortcw/make-macosx-app-sp.sh" SP/make-macosx-app.sh
+cp "../MSPBuildSystem/iortcw/make-macosx-ub2.sh" MP
+cp "../MSPBuildSystem/iortcw/make-macosx-app-mp.sh" MP/make-macosx-app.sh
 
 # creating the "release" folder here since there's two apps involved. 
 if [ -d "${BUILT_PRODUCTS_DIR}" ]; then
@@ -37,34 +44,19 @@ mkdir "${BUILT_PRODUCTS_DIR}"
 
 cd SP
 
-# x86_64 client and server
-if [ -d build/release-darwin-x86_64 ]; then
-rm -rf build/release-darwin-x86_64
-fi
-(ARCH=x86_64 CFLAGS=$X86_64_CFLAGS MACOSX_VERSION_MIN=$X86_64_MACOSX_VERSION_MIN make -j$NCPU) || exit 1;
-
-# arm64 client and server
-if [ -d build/release-darwin-arm64 ]; then
-rm -rf build/release-darwin-arm64
-fi
-(ARCH=arm64 CFLAGS=$ARM64_CFLAGS MACOSX_VERSION_MIN=$ARM64_MACOSX_VERSION_MIN make -j$NCPU) || exit 1;
-
-# use the following shell script to build a universal 2 application bundle
-export MACOSX_DEPLOYMENT_TARGET="10.7"
-export MACOSX_DEPLOYMENT_TARGET_X86_64="$X86_64_MACOSX_VERSION_MIN"
-export MACOSX_DEPLOYMENT_TARGET_ARM64="$ARM64_MACOSX_VERSION_MIN"
-
-if [ -d build/release-darwin-universal2 ]; then
-	rm -r build/release-darwin-universal2
+if [ -d build ]; then
+	rm -rf build
 fi
 
-# ioq3 handles its own app bundling and lipo'ing so we do this
-# instead of calling "../MSPScripts/build_app_bundle.sh"
-"./make-macosx-app.sh" release
+"./make-macosx-ub2.sh" release
 
 cp -R build/release-darwin-universal2/"${WRAPPER_NAME}" "../${BUILT_PRODUCTS_DIR}"
 
 cd ..
+
+cp "../MSPBuildSystem/iortcw/iortcwsp.icns" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+gsed -i 's|org.iortcw.iowolfsp|com.macsourceports.iowolfsp|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+gsed -i 's|<string>iortcw</string>|<string>iortcwsp</string>|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 
 export ENTITLEMENTS_FILE="SP/misc/xcode/iortcw/iortcw.entitlements"
 
@@ -77,39 +69,27 @@ export ENTITLEMENTS_FILE="SP/misc/xcode/iortcw/iortcw.entitlements"
 # Multiplayer
 
 cd MP
+
 export PRODUCT_NAME="iowolfmp"
 export EXECUTABLE_NAME="iowolfmp"
 export WRAPPER_NAME="${PRODUCT_NAME}.app"
 export BUNDLE_ID="com.macsourceports.${PRODUCT_NAME}"
+export CONTENTS_FOLDER_PATH="${WRAPPER_NAME}/Contents"
+export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
 
-# x86_64 client and server
-if [ -d build/release-darwin-x86_64 ]; then
-rm -rf build/release-darwin-x86_64
-fi
-(ARCH=x86_64 CFLAGS=$X86_64_CFLAGS MACOSX_VERSION_MIN=$X86_64_MACOSX_VERSION_MIN make -j$NCPU) || exit 1;
-
-# arm64 client and server
-if [ -d build/release-darwin-arm64 ]; then
-rm -rf build/release-darwin-arm64
-fi
-(ARCH=arm64 CFLAGS=$ARM64_CFLAGS MACOSX_VERSION_MIN=$ARM64_MACOSX_VERSION_MIN make -j$NCPU) || exit 1;
-
-# use the following shell script to build a universal 2 application bundle
-export MACOSX_DEPLOYMENT_TARGET="10.7"
-export MACOSX_DEPLOYMENT_TARGET_X86_64="$X86_64_MACOSX_VERSION_MIN"
-export MACOSX_DEPLOYMENT_TARGET_ARM64="$ARM64_MACOSX_VERSION_MIN"
-
-if [ -d build/release-darwin-universal2 ]; then
-	rm -r build/release-darwin-universal2
+if [ -d build ]; then
+	rm -rf build
 fi
 
-# ioq3 handles its own app bundling and lipo'ing so we do this
-# instead of calling "../MSPScripts/build_app_bundle.sh"
-"./make-macosx-app.sh" release
+"./make-macosx-ub2.sh" release
 
 cp -R build/release-darwin-universal2/"${WRAPPER_NAME}" "../${BUILT_PRODUCTS_DIR}"
 
 cd ..
+
+cp "../MSPBuildSystem/iortcw/iortcwmp.icns" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+gsed -i 's|org.iortcw.iowolfmp|com.macsourceports.iowolfmp|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+gsed -i 's|<string>iortcw</string>|<string>iortcwmp</string>|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 
 export ENTITLEMENTS_FILE="MP/misc/xcode/iortcw/iortcw.entitlements"
 
