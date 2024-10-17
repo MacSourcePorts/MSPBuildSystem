@@ -1,6 +1,6 @@
 # game/app specific values
 # note that for iortcw some of these values are not used since it handles bundling differently. 
-export APP_VERSION="1.51d"
+# export APP_VERSION="1.51d"
 export PRODUCT_NAME="iowolfsp"
 export PROJECT_NAME="iortcw"
 export PORT_NAME="iortcw"
@@ -14,15 +14,24 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+export APP_VERSION=`grep '^VERSION=' Makefile | sed -e 's/.*=\(.*\)/\1/'`
 
-# fetch the latest 
-echo git pull
-git pull
 
-# skipping checkout since we just use the latest on this one
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	echo "Skipping git because we're on the build server"
+	
+	export RANLIB=/usr/bin/ranlib
+else
+	# reset to the main branch
+	echo git checkout ${GIT_DEFAULT_BRANCH}
+	git checkout ${GIT_DEFAULT_BRANCH}
+
+	# fetch the latest 
+	echo git pull
+	git pull
+
+	# skipping checkout since we just use the latest on this one
+fi
 
 # iortcw has everything scripted out so we just need to delete the last build
 # and fire off a script. Formerly the MSP build script recreated portions of
