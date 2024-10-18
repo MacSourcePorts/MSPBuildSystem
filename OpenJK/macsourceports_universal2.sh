@@ -29,15 +29,31 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-/usr/local/bin/cmake -DCMAKE_INSTALL_PREFIX=./install -DARCH=x86_64 -DBuildJK2SPEngine=ON -DBuildJK2SPGame=ON -DBuildJK2SPRdVanilla=ON -DSDL2_DIR=/usr/local/opt/sdl2/lib/cmake/SDL2 -DSDL2_INCLUDE_DIRS=/usr/local/opt/sdl2/include/SDL2 -DSDL2_LIBRARIES=/usr/local/opt/sdl2/lib ..
-make -j$NCPU install
+cmake \
+-DCMAKE_INSTALL_PREFIX=./install \
+-DCMAKE_OSX_ARCHITECTURES=x86_64 \
+-DBuildJK2SPEngine=ON \
+-DBuildJK2SPGame=ON \
+-DBuildJK2SPRdVanilla=ON \
+-DCMAKE_PREFIX_PATH=/usr/local \
+-DCMAKE_BUILD_TYPE=Release
+..
+cmake --build . --parallel -j$NCPU --target install
 cd ..
 
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake -DCMAKE_INSTALL_PREFIX=./install -DBuildJK2SPEngine=ON -DBuildJK2SPGame=ON -DBuildJK2SPRdVanilla=ON -DCMAKE_BUILD_TYPE=Release ..
-make -j$NCPU install
+cmake \
+-DCMAKE_INSTALL_PREFIX=./install \
+-DCMAKE_OSX_ARCHITECTURES=arm64 \
+-DBuildJK2SPEngine=ON \
+-DBuildJK2SPGame=ON \
+-DBuildJK2SPRdVanilla=ON \
+-DCMAKE_PREFIX_PATH=/opt/Homebrew \
+-DCMAKE_BUILD_TYPE=Release 
+..
+cmake --build . --parallel -j$NCPU --target install
 cd ..
 
 # First, OpenJK-SP
@@ -52,13 +68,28 @@ export EXECUTABLE_NAME="openjk_sp"
 export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
 export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 
+# the file names always have the host OS even when cross compiling. Trying to use CMAKE_SYSTEM_PROCESSOR break things. Have to do this by hand.
 rm -rf ${X86_64_BUILD_FOLDER}/openjk_sp.x86_64.app
-mv ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk_sp.x86_64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
-mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk_sp.x86_64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+if [ -d ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk_sp.x86_64.app ]; then 
+    mv ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk_sp.x86_64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk_sp.x86_64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+    mv ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk_sp.arm64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk_sp.arm64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamearm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamex86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_arm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib
+fi
 
 rm -rf ${ARM64_BUILD_FOLDER}/openjk_sp.arm64.app
-mv ${ARM64_BUILD_FOLDER}/install/JediAcademy/openjk_sp.arm64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
-mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk_sp.arm64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+if [ -d ${ARM64_BUILD_FOLDER}/install/JediAcademy/openjk_sp.arm64.app ]; then 
+    mv ${ARM64_BUILD_FOLDER}/install/JediAcademy/openjk_sp.arm64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk_sp.arm64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+    mv ${ARM64_BUILD_FOLDER}/install/JediAcademy/openjk_sp.x86_64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk_sp.x86_64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamex86_64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamearm64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_arm64.dylib
+fi
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
@@ -108,14 +139,38 @@ export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
 export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 
 rm -rf ${X86_64_BUILD_FOLDER}/openjk.x86_64.app
-mv ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk.x86_64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
-mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.x86_64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-echo mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.x86_64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+if [ -d ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk.x86_64.app ]; then 
+    mv ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk.x86_64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.x86_64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+    mv ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk.arm64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.arm64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jampgamearm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jampgamex86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/cgamearm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/cgamex86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/uiarm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/uix86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/jampgamearm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/jampgamex86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/cgamearm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/cgamex86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uiarm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uix86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-rend2_arm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-rend2_x86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_arm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib
+fi
 
 rm -rf ${ARM64_BUILD_FOLDER}/openjk.arm64.app
-mv ${ARM64_BUILD_FOLDER}/install/JediAcademy/openjk.arm64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
-mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.arm64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-echo mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.arm64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+if [ -d ${ARM64_BUILD_FOLDER}/install/JediAcademy/openjk.arm64.app ]; then 
+    mv ${ARM64_BUILD_FOLDER}/install/JediAcademy/openjk.arm64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.arm64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+    mv ${ARM64_BUILD_FOLDER}/install/JediAcademy/openjk.x86_64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjk.x86_64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jampgamex86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jampgamearm64.dylib
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/cgamex86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/cgamearm64.dylib
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/uix86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/uiarm64.dylib
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/jampgamex86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/jampgamearm64.dylib
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/cgamex86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/cgamearm64.dylib
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uix86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uiarm64.dylib
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-rend2_x86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-rend2_arm64.dylib
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_arm64.dylib
+fi
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
@@ -177,12 +232,27 @@ export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
 export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 
 rm -rf ${X86_64_BUILD_FOLDER}/openjo_sp.x86_64.app
-mv ${X86_64_BUILD_FOLDER}/install/JediOutcast/openjo_sp.x86_64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
-mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjo_sp.x86_64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+
+if [ -d ${X86_64_BUILD_FOLDER}/install/JediOutcast/openjo_sp.x86_64.app ]; then
+    mv ${X86_64_BUILD_FOLDER}/install/JediOutcast/openjo_sp.x86_64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjo_sp.x86_64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+    mv ${X86_64_BUILD_FOLDER}/install/JediOutcast/openjo_sp.arm64.app ${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjo_sp.arm64  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamearm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamex86_64.dylib
+    mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_arm64.dylib  ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib
+fi
 
 rm -rf ${ARM64_BUILD_FOLDER}/openjo_sp.arm64.app
-mv ${ARM64_BUILD_FOLDER}/install/JediOutcast/openjo_sp.arm64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
-mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjo_sp.arm64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+if [ -d ${ARM64_BUILD_FOLDER}/install/JediOutcast/openjo_sp.arm64.app ]; then
+    mv ${ARM64_BUILD_FOLDER}/install/JediOutcast/openjo_sp.arm64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjo_sp.arm64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+    mv ${ARM64_BUILD_FOLDER}/install/JediOutcast/openjo_sp.x86_64.app ${ARM64_BUILD_FOLDER}/${WRAPPER_NAME}
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/openjo_sp.x86_64  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamex86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamearm64.dylib
+    mv ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib  ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_arm64.dylib
+fi
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
@@ -216,4 +286,4 @@ cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
 #create dmg
-"../MSPBuildSystem/common/package_dmg.sh" "skipdelete"
+"../MSPBuildSystem/common/package_dmg.sh" "skipdelete" "skipcleanup"
