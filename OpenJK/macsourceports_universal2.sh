@@ -13,13 +13,20 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+export ARM64_PREFIX_PATH=/opt/Homebrew
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	echo "Skipping git because we're on the build server"
+    export ARM64_PREFIX_PATH=/usr/local
+	export RANLIB=/usr/bin/ranlib
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
+fi
 
 # this one doesn't do releases, we just build latest
 
@@ -36,7 +43,7 @@ cmake \
 -DBuildJK2SPGame=ON \
 -DBuildJK2SPRdVanilla=ON \
 -DCMAKE_PREFIX_PATH=/usr/local \
--DCMAKE_BUILD_TYPE=Release
+-DCMAKE_BUILD_TYPE=Release \
 ..
 cmake --build . --parallel -j$NCPU --target install
 cd ..
@@ -50,8 +57,8 @@ cmake \
 -DBuildJK2SPEngine=ON \
 -DBuildJK2SPGame=ON \
 -DBuildJK2SPRdVanilla=ON \
--DCMAKE_PREFIX_PATH=/opt/Homebrew \
--DCMAKE_BUILD_TYPE=Release 
+-DCMAKE_PREFIX_PATH=$ARM64_PREFIX_PATH\
+-DCMAKE_BUILD_TYPE=Release \
 ..
 cmake --build . --parallel -j$NCPU --target install
 cd ..
