@@ -58,7 +58,6 @@ cmake \
 -DCMAKE_TOOLCHAIN_FILE=../../MSPBuildSystem/jk2mv/x86_64.cmake \
 ..
 cmake --build . --parallel -j$NCPU
-# make -j$NCPU
 cd ..
 
 rm -rf ${ARM64_BUILD_FOLDER}
@@ -74,7 +73,6 @@ cmake \
 -DCMAKE_TOOLCHAIN_FILE=../../MSPBuildSystem/jk2mv/arm64.cmake \
 ..
 cmake --build . --parallel -j$NCPU
-# make -j$NCPU
 cd ..
 
 cp ${X86_64_BUILD_FOLDER}/out/Release/jk2mvmenu_x86_64.dylib ${X86_64_BUILD_FOLDER}/out/Release/jk2mvmp.app/Contents/MacOS
