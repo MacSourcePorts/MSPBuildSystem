@@ -39,14 +39,30 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-/usr/local/bin/cmake -DUseInternalLibs=ON -DBuildPortableVersion=OFF -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 ..
+cmake \
+-DUseInternalLibs=ON \
+-DBuildPortableVersion=OFF \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
+-DCMAKE_INSTALL_PREFIX=./install \
+-DCMAKE_OSX_ARCHITECTURES=x86_64 \
+-DCMAKE_PREFIX_PATH=/usr/local \
+-DCMAKE_TOOLCHAIN_FILE=../../MSPBuildSystem/jk2mv/x86_64.cmake \
+..
 make -j$NCPU
 cd ..
 
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake -DUseInternalLibs=ON -DBuildPortableVersion=OFF -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 ..
+cmake \
+-DUseInternalLibs=ON \
+-DBuildPortableVersion=OFF \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
+-DCMAKE_INSTALL_PREFIX=./install \
+-DCMAKE_OSX_ARCHITECTURES=arm64 \
+-DCMAKE_PREFIX_PATH=/opt/Homebrew \
+-DCMAKE_TOOLCHAIN_FILE=../../MSPBuildSystem/jk2mv/arm64.cmake \
+..
 make -j$NCPU
 cd ..
 
