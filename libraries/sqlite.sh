@@ -1,0 +1,6 @@
+export SOURCE_URL="https://www.sqlite.org/2024/sqlite-autoconf-3470000.tar.gz"
+export CONFIGURE_ARGS="--disable-dependency-tracking --enable-dynamic-extensions --enable-readline --disable-editline --enable-session"
+export CPPFLAGS="-DSQLITE_ENABLE_API_ARMOR=1 -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1 -DSQLITE_ENABLE_JSON1=1 -DSQLITE_ENABLE_MEMORY_MANAGEMENT=1 -DSQLITE_ENABLE_RTREE=1 -DSQLITE_ENABLE_STAT4=1 -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 -DSQLITE_MAX_VARIABLE_NUMBER=250000 -DSQLITE_USE_URI=1"
+
+source "../common/get_source.sh"
+source "../common/make_build.sh"
