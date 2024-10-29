@@ -42,7 +42,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="vectoroids-changes",
-        change_filter=util.ChangeFilter(project='vectoroids', branch='master'),
+        change_filter=util.ChangeFilter(project='vectoroids', branch='main'),
         treeStableTimer=None,
         builderNames=["vectoroids-builder"]),
     schedulers.ForceScheduler(

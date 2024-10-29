@@ -42,7 +42,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="gemdropx-changes",
-        change_filter=util.ChangeFilter(project='gemdropx', branch='master'),
+        change_filter=util.ChangeFilter(project='gemdropx', branch='main'),
         treeStableTimer=None,
         builderNames=["gemdropx-builder"]),
     schedulers.ForceScheduler(

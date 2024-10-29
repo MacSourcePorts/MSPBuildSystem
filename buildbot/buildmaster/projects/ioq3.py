@@ -42,7 +42,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="ioq3-changes",
-        change_filter=util.ChangeFilter(project='ioq3', branch='master'),
+        change_filter=util.ChangeFilter(project='ioq3', branch='main'),
         treeStableTimer=None,
         builderNames=["ioq3-builder"]),
     schedulers.ForceScheduler(

@@ -42,7 +42,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="bugsquish-changes",
-        change_filter=util.ChangeFilter(project='bugsquish', branch='master'),
+        change_filter=util.ChangeFilter(project='bugsquish', branch='main'),
         treeStableTimer=None,
         builderNames=["bugsquish-builder"]),
     schedulers.ForceScheduler(
