@@ -62,8 +62,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_BUILD_TYPE=Release  \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12  \
     -DCMAKE_PREFIX_PATH=/usr/local  \
-    -DPYTHON_LIBRARIES=/Library/Frameworks/Python.framework/Versions/Current/lib/libpython3.12.dylib  \
-    -DPYTHON_INCLUDE_DIRS=/Library/Frameworks/Python.framework/Versions/Current/include/python3.12  \
+    -DPYTHON_LIBRARIES=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/libpython${PYTHON_VERSION}.dylib  \
+    -DPYTHON_INCLUDE_DIRS=/Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/include/python${PYTHON_VERSION}  \
     ..
     # -DLIBVLC_INCLUDE_DIR=/Applications/VLC.app/Contents/MacOS/include \
     # -DLIBVLC_LIBRARY=/Applications/VLC.app/Contents/MacOS/lib/libvlc.dylib \
@@ -75,22 +75,31 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 
     source ../MSPBuildSystem/common/signing_values.local
 
-    mkdir -p release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/lib/python${PYTHON_VERSION}/encodings/
-    cp -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/libpython${PYTHON_VERSION}.dylib release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/lib/
-    cp -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/*.py release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/lib/python${PYTHON_VERSION}/
-    cp -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/collections release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/lib/python${PYTHON_VERSION}/
-    cp -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/encodings release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/lib/python${PYTHON_VERSION}/
-    cp -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/lib-dynload release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/lib/python${PYTHON_VERSION}/
-    cp -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/re release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/lib/python${PYTHON_VERSION}/
-    cp -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/
+    # FIX for broken links issues that break notarization
+    rm release/gemrb.app/Contents/Frameworks/libSDL2.dylib
+    ln -s libSDL2-2.0.0.dylib release/gemrb.app/Contents/Frameworks/libSDL2.dylib
+
+    rsync -a --exclude 'lib' --exclude 'Resources/English.lproj' --exclude 'Python.app' /Library/Frameworks/Python.framework release/gemrb.app/Contents/Frameworks/
+    rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/libpython${PYTHON_VERSION}.dylib release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/
+    rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/*.py release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/
+    rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/collections release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/
+    rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/encodings release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/
+    rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/lib-dynload release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/
+    rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/re release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/
+    rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/
+    rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/
+
+    # FIX for broken links issues that break notarization (from my minimal Python packaging)
+    rm release/gemrb.app/Contents/Frameworks/Python.framework/Versions/3.12/etc/openssl/cert.pem
+    rm release/gemrb.app/Contents/Frameworks/Python.framework/Versions/3.12/share/doc/python3.12/html
 
     find release/gemrb.app/Contents/Frameworks/Python.framework -type f -name "*.so" -exec echo codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" {} \;
     find release/gemrb.app/Contents/Frameworks/Python.framework -type f -name "*.so" -exec codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" {} \;
 
-    echo codesign --force --timestamp --sign "${SIGNING_IDENTITY}" release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/Python
-    codesign --force --timestamp --sign "${SIGNING_IDENTITY}" release/gemrb.app/Contents/Frameworks/Python.framework/Versions/Current/Python
+    echo codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
+    codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python
 
-    install_name_tool -change /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python @executable_path/../Frameworks/Python.framework/Versions/Current/Python release/gemrb.app/Contents/PlugIns/GUIScript.so
+    install_name_tool -change /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python @executable_path/../Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python release/gemrb.app/Contents/PlugIns/GUIScript.so
 
     cp /usr/local/lib/libSDL2_mixer-2.0.0.dylib release/gemrb.app/Contents/Frameworks
     "../MSPBuildSystem/common/copy_dependencies.sh" release/gemrb.app/Contents/Frameworks/libSDL2_mixer-2.0.0.dylib
