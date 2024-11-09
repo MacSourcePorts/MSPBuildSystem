@@ -1,5 +1,5 @@
-export SOURCE_URL="https://github.com/carlobaldassi/liblqr/archive/refs/tags/v0.4.2.tar.gz"
-export SOURCE_FILE="liblqr-0.4.2.tar.gz"
+export SOURCE_URL="https://github.com/carlobaldassi/liblqr/archive/refs/tags/v0.4.3.tar.gz"
+export SOURCE_FILE="liblqr-0.4.3.tar.gz"
 export CONFIGURE_ARGS="--enable-install-man"
 
 source "../common/get_source.sh"
