@@ -90,8 +90,12 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/Python release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/
 
     # FIX for broken links issues that break notarization (from my minimal Python packaging)
-    rm release/gemrb.app/Contents/Frameworks/Python.framework/Versions/3.12/etc/openssl/cert.pem
-    rm release/gemrb.app/Contents/Frameworks/Python.framework/Versions/3.12/share/doc/python3.12/html
+    if [ -f release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/etc/openssl/cert.pem ] ; then
+        rm release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/etc/openssl/cert.pem
+    fi
+    if [ -d release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/share/doc/python${PYTHON_VERSION}/html ] ; then
+        rm release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/share/doc/python${PYTHON_VERSION}/html
+    fi
 
     find release/gemrb.app/Contents/Frameworks/Python.framework -type f -name "*.so" -exec echo codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" {} \;
     find release/gemrb.app/Contents/Frameworks/Python.framework -type f -name "*.so" -exec codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" {} \;
