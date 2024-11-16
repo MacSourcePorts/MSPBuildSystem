@@ -4,3 +4,5 @@ export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON -DINSTALL_MANPAGES=OFF"
 
 source "../common/get_source.sh"
 source "../common/cmake_build.sh"
+
+sudo install_name_tool -id "@rpath/libgme.0.dylib" /usr/local/lib/libgme.0.dylib
