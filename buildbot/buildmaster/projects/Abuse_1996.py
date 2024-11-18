@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/Abuse_1996',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Abuse_1996"),
-        project="Abuse_1996",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/Abuse_1996',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Abuse_1996"),
+    #     project="Abuse_1996",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 Abuse_1996_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="Abuse_1996-changes",
-        change_filter=util.ChangeFilter(project='Abuse_1996', branch='master'),
-        treeStableTimer=None,
-        builderNames=["Abuse_1996-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="Abuse_1996-changes",
+    #     change_filter=util.ChangeFilter(project='Abuse_1996', branch='master'),
+    #     treeStableTimer=None,
+    #     builderNames=["Abuse_1996-builder"]),
     schedulers.ForceScheduler(
         name="Abuse_1996-force",
         builderNames=["Abuse_1996-builder"])

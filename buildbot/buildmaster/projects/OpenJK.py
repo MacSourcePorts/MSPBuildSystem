@@ -15,7 +15,7 @@ change_source_list = [
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenJK"),
         project="OpenJK",
         branches=True,
-        pollInterval=300  # Poll every 5 minutes
+        pollInterval=3600  # Poll every hour
     )
 ]
 

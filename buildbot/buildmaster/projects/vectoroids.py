@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/vectoroids',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/vectoroids"),
-        project="vectoroids",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/vectoroids',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/vectoroids"),
+    #     project="vectoroids",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 vectoroids_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="vectoroids-changes",
-        change_filter=util.ChangeFilter(project='vectoroids', branch='main'),
-        treeStableTimer=None,
-        builderNames=["vectoroids-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="vectoroids-changes",
+    #     change_filter=util.ChangeFilter(project='vectoroids', branch='main'),
+    #     treeStableTimer=None,
+    #     builderNames=["vectoroids-builder"]),
     schedulers.ForceScheduler(
         name="vectoroids-force",
         builderNames=["vectoroids-builder"])

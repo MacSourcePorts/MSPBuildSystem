@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/Good-Robot',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Good-Robot"),
-        project="GoodRobot",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/Good-Robot',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Good-Robot"),
+    #     project="GoodRobot",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 GoodRobot_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="GoodRobot-changes",
-        change_filter=util.ChangeFilter(project='GoodRobot', branch='master'),
-        treeStableTimer=None,
-        builderNames=["GoodRobot-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="GoodRobot-changes",
+    #     change_filter=util.ChangeFilter(project='GoodRobot', branch='master'),
+    #     treeStableTimer=None,
+    #     builderNames=["GoodRobot-builder"]),
     schedulers.ForceScheduler(
         name="GoodRobot-force",
         builderNames=["GoodRobot-builder"])

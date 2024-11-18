@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/bugsquish',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/bugsquish"),
-        project="bugsquish",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/bugsquish',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/bugsquish"),
+    #     project="bugsquish",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 bugsquish_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="bugsquish-changes",
-        change_filter=util.ChangeFilter(project='bugsquish', branch='main'),
-        treeStableTimer=None,
-        builderNames=["bugsquish-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="bugsquish-changes",
+    #     change_filter=util.ChangeFilter(project='bugsquish', branch='main'),
+    #     treeStableTimer=None,
+    #     builderNames=["bugsquish-builder"]),
     schedulers.ForceScheduler(
         name="bugsquish-force",
         builderNames=["bugsquish-builder"])

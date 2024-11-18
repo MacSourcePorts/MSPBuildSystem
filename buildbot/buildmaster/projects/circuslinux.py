@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/circuslinux',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/circuslinux"),
-        project="circuslinux",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/circuslinux',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/circuslinux"),
+    #     project="circuslinux",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 circuslinux_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="circuslinux-changes",
-        change_filter=util.ChangeFilter(project='circuslinux', branch='main'),
-        treeStableTimer=None,
-        builderNames=["circuslinux-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="circuslinux-changes",
+    #     change_filter=util.ChangeFilter(project='circuslinux', branch='main'),
+    #     treeStableTimer=None,
+    #     builderNames=["circuslinux-builder"]),
     schedulers.ForceScheduler(
         name="circuslinux-force",
         builderNames=["circuslinux-builder"])

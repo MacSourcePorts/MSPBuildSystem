@@ -15,7 +15,7 @@ change_source_list = [
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Commander-Genius"),
         project="CommanderGenius",
         only_tags=True,
-        pollInterval=300  # Poll every 5 minutes
+        pollInterval=3600  # Poll every hour
     )
 ]
 

@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/disasteroids3d',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/disasteroids3d"),
-        project="disasteroids3d",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/disasteroids3d',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/disasteroids3d"),
+    #     project="disasteroids3d",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 disasteroids3d_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="disasteroids3d-changes",
-        change_filter=util.ChangeFilter(project='disasteroids3d', branch='master'),
-        treeStableTimer=None,
-        builderNames=["disasteroids3d-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="disasteroids3d-changes",
+    #     change_filter=util.ChangeFilter(project='disasteroids3d', branch='master'),
+    #     treeStableTimer=None,
+    #     builderNames=["disasteroids3d-builder"]),
     schedulers.ForceScheduler(
         name="disasteroids3d-force",
         builderNames=["disasteroids3d-builder"])

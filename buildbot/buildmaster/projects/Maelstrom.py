@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/Maelstrom',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Maelstrom"),
-        project="Maelstrom",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/Maelstrom',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Maelstrom"),
+    #     project="Maelstrom",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 Maelstrom_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="Maelstrom-changes",
-        change_filter=util.ChangeFilter(project='Maelstrom', branch='main'),
-        treeStableTimer=None,
-        builderNames=["Maelstrom-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="Maelstrom-changes",
+    #     change_filter=util.ChangeFilter(project='Maelstrom', branch='main'),
+    #     treeStableTimer=None,
+    #     builderNames=["Maelstrom-builder"]),
     schedulers.ForceScheduler(
         name="Maelstrom-force",
         builderNames=["Maelstrom-builder"])

@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/entombed',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/entombed"),
-        project="entombed",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/entombed',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/entombed"),
+    #     project="entombed",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 entombed_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="entombed-changes",
-        change_filter=util.ChangeFilter(project='entombed', branch='main'),
-        treeStableTimer=None,
-        builderNames=["entombed-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="entombed-changes",
+    #     change_filter=util.ChangeFilter(project='entombed', branch='main'),
+    #     treeStableTimer=None,
+    #     builderNames=["entombed-builder"]),
     schedulers.ForceScheduler(
         name="entombed-force",
         builderNames=["entombed-builder"])

@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/OpenTyrian',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenTyrian"),
-        project="OpenTyrian",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/OpenTyrian',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenTyrian"),
+    #     project="OpenTyrian",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 OpenTyrian_factory = util.BuildFactory()
@@ -39,11 +39,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="OpenTyrian-changes",
-        change_filter=util.ChangeFilter(project='OpenTyrian', branch='master'),
-        treeStableTimer=None,
-        builderNames=["OpenTyrian-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="OpenTyrian-changes",
+    #     change_filter=util.ChangeFilter(project='OpenTyrian', branch='master'),
+    #     treeStableTimer=None,
+    #     builderNames=["OpenTyrian-builder"]),
     schedulers.ForceScheduler(
         name="OpenTyrian-force",
         builderNames=["OpenTyrian-builder"])

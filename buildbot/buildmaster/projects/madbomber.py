@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/madbomber',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/madbomber"),
-        project="madbomber",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/madbomber',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/madbomber"),
+    #     project="madbomber",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 madbomber_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="madbomber-changes",
-        change_filter=util.ChangeFilter(project='madbomber', branch='main'),
-        treeStableTimer=None,
-        builderNames=["madbomber-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="madbomber-changes",
+    #     change_filter=util.ChangeFilter(project='madbomber', branch='main'),
+    #     treeStableTimer=None,
+    #     builderNames=["madbomber-builder"]),
     schedulers.ForceScheduler(
         name="madbomber-force",
         builderNames=["madbomber-builder"])

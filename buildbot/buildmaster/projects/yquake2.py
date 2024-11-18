@@ -15,28 +15,28 @@ change_source_list = [
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/yquake2"),
         project="yquake2",
         only_tags=True,
-        pollInterval=300  # Poll every 5 minutes
+        pollInterval=3600  # Poll every hour
     ),
     changes.GitPoller(
         repourl='https://github.com/yquake2/xatrix',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/yquake2/xatrix"),
         project="yquake2",
         only_tags=True,
-        pollInterval=300  # Poll every 5 minutes
+        pollInterval=3600  # Poll every hour
     ),
     changes.GitPoller(
         repourl='https://github.com/yquake2/rogue',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/yquake2/rogue"),
         project="yquake2",
         only_tags=True,
-        pollInterval=300  # Poll every 5 minutes
+        pollInterval=3600  # Poll every hour
     ),
     changes.GitPoller(
         repourl='https://github.com/yquake2/ctf',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/yquake2/ctf"),
         project="yquake2",
         only_tags=True,
-        pollInterval=300  # Poll every 5 minutes
+        pollInterval=3600  # Poll every hour
     )
 ]
 

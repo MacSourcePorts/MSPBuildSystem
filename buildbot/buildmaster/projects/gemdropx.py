@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/gemdropx',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/gemdropx"),
-        project="gemdropx",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/gemdropx',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/gemdropx"),
+    #     project="gemdropx",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 gemdropx_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="gemdropx-changes",
-        change_filter=util.ChangeFilter(project='gemdropx', branch='main'),
-        treeStableTimer=None,
-        builderNames=["gemdropx-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="gemdropx-changes",
+    #     change_filter=util.ChangeFilter(project='gemdropx', branch='main'),
+    #     treeStableTimer=None,
+    #     builderNames=["gemdropx-builder"]),
     schedulers.ForceScheduler(
         name="gemdropx-force",
         builderNames=["gemdropx-builder"])

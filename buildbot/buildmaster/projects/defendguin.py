@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/defendguin',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/defendguin"),
-        project="defendguin",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/defendguin',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/defendguin"),
+    #     project="defendguin",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 defendguin_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="defendguin-changes",
-        change_filter=util.ChangeFilter(project='defendguin', branch='main'),
-        treeStableTimer=None,
-        builderNames=["defendguin-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="defendguin-changes",
+    #     change_filter=util.ChangeFilter(project='defendguin', branch='main'),
+    #     treeStableTimer=None,
+    #     builderNames=["defendguin-builder"]),
     schedulers.ForceScheduler(
         name="defendguin-force",
         builderNames=["defendguin-builder"])

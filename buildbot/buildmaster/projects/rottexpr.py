@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/rottexpr',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/rottexpr"),
-        project="rottexpr",
-        branches=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/rottexpr',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/rottexpr"),
+    #     project="rottexpr",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 rottexpr_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="rottexpr-changes",
-        change_filter=util.ChangeFilter(project='rottexpr', branch='master'),
-        treeStableTimer=None,
-        builderNames=["rottexpr-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="rottexpr-changes",
+    #     change_filter=util.ChangeFilter(project='rottexpr', branch='master'),
+    #     treeStableTimer=None,
+    #     builderNames=["rottexpr-builder"]),
     schedulers.ForceScheduler(
         name="rottexpr-force",
         builderNames=["rottexpr-builder"])

@@ -15,7 +15,8 @@ change_source_list = [
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/fheroes2"),
         project="fheroes2",
         only_tags=True,
-        pollInterval=300  # Poll every 5 minutes
+        branch=None,
+        pollInterval=3600  # Poll every hour
     )
 ]
 
@@ -55,8 +56,8 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="fheroes2-changes",
-        change_filter=util.ChangeFilter(project='fheroes2', branch='master'),
-        treeStableTimer=None,
+        change_filter=util.ChangeFilter(project='fheroes2', branch=None),
+        treeStableTimer=60,
         builderNames=["fheroes2-builder"]),
     schedulers.ForceScheduler(
         name="fheroes2-force",

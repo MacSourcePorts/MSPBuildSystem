@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/openjazz',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenJazz"),
-        project="OpenJazz",
-        only_tags=True,
-        pollInterval=300  # Poll every 5 minutes
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/MacSourcePorts/openjazz',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenJazz"),
+    #     project="OpenJazz",
+    #     only_tags=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 OpenJazz_factory = util.BuildFactory()
@@ -53,11 +53,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="OpenJazz-changes",
-        change_filter=util.ChangeFilter(project='OpenJazz', branch='dev'),
-        treeStableTimer=None,
-        builderNames=["OpenJazz-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="OpenJazz-changes",
+    #     change_filter=util.ChangeFilter(project='OpenJazz', branch='dev'),
+    #     treeStableTimer=None,
+    #     builderNames=["OpenJazz-builder"]),
     schedulers.ForceScheduler(
         name="OpenJazz-force",
         builderNames=["OpenJazz-builder"],
