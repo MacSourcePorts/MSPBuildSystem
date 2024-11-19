@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    changes.GitPoller(
-        repourl='https://github.com/dxx-rebirth/dxx-rebirth',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/dxx-rebirth"),
-        project="dxx-rebirth",
-        branches=True,
-        pollInterval=3600  # Poll every hour
-    )
+    # changes.GitPoller(
+    #     repourl='https://github.com/dxx-rebirth/dxx-rebirth',
+    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/dxx-rebirth"),
+    #     project="dxx-rebirth",
+    #     branches=True,
+    #     pollInterval=3600  # Poll every hour
+    # )
 ]
 
 dxxrebirth_factory = util.BuildFactory()
@@ -40,11 +40,11 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    schedulers.SingleBranchScheduler(
-        name="dxx-rebirth-changes",
-        change_filter=util.ChangeFilter(project='dxx-rebirth', branch='master'),
-        treeStableTimer=None,
-        builderNames=["dxx-rebirth-builder"]),
+    # schedulers.SingleBranchScheduler(
+    #     name="dxx-rebirth-changes",
+    #     change_filter=util.ChangeFilter(project='dxx-rebirth', branch='master'),
+    #     treeStableTimer=None,
+    #     builderNames=["dxx-rebirth-builder"]),
     schedulers.ForceScheduler(
         name="dxx-rebirth-force",
         builderNames=["dxx-rebirth-builder"])
