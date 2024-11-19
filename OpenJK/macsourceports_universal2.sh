@@ -140,7 +140,7 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamearm64.dylib ${BU
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib
     cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp -a /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
     cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
@@ -250,7 +250,7 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uiarm64.dylib ${BUILT_PR
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib
     cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp -a /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
     cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
@@ -340,7 +340,7 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamearm64.dylib ${
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib
     cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp -a /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
     cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
