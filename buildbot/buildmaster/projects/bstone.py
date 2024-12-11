@@ -54,8 +54,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="bstone-changes",
-        change_filter=util.ChangeFilter(project='bstone', branch='master'),
+        name="bstone-releases",
+        change_filter=util.ChangeFilter(project='bstone'),
         treeStableTimer=None,
         builderNames=["bstone-builder"]),
     schedulers.ForceScheduler(

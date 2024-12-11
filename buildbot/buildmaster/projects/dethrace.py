@@ -55,8 +55,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="dethrace-changes",
-        change_filter=util.ChangeFilter(project='dethrace', branch='main'),
+        name="dethrace-releases",
+        change_filter=util.ChangeFilter(project='dethrace'),
         treeStableTimer=None,
         builderNames=["dethrace-builder"]),
     schedulers.ForceScheduler(

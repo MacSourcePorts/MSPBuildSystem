@@ -54,8 +54,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="CommanderGenius-changes",
-        change_filter=util.ChangeFilter(project='CommanderGenius', branch='master'),
+        name="CommanderGenius-releases",
+        change_filter=util.ChangeFilter(project='CommanderGenius'),
         treeStableTimer=None,
         builderNames=["CommanderGenius-builder"]),
     schedulers.ForceScheduler(

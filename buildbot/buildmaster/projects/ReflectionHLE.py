@@ -54,8 +54,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="ReflectionHLE-changes",
-        change_filter=util.ChangeFilter(project='ReflectionHLE', branch='master'),
+        name="ReflectionHLE-releases",
+        change_filter=util.ChangeFilter(project='ReflectionHLE'),
         treeStableTimer=None,
         builderNames=["ReflectionHLE-builder"]),
     schedulers.ForceScheduler(

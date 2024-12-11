@@ -54,8 +54,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="dhewm3-changes",
-        change_filter=util.ChangeFilter(project='dhewm3', branch='master'),
+        name="dhewm3-releases",
+        change_filter=util.ChangeFilter(project='dhewm3'),
         treeStableTimer=None,
         builderNames=["dhewm3-builder"]),
     schedulers.ForceScheduler(

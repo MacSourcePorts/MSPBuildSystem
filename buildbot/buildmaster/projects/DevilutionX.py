@@ -54,8 +54,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="DevilutionX-changes",
-        change_filter=util.ChangeFilter(project='DevilutionX', branch='master'),
+        name="DevilutionX-releases",
+        change_filter=util.ChangeFilter(project='DevilutionX'),
         treeStableTimer=None,
         builderNames=["DevilutionX-builder"]),
     schedulers.ForceScheduler(

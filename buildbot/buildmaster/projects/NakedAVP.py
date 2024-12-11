@@ -54,8 +54,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="NakedAVP-changes",
-        change_filter=util.ChangeFilter(project='NakedAVP', branch='main'),
+        name="NakedAVP-releases",
+        change_filter=util.ChangeFilter(project='NakedAVP'),
         treeStableTimer=None,
         builderNames=["NakedAVP-builder"]),
     schedulers.ForceScheduler(

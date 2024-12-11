@@ -60,8 +60,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="GemRB-changes",
-        change_filter=util.ChangeFilter(project='GemRB', branch='master'),
+        name="GemRB-releases",
+        change_filter=util.ChangeFilter(project='GemRB'),
         treeStableTimer=None,
         builderNames=["GemRB-builder"]),
     schedulers.ForceScheduler(

@@ -55,8 +55,8 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="fheroes2-changes",
-        change_filter=util.ChangeFilter(project='fheroes2', branch=None),
+        name="fheroes2-releases",
+        change_filter=util.ChangeFilter(project='fheroes2'),
         treeStableTimer=60,
         builderNames=["fheroes2-builder"]),
     schedulers.ForceScheduler(
