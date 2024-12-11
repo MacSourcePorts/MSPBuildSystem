@@ -5,7 +5,7 @@ export PROJECT_NAME="openmohaa"
 export PORT_NAME="openmohaa"
 export ICONSFILENAME="openmohaa"
 export EXECUTABLE_NAME="openmohaa"
-export PKGINFO="APPLVKQ1"
+export PKGINFO="APPLMOHA"
 export GIT_TAG="0.7"
 export GIT_DEFAULT_BRANCH="main"
 
@@ -13,6 +13,14 @@ export GIT_DEFAULT_BRANCH="main"
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
+
+if [ -n "$3" ]; then
+	export APP_VERSION="${3/v/}"
+	export GIT_TAG="$3"
+	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+else
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+fi
 
 export ARM64_PREFIX_PATH=/usr/local
 export X86_64_PREFIX_PATH=/opt/Homebrew
@@ -35,8 +43,8 @@ else
     git pull
 
     # check out the latest release tag
-    # echo git checkout tags/${GIT_TAG}
-    # git checkout tags/${GIT_TAG}
+    echo git checkout tags/${GIT_TAG}
+    git checkout tags/${GIT_TAG}
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

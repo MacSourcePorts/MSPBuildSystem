@@ -14,7 +14,7 @@ change_source_list = [
         repourl='https://github.com/openmoh/openmohaa',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenMoHAA"),
         project="OpenMoHAA",
-        branches=True,
+        only_tags=True,
         pollInterval=3600  # Poll every hour
     )
 ]
@@ -29,8 +29,21 @@ OpenMoHAA_factory.addStep(steps.Git(
     haltOnFailure=True,
     submodules=True
 ))
+OpenMoHAA_factory.addStep(steps.SetPropertyFromCommand(
+    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenMoHAA"),
+    property="OpenMoHAA_latest_tag",
+    name="Fetch Latest OpenMoHAA Tag",
+    haltOnFailure=True
+))
 OpenMoHAA_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenMoHAA/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["git", "checkout", util.Property('OpenMoHAA_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenMoHAA"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
+OpenMoHAA_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenMoHAA/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('OpenMoHAA_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenMoHAA"),
     name="Run Build Script",
     haltOnFailure=True
@@ -42,7 +55,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="OpenMoHAA-changes",
+        name="OpenMoHAA-releases",
         change_filter=util.ChangeFilter(project='OpenMoHAA', branch='main'),
         treeStableTimer=None,
         builderNames=["OpenMoHAA-builder"]),

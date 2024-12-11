@@ -138,7 +138,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="yquake2-changes",
+        name="yquake2-releases",
         change_filter=util.ChangeFilter(project='yquake2'),
         treeStableTimer=None,
         builderNames=["yquake2-builder"]),
