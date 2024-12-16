@@ -3,3 +3,5 @@ export CONFIGURE_ARGS="--disable-freetype-builtin --disable-harfbuzz-builtin --e
 
 source "../common/get_source.sh"
 source "../common/make_build.sh"
+
+sudo install_name_tool -id "@rpath/libSDL2_ttf-2.0.0.dylib" /usr/local/lib/libSDL2_ttf-2.0.0.dylib

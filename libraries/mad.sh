@@ -19,3 +19,5 @@ autoreconf -fiv
 cd ../..
 
 source "../common/make_build.sh"
+
+sudo install_name_tool -id "@rpath/libmad.0.dylib" /usr/local/lib/libmad.0.dylib

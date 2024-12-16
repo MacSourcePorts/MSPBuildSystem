@@ -3,3 +3,6 @@ export CONFIGURE_ARGS="--disable-silent-rules --enable-unix-transport --enable-t
 
 source "../common/get_source.sh"
 source "../common/make_build.sh"
+
+sudo install_name_tool -id "@rpath/libX11.6.dylib" /usr/local/lib/libX11.6.dylib
+sudo install_name_tool -id "@rpath/libX11-xcb.1.dylib" /usr/local/lib/libX11-xcb.1.dylib

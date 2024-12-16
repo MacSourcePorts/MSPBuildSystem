@@ -8,3 +8,51 @@ export MAKE_ARGS="-j`sysctl -n hw.ncpu`"
 
 source "../common/get_source.sh"
 source "../common/make_build.sh"
+
+
+sudo install_name_tool -id "@rpath/libwx_baseu-3.2.0.2.3.dylib" /usr/local/lib/libwx_baseu-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_baseu_net-3.2.0.2.3.dylib" /usr/local/lib/libwx_baseu_net-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_baseu_xml-3.2.0.2.3.dylib" /usr/local/lib/libwx_baseu_xml-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_adv-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_adv-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_aui-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_aui-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_gl-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_gl-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_html-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_html-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_media-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_media-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_propgrid-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_propgrid-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_qa-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_qa-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_ribbon-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_ribbon-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_richtext-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_richtext-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_stc-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_stc-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_webview-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_webview-3.2.0.2.3.dylib
+sudo install_name_tool -id "@rpath/libwx_osx_cocoau_xrc-3.2.0.2.3.dylib" /usr/local/lib/libwx_osx_cocoau_xrc-3.2.0.2.3.dylib
+
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_webview-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_webview-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_aui-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_aui-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_baseu_net-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_xrc-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_html-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_html-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_xrc-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_xrc-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu_xml-3.2.0.2.3.dylib @rpath/libwx_baseu_xml-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_xrc-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_qa-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_qa-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu_xml-3.2.0.2.3.dylib @rpath/libwx_baseu_xml-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_qa-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_adv-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_adv-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_html-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_html-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_ribbon-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_ribbon-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_media-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_media-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_propgrid-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_propgrid-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_core-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_core-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_richtext-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_osx_cocoau_html-3.2.0.2.3.dylib @rpath/libwx_osx_cocoau_html-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_richtext-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_richtext-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu_xml-3.2.0.2.3.dylib @rpath/libwx_baseu_xml-3.2.0.2.3.dylib /usr/local/lib/libwx_osx_cocoau_richtext-3.2.0.2.3.dylib
+sudo install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/wxWidgets-3.2.5/lib/libwx_baseu-3.2.0.2.3.dylib @rpath/libwx_baseu-3.2.0.2.3.dylib /usr/local/lib/libwx_baseu_xml-3.2.0.2.3.dylib
+

@@ -8,3 +8,7 @@ mv configure-pre-0.4.2.418-big_sur.diff source
 patch -d source/${SOURCE_FOLDER} < source/configure-pre-0.4.2.418-big_sur.diff
 
 source "../common/make_build.sh"
+
+sudo install_name_tool -id "@rpath/libtheoraenc.1.dylib" /usr/local/lib/libtheoraenc.1.dylib
+sudo install_name_tool -id "@rpath/libtheoradec.1.dylib" /usr/local/lib/libtheoradec.1.dylib
+sudo install_name_tool -id "@rpath/libtheora.0.dylib" /usr/local/lib/libtheora.0.dylib

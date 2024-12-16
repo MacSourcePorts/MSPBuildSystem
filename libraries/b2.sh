@@ -8,3 +8,5 @@ mv configure-big_sur.diff source
 patch -d source/${SOURCE_FOLDER} < source/configure-big_sur.diff
 
 source "../common/make_build.sh"
+
+sudo install_name_tool -id "@rpath/libb2.1.dylib" /usr/local/lib/libb2.1.dylib
