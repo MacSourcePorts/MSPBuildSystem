@@ -1,5 +1,5 @@
-# This file is for the GL version of Hexen II. 
-# As of right now the game has issues on Apple Silicon
+# As of right now this only builds on the host architecture
+# I believe to fix it the project needs to pass architecture info to the Rust compiler it uses for static libraries.
 
 # game/app specific values
 export APP_VERSION="0.21.0"
@@ -10,7 +10,7 @@ export ICONSFILENAME="ja2-stracciatella"
 export EXECUTABLE_NAME="ja2-launcher"
 export PKGINFO="APPLJA2"
 export GIT_DEFAULT_BRANCH="master"
-export ENTITLEMENTS_FILE="../MSPBuildSystem/Serious-Engine/Serious-Engine.entitlements"
+export ENTITLEMENTS_FILE="../MSPBuildSystem/ja2-stracciatella/ja2-stracciatella.entitlements"
 export GIT_TAG="v0.21.0"
 
 #constants
@@ -21,17 +21,24 @@ export HIGH_RESOLUTION_CAPABLE="true"
 
 cd ../../${PROJECT_NAME}
 
-# # reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ -n "$3" ]; then
+	export APP_VERSION="${3/v/}"
+	export GIT_TAG="$3"
+	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+else
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# # fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
 
-# # check out the latest release tag
-echo git checkout tags/${GIT_TAG}
-git checkout tags/${GIT_TAG}
+    # check out the latest release tag
+    echo git checkout tags/${GIT_TAG}
+    git checkout tags/${GIT_TAG}
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}
@@ -49,20 +56,34 @@ make
 cd ..
 
 cp ${ARM64_BUILD_FOLDER}/ja2 "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
-install_name_tool -change @rpath/SDL2.framework/Versions/A/SDL2 /opt/homebrew/lib/libSDL2.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2"
 cp ${ARM64_BUILD_FOLDER}/ja2-launcher "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
-install_name_tool -change @rpath/SDL2.framework/Versions/A/SDL2 /opt/homebrew/lib/libSDL2.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2-launcher"
 
-cd ${BUILT_PRODUCTS_DIR}
-echo dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/ja2" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
-dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/ja2" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
-echo dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/ja2-launcher" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
-dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/ja2-launcher" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
-cd ..
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    install_name_tool -change @rpath/SDL2.framework/Versions/A/SDL2 @rpath/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2"
+    install_name_tool -change @rpath/SDL2.framework/Versions/A/SDL2 @rpath/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2-launcher"
+
+    install_name_tool -add_rpath @executable_path/../Frameworks/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2
+    install_name_tool -add_rpath @executable_path/../Frameworks/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2-launcher
+
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2-launcher
+else
+    install_name_tool -change @rpath/SDL2.framework/Versions/A/SDL2 /opt/homebrew/lib/libSDL2.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2"
+    install_name_tool -change @rpath/SDL2.framework/Versions/A/SDL2 /opt/homebrew/lib/libSDL2.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2-launcher"
+
+    cd ${BUILT_PRODUCTS_DIR}
+    dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/ja2" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
+    dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/ja2-launcher" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
+    cd ..
+fi
 
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2-launcher
-codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libs-arm64/libSDL2-2.0.0.dylib
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libSDL2-2.0.0.dylib
+else
+    codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libs-arm64/libSDL2-2.0.0.dylib
+fi
 
 cp "../MSPBuildSystem/${PROJECT_NAME}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}"
 echo -n ${PKGINFO} > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/PkgInfo" || exit 1;
@@ -125,4 +146,4 @@ echo "bundle done."
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
 #create dmg
-"../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
+"../MSPBuildSystem/common/package_dmg.sh"
