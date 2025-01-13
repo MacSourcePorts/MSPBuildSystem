@@ -29,19 +29,19 @@ OpenGothic_factory.addStep(steps.Git(
     name="Git Pull Latest OpenGothic Code",
     haltOnFailure=True
 ))
-# OpenGothic_factory.addStep(steps.SetPropertyFromCommand(
-#     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenGothic"),
-#     property="OpenGothic_latest_tag",
-#     name="Fetch Latest OpenGothic Tag",
-#     haltOnFailure=True
-# ))
-# OpenGothic_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('OpenGothic_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenGothic"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True
-# ))
+OpenGothic_factory.addStep(steps.SetPropertyFromCommand(
+    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenGothic"),
+    property="OpenGothic_latest_tag",
+    name="Fetch Latest OpenGothic Tag",
+    haltOnFailure=True
+))
+OpenGothic_factory.addStep(steps.ShellCommand(
+    command=["git", "checkout", util.Property('OpenGothic_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenGothic"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
 OpenGothic_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenGothic/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('OpenGothic_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenGothic"),
@@ -56,7 +56,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="OpenGothic-changes",
-        change_filter=util.ChangeFilter(project='OpenGothic', branch='master'),
+        change_filter=util.ChangeFilter(project='OpenGothic'),
         treeStableTimer=None,
         builderNames=["OpenGothic-builder"]),
     schedulers.ForceScheduler(
