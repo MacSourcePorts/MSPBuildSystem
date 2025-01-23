@@ -40,7 +40,14 @@ echo TEMP_PATH = $TEMP_PATH
 # Step 1.1: Xash3D-FWGS - Apple Silicon (arm64)
 echo "Step 1.1: Xash3D-FWGS - Apple Silicon (arm64)"
 
-(PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release)
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	# (CC="/usr/local/llvm/bin/clang" CXX="/usr/local/llvm/bin/clang++" LDFLAGS="-L /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib" ./waf configure --64bits -T release --sdl-use-pkgconfig)
+	export RANLIB=/usr/bin/ranlib
+	export AR=/usr/bin/ar
+fi
+
+(PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release --sdl-use-pkgconfig)
+
 echo PATH = $PATH
 ./waf build
 ./waf install --destdir=${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
@@ -54,7 +61,7 @@ mkdir ${ARM64_BUILD_FOLDER}/install/dlls
 # Step 1.2: Xash3D-FWGS - Intel (amd64)
 echo "Step 1.2: Xash3D-FWGS - Intel (amd64)"
 
-(CC="clang -arch x86_64" CXX="clang++ -arch x86_64" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release)
+(CC="clang -arch x86_64" CXX="clang++ -arch x86_64" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release --sdl-use-pkgconfig)
 echo PATH = $PATH
 ./waf build
 ./waf install --destdir=${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
@@ -85,12 +92,16 @@ cmake ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/hl.dylib dlls/hl_arm64.dylib
+if [ -f dlls/hl.dylib ]; then
+	mv dlls/hl.dylib dlls/hl_arm64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -112,12 +123,16 @@ cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/hl.dylib dlls/hl_amd64.dylib
+if [ -f dlls/hl.dylib ]; then
+	mv dlls/hl.dylib dlls/hl_amd64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -144,12 +159,16 @@ cmake ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/opfor.dylib dlls/opfor_arm64.dylib
+if [ -f dlls/opfor.dylib ]; then
+	mv dlls/opfor.dylib dlls/opfor_arm64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -169,12 +188,16 @@ cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/opfor.dylib dlls/opfor_amd64.dylib
+if [ -f dlls/opfor.dylib ]; then
+	mv dlls/opfor.dylib dlls/opfor_amd64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -199,12 +222,16 @@ cmake ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/bshift.dylib dlls/bshift_arm64.dylib
+if [ -f dlls/bshift.dylib ]; then
+	mv dlls/bshift.dylib dlls/bshift_arm64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -224,12 +251,16 @@ cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/bshift.dylib dlls/bshift_amd64.dylib
+if [ -f dlls/bshift.dylib ]; then
+	mv dlls/bshift.dylib dlls/bshift_amd64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -240,55 +271,27 @@ cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/install/dlls
 # Step 3: Build the Universal 2 bundle
 cd ../../${PROJECT_NAME}
 
-# cp ../MSPBuildSystem/${PROJECT_NAME}/${ICONSFILENAME}.icns ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+else
+	# dylibbundler libxash
+	dylibbundler -od -b -x ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -d ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
+	dylibbundler -od -b -x ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -d ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
 
-# PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-# <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
-# <plist version=\"1.0\">
-# <dict>
-#     <key>CFBundleExecutable</key>
-#     <string>${EXECUTABLE_NAME}</string>
-#     <key>CFBundleIconFile</key>
-#     <string>${ICONSFILENAME}</string>
-#     <key>CFBundleIdentifier</key>
-#     <string>${BUNDLE_ID}</string>
-#     <key>CFBundleInfoDictionaryVersion</key>
-#     <string>6.0</string>
-#     <key>CFBundleName</key>
-#     <string>${PRODUCT_NAME}</string>
-#     <key>CFBundlePackageType</key>
-#     <string>APPL</string>
-#     <key>CFBundleShortVersionString</key>
-#     <string>${APP_VERSION}</string>
-#     <key>CFBundleVersion</key>
-#     <string>${APP_VERSION}</string>
-#     <key>LSMinimumSystemVersion</key>
-#     <string>11.0</string>
-#     <key>NSPrincipalClass</key>
-#     <string>NSApplication</string>
-#     <key>LSApplicationCategoryType</key>
-# 	<string>public.app-category.games</string>
-#     <key>NSHighResolutionCapable</key>
-#     <${HIGH_RESOLUTION_CAPABLE}/>
-# </dict>
-# </plist>
-# "
-# echo "${PLIST}" > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+	# create the app bundle
+	"../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
-# dylibbundler libxash
-dylibbundler -od -b -x ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -d ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-dylibbundler -od -b -x ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -d ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
-
-# create the app bundle
-# export BUNDLE_ID="com.macsourceports.uqm"
-"../MSPBuildSystem/common/build_app_bundle.sh"
+echo install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+echo "@rpath added"
 
 #create any app-specific directories
 if [ ! -d "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" || exit 1;
 fi
 
-cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/valve ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/valve
+cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/valve ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/valve
 
 #lipo any app-specific things
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib" -create
@@ -296,6 +299,10 @@ lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libmenu.dylib ${ARM64_BUIL
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib" -create
+
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	"../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib"
+fi
 
 #copy over game libraries
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/cl_dlls" ]; then
@@ -311,10 +318,6 @@ fi
 
 cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls
 cp -a ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls
-
-# cd ${BUILT_PRODUCTS_DIR}
-# dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/libxash.dylib" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
-# cd ..
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
