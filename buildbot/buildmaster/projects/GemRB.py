@@ -42,15 +42,9 @@ GemRB_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 GemRB_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/GemRB/macsourceports_arm64.sh"), "notarize", "buildserver", util.Property('GemRB_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/GemRB/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('GemRB_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/GemRB"),
-    name="Run Build Script (arm64)",
-    haltOnFailure=True
-))
-GemRB_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/GemRB/macsourceports_x86_64.sh"), "notarize", "buildserver", util.Property('GemRB_latest_tag')],
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/GemRB"),
-    name="Run Build Script (x86_64)",
+    name="Run Build Script",
     haltOnFailure=True
 ))
 
