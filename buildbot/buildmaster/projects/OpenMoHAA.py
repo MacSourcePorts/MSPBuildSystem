@@ -56,7 +56,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="OpenMoHAA-releases",
-        change_filter=util.ChangeFilter(project='OpenMoHAA', branch='main'),
+        change_filter=util.ChangeFilter(project='OpenMoHAA'),
         treeStableTimer=None,
         builderNames=["OpenMoHAA-builder"]),
     schedulers.ForceScheduler(
