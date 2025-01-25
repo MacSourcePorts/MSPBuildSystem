@@ -11,7 +11,7 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/tomkidd/xash3d-fwgs',
+        repourl='https://github.com/FWGS/xash3d-fwgs',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/xash3d-fwgs"),
         project="xash3d-fwgs",
         branches=True,
@@ -28,7 +28,7 @@ change_source_list = [
 
 xash3dfwgs_factory = util.BuildFactory()
 xash3dfwgs_factory.addStep(steps.Git(
-    repourl='https://github.com/tomkidd/xash3d-fwgs',
+    repourl='https://github.com/FWGS/xash3d-fwgs',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     submodules=True,
