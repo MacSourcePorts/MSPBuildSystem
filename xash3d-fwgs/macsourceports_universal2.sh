@@ -46,7 +46,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	export AR=/usr/bin/ar
 fi
 
-(PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release --sdl-use-pkgconfig)
+(CC="clang -arch arm64 -mmacosx-version-min=10.7" CXX="clang++ -arch arm64 -mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release --sdl-use-pkgconfig)
 
 echo PATH = $PATH
 ./waf build
@@ -61,7 +61,7 @@ mkdir ${ARM64_BUILD_FOLDER}/install/dlls
 # Step 1.2: Xash3D-FWGS - Intel (amd64)
 echo "Step 1.2: Xash3D-FWGS - Intel (amd64)"
 
-(CC="clang -arch x86_64" CXX="clang++ -arch x86_64" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release --sdl-use-pkgconfig)
+(CC="clang -arch x86_64 -mmacosx-version-min=10.7" CXX="clang++ -arch x86_64 -mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release --sdl-use-pkgconfig)
 echo PATH = $PATH
 ./waf build
 ./waf install --destdir=${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
@@ -88,7 +88,7 @@ echo "Step 2.1.1 : HLSDK - Half-Life - Apple Silicon (arm64)"
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake ..
+cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -119,7 +119,7 @@ echo "Step 2.1.2 : HLSDK - Half-Life - Intel (amd64)"
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -155,7 +155,7 @@ echo "Step 2.2.1 : HLSDK - Half-Life: Opposing Force - Apple Silicon (arm64)"
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake ..
+cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -184,7 +184,7 @@ echo "Step 2.2.2 : HLSDK - Half-Life: Opposing Force - Intel (amd64)"
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -218,7 +218,7 @@ echo "Step 2.3.1 : HLSDK - Half-Life: Blue Shift - Apple Silicon (arm64)"
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake ..
+cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -247,7 +247,7 @@ echo "Step 2.3.2 : HLSDK - Half-Life: Blue Shift - Intel (amd64)"
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
