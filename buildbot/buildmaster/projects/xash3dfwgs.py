@@ -40,6 +40,7 @@ xash3dfwgs_factory.addStep(steps.Git(
     repourl='https://github.com/FWGS/hlsdk-portable',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
+    submodules=True,
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/hlsdk-portable"),
     name="Git Pull Latest hlsdk-portable Code",
     haltOnFailure=True
