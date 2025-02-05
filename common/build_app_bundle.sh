@@ -51,8 +51,8 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <string>NSApplication</string>
     <key>NSHighResolutionCapable</key>
     <${HIGH_RESOLUTION_CAPABLE}/>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.games</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.games</string>
 </dict>
 </plist>
 "

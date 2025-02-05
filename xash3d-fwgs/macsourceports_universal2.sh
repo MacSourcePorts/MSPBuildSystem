@@ -85,12 +85,16 @@ cmake ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/hl.dylib dlls/hl_arm64.dylib
+if [ -f dlls/hl.dylib ]; then
+	mv dlls/hl.dylib dlls/hl_arm64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -112,12 +116,16 @@ cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/hl.dylib dlls/hl_amd64.dylib
+if [ -f dlls/hl.dylib ]; then
+	mv dlls/hl.dylib dlls/hl_amd64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -132,7 +140,7 @@ cd ..
 # Step 2.2 : HLSDK - Half-Life: Opposing Force
 echo "Step 2.2 : HLSDK - Half-Life: Opposing Force"
 
-git checkout opfor
+git checkout opforfixed
 
 # Step 2.2.1 : HLSDK - Half-Life: Opposing Force - Apple Silicon (arm64)
 echo "Step 2.2.1 : HLSDK - Half-Life: Opposing Force - Apple Silicon (arm64)"
@@ -144,12 +152,16 @@ cmake ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/opfor.dylib dlls/opfor_arm64.dylib
+if [ -f dlls/opfor.dylib ]; then
+	mv dlls/opfor.dylib dlls/opfor_arm64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -169,12 +181,16 @@ cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/opfor.dylib dlls/opfor_amd64.dylib
+if [ -f dlls/opfor.dylib ]; then
+	mv dlls/opfor.dylib dlls/opfor_amd64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -199,12 +215,16 @@ cmake ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_arm64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/bshift.dylib dlls/bshift_arm64.dylib
+if [ -f dlls/bshift.dylib ]; then
+	mv dlls/bshift.dylib dlls/bshift_arm64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
@@ -224,12 +244,16 @@ cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
-mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+if [ -f cl_dlls/client.dylib ]; then
+	mv cl_dlls/client.dylib cl_dlls/client_amd64.dylib
+fi
 rm cl_dlls/cmake_install.cmake
 rm -rf cl_dlls/CMakeFiles
 rm cl_dlls/Makefile
 
-mv dlls/bshift.dylib dlls/bshift_amd64.dylib
+if [ -f dlls/bshift.dylib ]; then
+	mv dlls/bshift.dylib dlls/bshift_amd64.dylib
+fi
 rm dlls/cmake_install.cmake
 rm -rf dlls/CMakeFiles
 rm dlls/Makefile
