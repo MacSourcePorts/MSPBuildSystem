@@ -10,13 +10,13 @@ project_list = [
 ]
 
 change_source_list = [
-    # changes.GitPoller(
-    #     repourl='https://github.com/MacSourcePorts/openjazz',
-    #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenJazz"),
-    #     project="OpenJazz",
-    #     only_tags=True,
-    #     pollInterval=3600  # Poll every hour
-    # )
+    changes.GitPoller(
+        repourl='https://github.com/MacSourcePorts/openjazz',
+        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenJazz"),
+        project="OpenJazz",
+        branches=True,
+        pollInterval=3600  # Poll every hour
+    )
 ]
 
 OpenJazz_factory = util.BuildFactory()
@@ -28,21 +28,8 @@ OpenJazz_factory.addStep(steps.Git(
     name="Git Pull Latest OpenJazz Code",
     haltOnFailure=True
 ))
-# OpenJazz_factory.addStep(steps.SetPropertyFromCommand(
-#     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenJazz"),
-#     property="OpenJazz_latest_tag",
-#     name="Fetch Latest OpenJazz Tag",
-#     haltOnFailure=True
-# ))
-# OpenJazz_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('OpenJazz_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenJazz"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True
-# ))
 OpenJazz_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('OpenJazz_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz/macsourceports_universal2.sh"), "notarize", "buildserver"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz"),
     name="Run Build Script",
     haltOnFailure=True
@@ -53,27 +40,12 @@ builder_configs = [
 ]
 
 scheduler_list = [ 
-    # schedulers.SingleBranchScheduler(
-    #     name="OpenJazz-releases",
-    #     change_filter=util.ChangeFilter(project='OpenJazz'),
-    #     treeStableTimer=None,
-    #     builderNames=["OpenJazz-builder"]),
+    schedulers.SingleBranchScheduler(
+        name="OpenJazz-changes",
+        change_filter=util.ChangeFilter(project='OpenJazz', branch='master'),
+        treeStableTimer=None,
+        builderNames=["OpenJazz-builder"]),
     schedulers.ForceScheduler(
         name="OpenJazz-force",
-        builderNames=["OpenJazz-builder"],
-        codebases=[
-            util.CodebaseParameter(
-            "",
-            label="Main repository",
-            # will generate a combo box
-            branch=util.ChoiceStringParameter(
-                name="branch",
-                choices=["master", "dev"],
-                default="dev"),
-            revision=util.FixedParameter(name="revision", default=""),
-            repository=util.FixedParameter(name="repository", default=""),
-            project=util.FixedParameter(name="project", default=""),
-            )
-        ]
-    )
+        builderNames=["OpenJazz-builder"])
 ]
