@@ -24,19 +24,36 @@ cd ../../${PROJECT_NAME}
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 # create makefiles with cmake, perform builds with make
-rm -rf ${X86_64_BUILD_FOLDER}
-mkdir ${X86_64_BUILD_FOLDER}
-mkdir -p ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
-make clean
-(ARCH=x86_64 PREFIX=/usr/local/bin make -j$NCPU)
-cp ${EXECUTABLE_NAME} ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 mkdir -p ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
-make clean
-(ARCH=arm64 PREFIX=/opt/Homebrew/bin make -j$NCPU)
-cp ${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+cd ${ARM64_BUILD_FOLDER}
+cmake \
+-DCMAKE_OSX_ARCHITECTURES=arm64 \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
+-DCMAKE_PREFIX_PATH=/opt/Homebrew \
+-DCMAKE_INSTALL_PREFIX=/opt/Homebrew \
+..
+cmake --build . -j $NCPU
+cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+
+cd ..
+
+rm -rf ${X86_64_BUILD_FOLDER}
+mkdir ${X86_64_BUILD_FOLDER}
+mkdir -p ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
+cd ${X86_64_BUILD_FOLDER}
+cmake \
+-DCMAKE_OSX_ARCHITECTURES=x86_64 \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
+-DCMAKE_PREFIX_PATH=/usr/local \
+-DCMAKE_INSTALL_PREFIX=/usr/local \
+..
+cmake --build . -j $NCPU
+cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+
+cd ..
 
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh"
