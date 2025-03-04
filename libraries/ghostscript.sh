@@ -1,3 +1,12 @@
+rm -rf source
+mkdir source
+cd source
+curl -JLO https://downloads.sourceforge.net/project/gs-fonts/gs-fonts/8.11%20%28base%2035%2C%20GPL%29/ghostscript-fonts-std-8.11.tar.gz
+tar -xzvf ghostscript-fonts-std-8.11.tar.gz
+sudo rm -rf /usr/local/share/ghostscript/fonts
+sudo mv fonts /usr/local/share/ghostscript
+cd ..
+
 export SOURCE_URL="https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10031/ghostpdl-10.03.1.tar.xz"
 export CONFIGURE_ARGS="--disable-compile-inits --disable-cups --disable-gtk --with-system-libtiff --without-x --enable-shared"
 
