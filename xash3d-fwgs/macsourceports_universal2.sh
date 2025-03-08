@@ -41,7 +41,6 @@ echo TEMP_PATH = $TEMP_PATH
 echo "Step 1.1: Xash3D-FWGS - Apple Silicon (arm64)"
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	# (CC="/usr/local/llvm/bin/clang" CXX="/usr/local/llvm/bin/clang++" LDFLAGS="-L /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib" ./waf configure --64bits -T release --sdl-use-pkgconfig)
 	export RANLIB=/usr/bin/ranlib
 	export AR=/usr/bin/ar
 fi
