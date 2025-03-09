@@ -42,7 +42,7 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>CFBundleVersion</key>
     <string>${APP_VERSION}</string>
     <key>LSMinimumSystemVersion</key>
-    <string>10.7</string>
+    <string>${MINIMUM_SYSTEM_VERSION}</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSHighResolutionCapable</key>

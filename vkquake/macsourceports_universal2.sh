@@ -11,6 +11,7 @@ export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
@@ -41,6 +42,8 @@ rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    export MACOSX_DEPLOYMENT_TARGET=10.15
+
     export PATH=/usr/local/bin:$PATH
     export LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
     export CPATH=/usr/local/include:$CPATH
