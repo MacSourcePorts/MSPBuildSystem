@@ -21,3 +21,5 @@ gsed -i "s|\$(MYLDFLAGS)*|-arch x86_64 -arch arm64|" source/lua-5.4.6/src/Makefi
 gsed -i "s|-dynamiclib*|-dynamiclib -arch x86_64 -arch arm64|" source/lua-5.4.6/src/Makefile
 
 source "../common/make_build.sh"
+
+sudo install_name_tool -add_rpath /usr/local/lib/. /usr/local/bin/lua
