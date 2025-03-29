@@ -1,6 +1,6 @@
 # Akhenaten
 
-# Project where we build based the latest code because we can't update the original
+# Project where we build based off of release tags from the project
 
 import os
 from buildbot.plugins import steps, util, changes, schedulers
@@ -14,7 +14,7 @@ change_source_list = [
         repourl='https://github.com/dalerank/Akhenaten',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Akhenaten"),
         project="Akhenaten",
-        branches=True,
+        only_tags=True,
         pollInterval=3600  # Poll every hour
     )
 ]
@@ -28,8 +28,21 @@ Akhenaten_factory.addStep(steps.Git(
     name="Git Pull Latest Akhenaten Code",
     haltOnFailure=True
 ))
+Akhenaten_factory.addStep(steps.SetPropertyFromCommand(
+    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Akhenaten"),
+    property="Akhenaten_latest_tag",
+    name="Fetch Latest Akhenaten Tag",
+    haltOnFailure=True
+))
 Akhenaten_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Akhenaten/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["git", "checkout", util.Property('Akhenaten_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Akhenaten"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
+Akhenaten_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Akhenaten/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('Akhenaten_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Akhenaten"),
     name="Run Build Script",
     haltOnFailure=True

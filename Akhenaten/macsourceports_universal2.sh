@@ -13,9 +13,13 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
+if [ -n "$3" ]; then
+	export APP_VERSION="${3/v/}"
+	export GIT_TAG="$3"
+	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+
     # reset to the main branch
     echo git checkout ${GIT_DEFAULT_BRANCH}
     git checkout ${GIT_DEFAULT_BRANCH}
