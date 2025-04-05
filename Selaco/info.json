@@ -1,0 +1,14 @@
+{
+	"portName": "OpenJKDF2",
+	"homepageURL": "https://github.com/shinyquagsire23/OpenJKDF2",
+	"sourceCodeURL": "https://github.com/shinyquagsire23/OpenJKDF2",
+	"buildType": "MSPBuild",
+	"latestVersion": "0.9.0",
+	"latestVersionDate": "6/15/2023",
+	"versionOnMSP": "0.6.8",
+	"outdated": true,
+	"activeBuildStatus": "Builds, launches with error",
+	"fetchingByGITTag": "",
+	"notes": "",
+	"icon": "OpenJKDF2.icns"
+}
