@@ -19,21 +19,21 @@ change_source_list = [
     ),
     changes.GitPoller(
         repourl='https://github.com/yquake2/xatrix',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/yquake2/xatrix"),
+        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/xatrix"),
         project="yquake2",
         only_tags=True,
         pollInterval=3600  # Poll every hour
     ),
     changes.GitPoller(
         repourl='https://github.com/yquake2/rogue',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/yquake2/rogue"),
+        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/rogue"),
         project="yquake2",
         only_tags=True,
         pollInterval=3600  # Poll every hour
     ),
     changes.GitPoller(
         repourl='https://github.com/yquake2/ctf',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/yquake2/ctf"),
+        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/ctf"),
         project="yquake2",
         only_tags=True,
         pollInterval=3600  # Poll every hour
@@ -47,6 +47,7 @@ yquake2_factory.addStep(steps.Git(
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/yquake2"),
     name="Git Pull Latest yquake2 Code",
+    alwaysUseLatest=True,
     haltOnFailure=True
 ))
 yquake2_factory.addStep(steps.Git(
@@ -55,6 +56,7 @@ yquake2_factory.addStep(steps.Git(
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/xatrix"),
     name="Git Pull Latest xatrix (mp1) Code",
+    alwaysUseLatest=True,
     haltOnFailure=True
 ))
 yquake2_factory.addStep(steps.Git(
@@ -63,6 +65,7 @@ yquake2_factory.addStep(steps.Git(
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/rogue"),
     name="Git Pull Latest rogue (mp2) Code",
+    alwaysUseLatest=True,
     haltOnFailure=True
 ))
 yquake2_factory.addStep(steps.Git(
@@ -71,6 +74,7 @@ yquake2_factory.addStep(steps.Git(
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/ctf"),
     name="Git Pull Latest ctf Code",
+    alwaysUseLatest=True,
     haltOnFailure=True
 ))
 yquake2_factory.addStep(steps.SetPropertyFromCommand(
