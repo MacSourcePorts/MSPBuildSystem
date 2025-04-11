@@ -7,3 +7,5 @@ export CONFIGURE_ARGS="--enable-osx-universal-binary=no --disable-silent-rules -
 
 source "../common/get_source.sh"
 source "../common/make_build_lipo.sh"
+
+sudo install_name_tool -add_rpath /usr/local/lib /usr/local/bin/magick
