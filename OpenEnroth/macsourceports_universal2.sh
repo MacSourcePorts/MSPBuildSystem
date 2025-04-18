@@ -40,8 +40,6 @@ fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-gsed -i 's|list(APPEND _BACKWARD_LIBRARIES iberty z)|list(APPEND _BACKWARD_LIBRARIES z)|' thirdparty/backward_cpp/BackwardConfig.cmake
-
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     export OpenAL_DIR=/usr/local/opt/openal-soft
 
@@ -56,6 +54,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     -DOE_BUILD_TESTS=OFF \
     -DCMAKE_LIBRARY_PATH=/usr/local/lib \
+    -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
     -DOpenAL_DIR=/usr/local/opt/openal-soft \
     -DLIBDWARF_INCLUDE_DIR=/usr/local/include/libdwarf-0 \
     ..
@@ -75,6 +74,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     -DOE_BUILD_TESTS=OFF \
     -DCMAKE_LIBRARY_PATH=/usr/local/lib \
+    -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
     -DOpenAL_DIR=/usr/local/opt/openal-soft \
     -DLIBDWARF_INCLUDE_DIR=/usr/local/include/libdwarf-0 \
     ..
