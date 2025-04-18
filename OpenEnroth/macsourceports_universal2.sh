@@ -56,7 +56,6 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_LIBRARY_PATH=/usr/local/lib \
     -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
     -DOpenAL_DIR=/usr/local/opt/openal-soft \
-    -DLIBDWARF_INCLUDE_DIR=/usr/local/include/libdwarf-0 \
     ..
     cmake --build . --parallel $NCPU
     # install_name_tool -add_rpath @executable_path/. src/Bin/OpenEnroth/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
@@ -76,7 +75,6 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_LIBRARY_PATH=/usr/local/lib \
     -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
     -DOpenAL_DIR=/usr/local/opt/openal-soft \
-    -DLIBDWARF_INCLUDE_DIR=/usr/local/include/libdwarf-0 \
     ..
     cmake --build . --parallel $NCPU
     # install_name_tool -add_rpath @executable_path/. src/Bin/OpenEnroth/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
