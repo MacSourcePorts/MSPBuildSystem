@@ -14,17 +14,24 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	echo "Skipping git because we're on the build server"
+    export AR=/usr/bin/ar
+    export RANLIB=/usr/bin/ranlib
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
 
-# check out the latest release tag
-echo git checkout tags/${GIT_TAG}
-git checkout tags/${GIT_TAG}
+    # check out the latest release tag
+    # echo git checkout tags/${GIT_TAG}
+    # git checkout tags/${GIT_TAG}
+    # (the latest tag has issues, disabling for now)
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -71,6 +78,11 @@ cd ..
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+
+    cd ${BUILT_PRODUCTS_DIR}
+    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    cd ..
 else
     "../MSPBuildSystem/common/build_app_bundle.sh"
 fi
