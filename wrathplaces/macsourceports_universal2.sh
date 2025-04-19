@@ -13,6 +13,7 @@ export ENTITLEMENTS_FILE="../MSPBuildSystem/wrathplaces/wrathplaces.entitlements
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export STRIP=/usr/bin/strip
 
 cd ../../${PROJECT_NAME}
 # because we maintain this project and it's rare that it will ever change
@@ -101,4 +102,4 @@ codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BU
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
 # #create dmg
-"../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
+"../MSPBuildSystem/common/package_dmg.sh"
