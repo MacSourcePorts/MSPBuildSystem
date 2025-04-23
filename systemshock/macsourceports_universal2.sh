@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="1.0"
+export APP_VERSION="0.7.8"
 export ICONSFILENAME="systemshock"
 export PRODUCT_NAME="Shockolate"
 export PROJECT_NAME="systemshock"
@@ -13,34 +13,21 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	echo "Skipping git because we're on the build server"
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    # build fluidsynth
-    cd build_ext/fluidsynth-lite
-    rm -rf lib
-    cmake \
-        -DBUILD_SHARED_LIBS=ON \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-        -DCMAKE_C_FLAGS="-Wno-error=single-bit-bitfield-constant-conversion -Wno-error=unused-but-set-variable" \
-        .
-    cmake --build .
-    echo cp -a src/libfluidsynth* ../../src
-    cp -a src/libfluidsynth* ../../src
-    echo $PWD
-    echo cp -a include/fluidsynth/version.h ../../include/fluidsynth
-    cp -a include/fluidsynth/version.h ../../include/fluidsynth
-    cd ../../../
-
     # create makefiles with cmake
     mkdir ${BUILT_PRODUCTS_DIR}
     cd ${BUILT_PRODUCTS_DIR}
@@ -54,26 +41,27 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
         -DSDL2_DIR=/usr/local/opt/sdl2/lib/cmake/SDL2 \
         -DSDL2_MIXER_LIBRARIES=/usr/local/lib/libSDL2_mixer.dylib \
         -DENABLE_FLUIDSYNTH="BUNDLED" \
+        -DFLUIDSYNTH_LIBRARY=/usr/local/lib/libfluidsynth.1.dylib \
         -B. -S..
 
-    # perform build with make
-    make -j$NCPU
+    cmake --build . --parallel $NCPU
 
     #tweak install name
     cd ..
-    install_name_tool -change $PWD/build_ext/fluidsynth-lite/src/libfluidsynth.1.dylib $PWD/build_ext/fluidsynth-lite/lib/x86_64/libfluidsynth.1.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}
+    install_name_tool -change /usr/local/lib64/libfluidsynth.1.dylib @rpath/libfluidsynth.1.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}
 
     mkdir -p ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}
     mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
-    mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/res
-    mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/shaders
     mkdir -p ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
-    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}
+    mkdir -p ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/res
+    mkdir -p ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shaders
+    echo mv ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
     mv ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
     "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
     cp ${ICONSDIR}/${ICONS} "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}"
-    cp windows.sf2 ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/res
-    cp -a shaders/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/shaders
+    cp ../MSPBuildSystem/systemshock/windows.sf2 ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/res
+    cp -a shaders/. ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shaders
 else
     # build x86_64 fluidsynth
     cd build_ext/fluidsynth-lite
@@ -163,9 +151,6 @@ else
     cp windows.sf2 ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/res
     cp -a shaders/. ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/shaders
 fi
-# making two app bundles, one for software-only mode, another for software and OpenGL
-# the only difference is the software-only mode does not have the "shaders" directory
-# doing this because at this time I'm experiencing an issue on Apple Silicon with the OpenGL modes
 
 # create the app bundle
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
@@ -175,25 +160,14 @@ else
 
     mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/res
     cp windows.sf2 ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/res
+
+    #now copy the shaders to the bundle
+    mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/shaders
+    cp -a shaders/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/shaders
 fi
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
 #create dmg
-"../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
-
-mv "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}/${PRODUCT_NAME}-${APP_VERSION}.dmg" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}/${PRODUCT_NAME}-${APP_VERSION}_softwaremode.dmg"
-mv "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}/${PRODUCT_NAME}.app" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}/${PRODUCT_NAME}_softwaremode.app"
-echo rm -rf ${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}-${APP_VERSION}.dmg
-rm -rf ${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}-${APP_VERSION}.dmg
-
-#now copy the shaders to the bundle
-mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/shaders
-cp -a shaders/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/shaders
-
-#sign and notarize
-"../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
-
-#create dmg
-"../MSPBuildSystem/common/package_dmg.sh" "skipdelete"
+"../MSPBuildSystem/common/package_dmg.sh"
