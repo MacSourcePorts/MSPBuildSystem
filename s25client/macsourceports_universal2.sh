@@ -84,6 +84,7 @@ codesign --force --timestamp --options runtime  --entitlements "${ENTITLEMENTS_F
 codesign --force --timestamp --options runtime  --entitlements "${ENTITLEMENTS_FILE}" --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/driver/video/libvideoSDL2.dylib
 codesign --force --timestamp --options runtime  --entitlements "${ENTITLEMENTS_FILE}" --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/s25update
 codesign --force --timestamp --options runtime  --entitlements "${ENTITLEMENTS_FILE}" --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/starter
+codesign --force --timestamp --options runtime  --entitlements "${ENTITLEMENTS_FILE}" --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/s25edit
 codesign --force --timestamp --options runtime  --entitlements "${ENTITLEMENTS_FILE}" --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/s25client
 
 # copy over any resources
