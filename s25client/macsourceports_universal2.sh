@@ -37,7 +37,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
-    -DLUA_INCLUDE_DIR=/opt/homebrew/include/lua \
+    -DLUA_INCLUDE_DIR=/usr/local/include/lua \
     -DLUA_LIBRARY=/usr/local/lib/liblua.dylib \
     -DRTTR_BUNDLE=ON \
     -DRTTR_GAMEDIR="~/Library/Application Support/Return To The Roots" \
