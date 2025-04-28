@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.1.0"
+export APP_VERSION="1.2.1"
 export PRODUCT_NAME="NakedAVP"
 export PROJECT_NAME="NakedAVP"
 export PORT_NAME="NakedAVP"
 export ICONSFILENAME="NakedAVP"
 export EXECUTABLE_NAME="avp"
 export PKGINFO="APPLAVP"
-export GIT_TAG="1.1.0"
+export GIT_TAG="1.2.1"
 export GIT_DEFAULT_BRANCH="main"
 
 #constants
