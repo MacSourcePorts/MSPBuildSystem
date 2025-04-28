@@ -47,7 +47,9 @@ fi
 executable="$1"
 
 export exe_dir="$(dirname "$executable")"
-
+if [ -n "$2" ]; then
+    exe_dir="$2"
+fi
 if [[ ! -f "$executable" ]]; then
     echo "Error: $executable does not exist."
     exit 1
