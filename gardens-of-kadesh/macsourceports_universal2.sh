@@ -27,6 +27,12 @@ git pull
 # echo git checkout tags/${GIT_TAG}
 # git checkout tags/${GIT_TAG}
 
+cd tools/kas2c
+"./kas2c-macOS-compile.sh"
+cd ../..
+
+cp -a /Library/Frameworks/SDL2.framework Mac
+
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 # xcodebuild will make the release folder for us
@@ -54,7 +60,7 @@ echo mv ${BUILT_PRODUCTS_DIR}/Default/Homeworld.app "${BUILT_PRODUCTS_DIR}/${WRA
 mv ${BUILT_PRODUCTS_DIR}/Default/Homeworld.app "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 # #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

@@ -102,7 +102,9 @@ git-lfs:
 https://github.com/git-lfs/git-lfs/releases 
 
 
-
+SDL2 (Framework)
+Get the latest SDL2 release and put it in /Library/Frameworks
+As of right now we only have one project that needs it vs. dylibs and we may change that later but for now go with it
 
 cmake /Users/tomkidd/Downloads/ogg-master "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" -DBUILD_SHARED_LIBS=ON
 
