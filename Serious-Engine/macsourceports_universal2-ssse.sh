@@ -35,7 +35,7 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES=arm64 ../Sources
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_CXX_FLAGS="-Wno-error=enum-constexpr-conversion" -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_STANDARD_REQUIRED=ON ../Sources
 mkdir -p ${EXECUTABLE_FOLDER_PATH}
 mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 
@@ -43,7 +43,7 @@ cd ..
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES=x86_64 ../Sources -DCMAKE_PREFIX_PATH=/usr/local
+cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_CXX_FLAGS="-Wno-error=enum-constexpr-conversion" -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_STANDARD_REQUIRED=ON ../Sources -DCMAKE_PREFIX_PATH=/usr/local
 mkdir -p ${EXECUTABLE_FOLDER_PATH}
 mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 
@@ -56,7 +56,7 @@ cp Debug/* ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 
 cd ..
 cd ${X86_64_BUILD_FOLDER}
-make -j$NCPU #VERBOSE=1
+make -j$NCPU
 cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
 cp Debug/* ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 
@@ -70,8 +70,8 @@ lipo ${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libEntitiesMP.d
 lipo ${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGameMP.dylib ${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGameMP.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGameMP.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib ${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib" -create
 
-codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libEntities.dylib"
-codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGame.dylib"
+codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libEntitiesMP.dylib"
+codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGameMP.dylib"
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib"
 
 # lipo any app-specific libraries
