@@ -31,7 +31,7 @@ cd tools/kas2c
 "./kas2c-macOS-compile.sh"
 cd ../..
 
-cp -a /Library/Frameworks/SDL2.framework Mac
+unzip "../MSPBuildSystem/${PROJECT_NAME}/SDL2framework.zip" -d Mac
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
