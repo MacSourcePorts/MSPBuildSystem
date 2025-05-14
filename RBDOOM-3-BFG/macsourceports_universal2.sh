@@ -14,21 +14,29 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# because we do a patch, we need to reset any changes
-echo git reset --hard
-git reset --hard
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	echo "Skipping git because we're on the build server"
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+	# reset to the main branch
+	echo git checkout ${GIT_DEFAULT_BRANCH}
+	git checkout ${GIT_DEFAULT_BRANCH}
+else
+	# because we do a patch, we need to reset any changes
+	echo git reset --hard
+	git reset --hard
 
-# # fetch the latest 
-echo git pull
-git pull
+	# reset to the main branch
+	echo git checkout ${GIT_DEFAULT_BRANCH}
+	git checkout ${GIT_DEFAULT_BRANCH}
 
-# # check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+	# # fetch the latest 
+	echo git pull
+	git pull
+
+	# check out the latest release tag
+	# echo git checkout tags/${GIT_TAG}
+	# git checkout tags/${GIT_TAG}
+fi
 
 gsed -i '/#define[[:space:]]\+fdopen(fd,mode)[[:space:]]\+NULL/ d' neo/libs/zlib/zutil.h
 
@@ -38,62 +46,94 @@ export CMAKE_PREFIX_PATH=$VULKAN_SDK:$CMAKE_PREFIX_PATH
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-rm -rf ${X86_64_BUILD_FOLDER}
-mkdir ${X86_64_BUILD_FOLDER}
-cd ${X86_64_BUILD_FOLDER}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	mkdir ${BUILT_PRODUCTS_DIR}
+	cd ${BUILT_PRODUCTS_DIR}
 
-cmake \
--G "Unix Makefiles" \
--DCMAKE_BUILD_TYPE=Release \
--DCMAKE_OSX_ARCHITECTURES=x86_64 \
--DCMAKE_C_FLAGS_RELEASE="-DNDEBUG" \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=/usr/local:$VULKAN_SDK \
--DSDL2_DIR:PATH=/usr/local/lib/cmake/SDL2 \
--DFFMPEG=OFF \
--DBINKDEC=ON \
--DUSE_MoltenVK=ON \
--DOPENAL_LIBRARY=/usr/local/opt/openal-soft/lib/libopenal.dylib \
--DOPENAL_INCLUDE_DIR=/usr/local/opt/openal-soft/include  \
-../neo -Wno-dev
+	cmake \
+	-G "Unix Makefiles" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+	-DCMAKE_C_FLAGS_RELEASE="-DNDEBUG" \
+	-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+	-DCMAKE_PREFIX_PATH=/usr/local:$VULKAN_SDK \
+	-DSDL2_DIR:PATH=/usr/local/lib/cmake/SDL2 \
+	-DFFMPEG=OFF \
+	-DBINKDEC=ON \
+	-DUSE_MoltenVK=ON \
+	-DOPENAL_LIBRARY=/usr/local/lib/libopenal.dylib \
+	-DOPENAL_INCLUDE_DIR=/usr/local/include  \
+	../neo -Wno-dev
 
-cd ..
-rm -rf ${ARM64_BUILD_FOLDER}
-mkdir ${ARM64_BUILD_FOLDER}
-cd ${ARM64_BUILD_FOLDER}
+    cmake --build . --parallel $NCPU
 
-cmake \
--G "Unix Makefiles" \
--DCMAKE_BUILD_TYPE=Release \
--DCMAKE_C_FLAGS_RELEASE="-DNDEBUG" \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=/opt/homebrew:$VULKAN_SDK \
--DFFMPEG=OFF \
--DBINKDEC=ON \
--DUSE_MoltenVK=ON \
--DOPENAL_LIBRARY=/opt/homebrew/opt/openal-soft/lib/libopenal.dylib \
--DOPENAL_INCLUDE_DIR=/opt/homebrew/opt/openal-soft/include  \
-../neo -Wno-dev
+	mkdir -p ${EXECUTABLE_FOLDER_PATH}
+	mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
 
-# perform builds with make
-cd ..
-cd ${X86_64_BUILD_FOLDER}
-make -j$NCPU
-mkdir -p ${EXECUTABLE_FOLDER_PATH}
-install_name_tool -change @rpath/libMoltenVK.dylib /usr/local/lib/libMoltenVK.dylib ${EXECUTABLE_NAME}
-mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+else
+	rm -rf ${X86_64_BUILD_FOLDER}
+	mkdir ${X86_64_BUILD_FOLDER}
+	cd ${X86_64_BUILD_FOLDER}
 
-cd ..
-cd ${ARM64_BUILD_FOLDER}
-make -j$NCPU
-mkdir -p ${EXECUTABLE_FOLDER_PATH}
-install_name_tool -change @rpath/libMoltenVK.dylib /opt/homebrew/lib/libMoltenVK.dylib ${EXECUTABLE_NAME}
-mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+	cmake \
+	-G "Unix Makefiles" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_OSX_ARCHITECTURES=x86_64 \
+	-DCMAKE_C_FLAGS_RELEASE="-DNDEBUG" \
+	-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+	-DCMAKE_PREFIX_PATH=/usr/local:$VULKAN_SDK \
+	-DSDL2_DIR:PATH=/usr/local/lib/cmake/SDL2 \
+	-DFFMPEG=OFF \
+	-DBINKDEC=ON \
+	-DUSE_MoltenVK=ON \
+	-DOPENAL_LIBRARY=/usr/local/opt/openal-soft/lib/libopenal.dylib \
+	-DOPENAL_INCLUDE_DIR=/usr/local/opt/openal-soft/include  \
+	../neo -Wno-dev
+
+	cd ..
+	rm -rf ${ARM64_BUILD_FOLDER}
+	mkdir ${ARM64_BUILD_FOLDER}
+	cd ${ARM64_BUILD_FOLDER}
+
+	cmake \
+	-G "Unix Makefiles" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_C_FLAGS_RELEASE="-DNDEBUG" \
+	-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+	-DCMAKE_PREFIX_PATH=/opt/homebrew:$VULKAN_SDK \
+	-DFFMPEG=OFF \
+	-DBINKDEC=ON \
+	-DUSE_MoltenVK=ON \
+	-DOPENAL_LIBRARY=/opt/homebrew/opt/openal-soft/lib/libopenal.dylib \
+	-DOPENAL_INCLUDE_DIR=/opt/homebrew/opt/openal-soft/include  \
+	../neo -Wno-dev
+
+	# perform builds with make
+	cd ..
+	cd ${X86_64_BUILD_FOLDER}
+	make -j$NCPU
+	mkdir -p ${EXECUTABLE_FOLDER_PATH}
+	install_name_tool -change @rpath/libMoltenVK.dylib /usr/local/lib/libMoltenVK.dylib ${EXECUTABLE_NAME}
+	mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+
+	cd ..
+	cd ${ARM64_BUILD_FOLDER}
+	make -j$NCPU
+	mkdir -p ${EXECUTABLE_FOLDER_PATH}
+	install_name_tool -change @rpath/libMoltenVK.dylib /opt/homebrew/lib/libMoltenVK.dylib ${EXECUTABLE_NAME}
+	mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+fi
 
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+else
+	"../MSPBuildSystem/common/build_app_bundle.sh"
+fi
 
 #create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/base" ]; then
