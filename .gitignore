@@ -9,3 +9,4 @@ twistd.*
 /buildbot/workdirs
 /buildbot/buildmaster/projects/__pycache__
 /buildbot/buildmaster/secrets
+/RBDOOM-3-BFG/data
