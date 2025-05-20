@@ -11,6 +11,9 @@ export GIT_DEFAULT_BRANCH="master"
 #constants
 source ../common/constants.sh
 
+# this port is not HiDPI aware
+export HIGH_RESOLUTION_CAPABLE="false"
+
 cd ../../${PROJECT_NAME}
 
 export ARM64_PREFIX_PATH=/opt/Homebrew
@@ -18,6 +21,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	echo "Skipping git because we're on the build server"
     export ARM64_PREFIX_PATH=/usr/local
 	export RANLIB=/usr/bin/ranlib
+
+    gsed -i "s|<fp.h>|<math.h>|" lib/libpng/pngpriv.h
 else
     # reset to the main branch
     echo git checkout ${GIT_DEFAULT_BRANCH}
