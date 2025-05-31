@@ -37,6 +37,7 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     mkdir ${BUILT_PRODUCTS_DIR}
     mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    mkdir -p ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
     cd ${BUILT_PRODUCTS_DIR}
     cmake \
     -DMACOS_APP_BUNDLE=ON \
@@ -47,9 +48,9 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_CXX_STANDARD=11 \
     ..
     make -j$NCPU
-    install_name_tool -add_rpath @executable_path/. src/${EXECUTABLE_NAME}/${EXECUTABLE_NAME}
+    # install_name_tool -add_rpath @executable_path/../Frameworks src/${EXECUTABLE_NAME}/${EXECUTABLE_NAME}
     cp src/${EXECUTABLE_NAME}/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 else
     rm -rf ${X86_64_BUILD_FOLDER}
     mkdir ${X86_64_BUILD_FOLDER}

@@ -18,17 +18,33 @@ copy_libraries() {
         lib_name=$(basename "$lib")
         echo "examining" $lib "in" $lib_path
         src_lib_path="/usr/local/lib/$lib_name"
+        prefix_lib_path="$prefix_dir/$lib_name"
         dest_lib_path="$exe_dir/$lib_name"
 
         # Check if the library exists in /usr/local/lib
         if [ "$lib_name" != "$base_lib_path" ]; then
+
+            # prioritize the prefix version first if it exists
+            if [[ -f "$prefix_lib_path" ]]; then
+                # Copy the library to the executable's directory if not already there
+                if [[ ! -f "$dest_lib_path" ]]; then
+                    echo "Copying $prefix_lib_path to $dest_lib_path"
+                    cp "$prefix_lib_path" "$dest_lib_path"
+                else
+                    echo "Skipping $prefix_lib_path since $dest_lib_path exists"
+                fi
+                
+                # Recursively copy libraries linked to this library
+                copy_libraries "$prefix_lib_path"
+            fi
+
             if [[ -f "$src_lib_path" ]]; then
                 # Copy the library to the executable's directory if not already there
                 if [[ ! -f "$dest_lib_path" ]]; then
                     echo "Copying $src_lib_path to $dest_lib_path"
                     cp "$src_lib_path" "$dest_lib_path"
                 else
-                    echo "Skipping $src_lib_path since $dest_lib_path exists ?"
+                    echo "Skipping $src_lib_path since $dest_lib_path exists"
                 fi
                 
                 # Recursively copy libraries linked to this library
@@ -49,11 +65,18 @@ executable="$1"
 export exe_dir="$(dirname "$executable")"
 if [ -n "$2" ]; then
     exe_dir="$2"
+    mkdir -p $exe_dir
+fi
+export prefix_dir=""
+if [ -n "$3" ]; then
+    prefix_dir="$3lib"
 fi
 if [[ ! -f "$executable" ]]; then
     echo "Error: $executable does not exist."
     exit 1
 fi
+
+install_name_tool -add_rpath @executable_path/../Frameworks $executable
 
 # Start the recursive copying process from the main executable
 copy_libraries "$executable"
