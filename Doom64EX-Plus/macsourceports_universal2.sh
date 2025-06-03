@@ -59,17 +59,6 @@ echo $PWD
 echo mv ${BUILT_PRODUCTS_DIR}/Release/DOOM64EXPlus.app "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
 mv ${BUILT_PRODUCTS_DIR}/Release/DOOM64EXPlus.app "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
 
-# mv "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libz.1.2.13.dylib"  "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-# mv "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libpng16.16.dylib"  "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-# mv "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libSDL2_net-2.0.0.dylib"  "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-
-# install_name_tool -change /opt/local/lib/libz.1.dylib @rpath/libz.1.2.13.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-# install_name_tool -change /opt/local/lib/libpng16.16.dylib @rpath/libpng16.16.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-# install_name_tool -change /opt/local/lib/libSDL2_net-2.0.0.dylib @rpath/libSDL2_net-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-# install_name_tool -change @rpath/libfluidsynth.3.dylib @rpath/libfluidsynth.3.2.3.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-# install_name_tool -change @executable_path/libz.1.2.13.dylib @rpath/libz.1.2.13.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libpng16.16.dylib"
-# install_name_tool -change @executable_path/libSDL2-2.0.0.dylib @rpath/libSDL3.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL2_net-2.0.0.dylib"
-
 "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
