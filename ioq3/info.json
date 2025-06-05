@@ -1,5 +1,5 @@
 {
-	"portName": "ioQuake3",
+	"portName": "ioquake3",
 	"homepageURL": "https://www.ioquake3.org/",
 	"sourceCodeURL": "https://github.com/ioquake/ioq3",
 	"buildType": "MSPFork",
