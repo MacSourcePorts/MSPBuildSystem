@@ -1,4 +1,8 @@
 export SOURCE_URL="https://github.com/akheron/jansson/releases/download/v2.14.1/jansson-2.14.1.tar.gz"
+
+export RANLIB=/usr/bin/ranlib
+export AR=/usr/bin/ar
+
 source "../common/get_source.sh"
 source "../common/make_build.sh"
 
