@@ -21,31 +21,10 @@ source ../common/signing_values.local
 
 # Main game compilation
 cd ../../${PROJECT_NAME}
-# reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
-
-# fetch the latest 
-# echo git pull
-# git pull
-
-# check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-# if [ ! -e ./patchdata/data/pak4.pak ]; then	
-#     cp -a ../MSPBuildSystem/${PROJECT_NAME}/patchdata/* patchdata
-	# echo "Make sure to have Daikatana 1.3 patchdata in ./patchdata/data/ !"
-	# exit 1
-# fi
-
 set -e
-
-# if [ ! -d "./third_party" ] ; then
-# 	./bootstrap.sh
-# fi
 
 ./gengitdate.sh
 
@@ -60,10 +39,7 @@ cp "${EXECUTABLE_NAME}" "${EXECUTABLE_FOLDER_PATH}"
 mkdir -p "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls" || exit 1;
 cp dlls/* "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls" || exit 1;
 
-# install_name_tool -change ../bin/release-x86_64/dlls/ioncommon.dylib ../../bin/release-x86_64/dlls/ioncommon.dylib ${EXECUTABLE_FOLDER_PATH}/daikatana
 install_name_tool -change ../../bin/release-x86_64/dlls/minizip.dylib @executable_path/../Resources/dlls/minizip.dylib ${EXECUTABLE_FOLDER_PATH}/daikatana
-
-# dylibbundler -od -b -x ./"${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}" -d ./"${EXECUTABLE_FOLDER_PATH}"/libs-x86_64/ -p @executable_path/libs-x86_64/ -s ../../third_party/x86_64/lib/
 cd ../..
 
 cd bin/release-arm64
@@ -75,13 +51,6 @@ cp dlls/* "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls" || exit 1;
 
 # # dylibbundler needs a little nudge on these
 install_name_tool -change ../../bin/release-arm64/dlls/minizip.dylib @executable_path/../Resources/dlls/minizip.dylib ${EXECUTABLE_FOLDER_PATH}/daikatana
-# install_name_tool -change ../bin/release-arm64/dlls/ioncommon.dylib ../../bin/release-arm64/dlls/ioncommon.dylib ${EXECUTABLE_FOLDER_PATH}/daikatana
-# install_name_tool -change ../../bin/release-arm64/dlls/minizip.dylib ../../bin/release-arm64/dlls/minizip.dylib ${EXECUTABLE_FOLDER_PATH}/daikatana
-# install_name_tool -change libopenal.1.dylib ../../third_party/arm64/lib/libopenal.1.dylib ${EXECUTABLE_FOLDER_PATH}/daikatana
-# install_name_tool -change libalure.1.dylib ../../third_party/arm64/lib/libalure.1.dylib ${EXECUTABLE_FOLDER_PATH}/daikatana
-# install_name_tool -change libopenal.1.dylib ../../third_party/arm64/lib/libopenal.1.dylib ../../third_party/arm64/lib/libalure.1.dylib
-
-# dylibbundler -od -b -x ./"${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}" -d ./"${EXECUTABLE_FOLDER_PATH}"/libs-arm64/ -p @executable_path/libs-arm64/
 cd ../..
 
 # create the app bundle
@@ -102,10 +71,7 @@ fi
 
 cp -a ../MSPBuildSystem/${PROJECT_NAME}/patchdata/data/* ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patchedData
 
-# rsync -avz patchdata/data/* ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patchedData
-
 #lipo the executable
-# TODO: fix this on build box (add arm64 stuff, do actual lipo)
 lipo bin/release-x86_64/"${EXECUTABLE_FOLDER_PATH}"/daikatana bin/release-arm64/"${EXECUTABLE_FOLDER_PATH}"/daikatana -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/daikatana" -create
 lipo bin/release-x86_64/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"/dlls/ioncommon.dylib bin/release-arm64/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"/dlls/ioncommon.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls/ioncommon.dylib" -create
 lipo bin/release-x86_64/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"/dlls/language_english.dylib bin/release-arm64/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"/dlls/language_english.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls/language_english.dylib" -create
