@@ -68,6 +68,10 @@ Buildbot
 pip3 install --upgrade pip
 pip3 install --upgrade 'buildbot[bundle]'
 
+To make a secrets file a secret for buildbot (i.e., "Permissions 0o644 on file github_token are too open" error)
+
+chmod 400 /path/to/your/key.pem
+
 Node
 https://nodejs.org/en
 https://nodejs.org/dist/v20.18.0/node-v20.18.0.pkg
