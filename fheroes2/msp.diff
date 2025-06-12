@@ -3,7 +3,7 @@
 < 		run_dylibbundler
 < 		ALL
 < 		COMMAND dylibbundler -od -b -x ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/MacOS/${PROJECT_NAME} -d ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/libs
-< 		DEPENDS fheroes2 app_bundle_h2d_files app_bundle_translations
+< 		DEPENDS fheroes2 app_bundle_fh2m_maps app_bundle_h2d_files app_bundle_translations
 < 		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 < 		)
 ---
@@ -11,6 +11,6 @@
 > #		run_dylibbundler
 > #		ALL
 > #		COMMAND dylibbundler -od -b -x ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/MacOS/${PROJECT_NAME} -d ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.app/Contents/libs
-> #		DEPENDS fheroes2 app_bundle_h2d_files app_bundle_translations
+> #		DEPENDS fheroes2 app_bundle_fh2m_maps app_bundle_h2d_files app_bundle_translations
 > #		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 > #		)
