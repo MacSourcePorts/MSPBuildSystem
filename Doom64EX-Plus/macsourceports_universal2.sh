@@ -1,16 +1,22 @@
 # game/app specific values
-export APP_VERSION="4.0.0.3"
+export APP_VERSION="4.1.0.0"
 export PRODUCT_NAME="DOOM64EXPlus"
 export PROJECT_NAME="Doom64EX-Plus"
 export PORT_NAME="DOOM64EXPlus"
 export ICONSFILENAME="DOOM64EXPlus"
 export EXECUTABLE_NAME="DOOM64EXPlus"
-export GIT_TAG="4.0.0.3.SDL.3.2.10"
+export GIT_TAG="4.1.0.0"
 export GIT_DEFAULT_BRANCH="stable"
 
 # constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.13"
+
 cd ../../${PROJECT_NAME}
+
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	cp ../MSPBuildSystem/${PROJECT_NAME}/Libs/* Xcode
+fi
 
 if [ -n "$3" ]; then
 	export APP_VERSION="${3/v/}"
