@@ -6,10 +6,6 @@ export PORT_NAME="Daikatana 1.3 Project"
 export ICONSFILENAME="daikatana"
 export EXECUTABLE_NAME="daikatana"
 export PKGINFO="APPLDKTNA"
-export GIT_TAG="QUAKE2_8_20"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG_XATRIX="XATRIX_2_11"
-export GIT_TAG_ROGUE="ROGUE_2_10"
 
 export RANLIB=/usr/bin/ranlib
 export AR=/usr/bin/ar
@@ -65,11 +61,11 @@ if [ ! -d "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls" ]; t
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls" || exit 1;
 fi
 
-if [ ! -d "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patchedData" ]; then
-	mkdir -p "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patchedData" || exit 1;
+if [ ! -d "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data" ]; then
+	mkdir -p "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data" || exit 1;
 fi
 
-cp -a ../MSPBuildSystem/${PROJECT_NAME}/patchdata/data/* ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patchedData
+cp -a ../MSPBuildSystem/${PROJECT_NAME}/patchdata/data/* ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
 
 #lipo the executable
 lipo bin/release-x86_64/"${EXECUTABLE_FOLDER_PATH}"/daikatana bin/release-arm64/"${EXECUTABLE_FOLDER_PATH}"/daikatana -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/daikatana" -create
