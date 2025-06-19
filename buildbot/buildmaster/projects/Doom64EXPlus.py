@@ -11,7 +11,7 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/tomkidd/Doom64EX-Plus',
+        repourl='https://github.com/atsb/Doom64EX-Plus',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Doom64EX-Plus"),
         project="Doom64EX-Plus",
         branches=True,
@@ -21,7 +21,7 @@ change_source_list = [
 
 Doom64EXPlus_factory = util.BuildFactory()
 Doom64EXPlus_factory.addStep(steps.Git(
-    repourl='https://github.com/tomkidd/Doom64EX-Plus',
+    repourl='https://github.com/atsb/Doom64EX-Plus',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Doom64EX-Plus"),
