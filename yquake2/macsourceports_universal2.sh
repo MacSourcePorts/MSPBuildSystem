@@ -17,9 +17,9 @@ source ../common/constants.sh
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	ARM64_CFLAGS="-mmacosx-version-min=10.7"
-	ARM64_LDFLAGS="-mmacosx-version-min=10.7"
+	ARM64_LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names"
 	x86_64_CFLAGS="-mmacosx-version-min=10.7"
-	x86_64_LDFLAGS="-mmacosx-version-min=10.7"
+	x86_64_LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names"
 else
 	ARM64_CFLAGS="-I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include -mmacosx-version-min=10.7"
 	ARM64_LDFLAGS="-L/opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -mmacosx-version-min=10.7"
@@ -214,11 +214,10 @@ lipo ../ctf/${X86_64_BUILD_FOLDER}/game.dylib ../ctf/${ARM64_BUILD_FOLDER}/game.
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	cd ${BUILT_PRODUCTS_DIR}
-    install_name_tool -add_rpath @executable_path/. "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib"
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib"
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_soft.dylib"
+    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" ${FRAMEWORKS_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib" ${FRAMEWORKS_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib" ${FRAMEWORKS_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_soft.dylib" ${FRAMEWORKS_FOLDER_PATH}
 	cd ..
 fi
 

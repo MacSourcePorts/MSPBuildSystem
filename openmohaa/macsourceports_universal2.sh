@@ -93,9 +93,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
     
     cd ${BUILT_PRODUCTS_DIR}
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    cp /usr/local/lib/libopenal.1.dylib ${EXECUTABLE_FOLDER_PATH}/
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+    cp /usr/local/lib/libopenal.1.dylib ${FRAMEWORKS_FOLDER_PATH}/
     cd ..
 else
     echo lipo /usr/local/opt/openal-soft/lib/libopenal.1.dylib /opt/Homebrew/opt/openal-soft/lib/libopenal.1.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libopenal.1.dylib" -create

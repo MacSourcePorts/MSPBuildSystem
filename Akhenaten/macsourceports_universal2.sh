@@ -34,6 +34,8 @@ fi
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    gsed -i "s|<fp.h>|<math.h>|" ext/png/pngpriv.h
+
     mkdir ${BUILT_PRODUCTS_DIR}
     cd ${BUILT_PRODUCTS_DIR}
     cmake \

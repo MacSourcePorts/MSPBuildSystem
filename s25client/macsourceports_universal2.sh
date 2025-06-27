@@ -46,10 +46,9 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cp -a Contents/* ${CONTENTS_FOLDER_PATH}
     cp -a Info.plist ${CONTENTS_FOLDER_PATH}
     cp ../extras/macosLauncher/rttr.terminal ${EXECUTABLE_FOLDER_PATH}
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "./${EXECUTABLE_FOLDER_PATH}/driver/audio/libaudioSDL.dylib" ${EXECUTABLE_FOLDER_PATH}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "./${EXECUTABLE_FOLDER_PATH}/driver/video/libvideoSDL2.dylib" ${EXECUTABLE_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" "./${EXECUTABLE_FOLDER_PATH}/driver/audio/libaudioSDL.dylib" ${FRAMEWORKS_FOLDER_PATH}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" "./${EXECUTABLE_FOLDER_PATH}/driver/video/libvideoSDL2.dylib" ${FRAMEWORKS_FOLDER_PATH}
 else
     # create makefiles with cmake, perform builds with make
     rm -rf ${ARM64_BUILD_FOLDER}

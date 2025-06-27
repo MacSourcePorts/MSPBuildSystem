@@ -143,9 +143,9 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_arm64.dylib ${BU
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamearm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
     cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    # cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
     cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
@@ -253,9 +253,9 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/cgamearm64.dylib ${BUILT
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uiarm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
     cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    # cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
     cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
@@ -343,9 +343,9 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_arm64.dylib ${
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamearm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
     cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    # cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
     cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"

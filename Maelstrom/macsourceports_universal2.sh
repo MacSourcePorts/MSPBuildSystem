@@ -39,8 +39,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     # TODO: figure out how if/to factor out lipo step
     mkdir -p ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
     lipo "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
-    install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-    "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+    "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     make clean
     (ARCH=arm64 AM_CPPFLAGS="-mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" INCLUDES="-I/opt/homebrew/include/SDL2" LIBS="-L/opt/homebrew/lib -lSDL2 -lSDL2_net" make -j$NCPU)

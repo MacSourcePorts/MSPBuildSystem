@@ -29,9 +29,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -B ${BUILT_PRODUCTS_DIR} .
 
     cmake --build ${BUILT_PRODUCTS_DIR} -j$NCPU
-
-    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     # reset to the main branch
     echo git checkout ${GIT_DEFAULT_BRANCH}
@@ -72,7 +70,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
     # copy over sdl2 manually as shim for sdl12-compat
-    cp /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
+    cp /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 else
     "../MSPBuildSystem/common/build_app_bundle.sh"
 

@@ -41,8 +41,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 
     cmake --build . --parallel $NCPU
     cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 else
     rm -rf ${ARM64_BUILD_FOLDER}
     mkdir ${ARM64_BUILD_FOLDER}

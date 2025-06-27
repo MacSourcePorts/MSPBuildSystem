@@ -24,10 +24,10 @@ OpenGothic_factory.addStep(steps.Git(
     repourl='https://github.com/Try/OpenGothic',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
-    submodules=True,
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenGothic"),
     name="Git Pull Latest OpenGothic Code",
-    haltOnFailure=True
+    haltOnFailure=True,
+    submodules=True
 ))
 OpenGothic_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],

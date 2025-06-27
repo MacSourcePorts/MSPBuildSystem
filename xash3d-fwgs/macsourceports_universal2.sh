@@ -45,7 +45,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	export AR=/usr/bin/ar
 fi
 
-(CC="clang -arch arm64 -mmacosx-version-min=10.7" CXX="clang++ -arch arm64 -mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release --sdl-use-pkgconfig)
+(CC="clang -arch arm64 -mmacosx-version-min=10.7" CXX="clang++ -arch arm64 -mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names" PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release --sdl-use-pkgconfig)
 
 echo PATH = $PATH
 ./waf build
@@ -60,7 +60,7 @@ mkdir ${ARM64_BUILD_FOLDER}/install/dlls
 # Step 1.2: Xash3D-FWGS - Intel (amd64)
 echo "Step 1.2: Xash3D-FWGS - Intel (amd64)"
 
-(CC="clang -arch x86_64 -mmacosx-version-min=10.7" CXX="clang++ -arch x86_64 -mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release --sdl-use-pkgconfig)
+(CC="clang -arch x86_64 -mmacosx-version-min=10.7" CXX="clang++ -arch x86_64 -mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release --sdl-use-pkgconfig)
 echo PATH = $PATH
 ./waf build
 ./waf install --destdir=${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
@@ -300,7 +300,8 @@ lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib ${ARM64_
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib" -create
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	"../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib"
+    "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+    "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 fi
 
 #copy over game libraries

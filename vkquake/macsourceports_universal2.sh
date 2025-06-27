@@ -85,8 +85,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
     
     cd ${BUILT_PRODUCTS_DIR}
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
     cd ..
 else
     "../MSPBuildSystem/common/build_app_bundle.sh"

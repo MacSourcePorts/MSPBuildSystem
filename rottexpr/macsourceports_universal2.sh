@@ -34,13 +34,11 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 
     cd src
     make clean
-    (RANLIB=/usr/bin/ranlib AR=/usr/bin/ar CFLAGS="-I/usr/local/include/ -arch arm64 -arch x86_64 -mmacosx-version-min=10.9" LDFLAGS="-L/usr/local/lib/ -mmacosx-version-min=10.9" make) || exit 1;
+    (RANLIB=/usr/bin/ranlib AR=/usr/bin/ar CFLAGS="-I/usr/local/include/ -arch arm64 -arch x86_64 -mmacosx-version-min=10.9" LDFLAGS="-L/usr/local/lib/ -mmacosx-version-min=10.9 -headerpad_max_install_names" make) || exit 1;
     cd ..
     mkdir -p ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
     mv src/"${EXECUTABLE_NAME}" ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
-    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    # cp /usr/local/lib/libmodplug.1.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 else
     cd src
     make clean

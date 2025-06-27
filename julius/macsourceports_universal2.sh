@@ -41,8 +41,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cd ${BUILT_PRODUCTS_DIR}
     cmake "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" ..
     cmake --build . --parallel $NCPU
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 else
     # create makefiles with cmake, perform builds with make
     rm -rf ${X86_64_BUILD_FOLDER}

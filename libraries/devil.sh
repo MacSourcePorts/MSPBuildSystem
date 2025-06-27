@@ -22,3 +22,5 @@ gsed -i 's/static int iJp2_file_write(jas_stream_obj_t \*obj, char \*buf, int cn
 export SOURCE_FOLDER="DevIL/DevIL"
 
 source "../common/cmake_build.sh"
+
+sudo install_name_tool -id "@rpath/libIL.dylib" /usr/local/lib/libIL.dylib

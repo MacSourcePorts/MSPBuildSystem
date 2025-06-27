@@ -26,7 +26,8 @@ dethrace_factory.addStep(steps.Git(
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/dethrace"),
     name="Git Pull Latest dethrace Code",
-    haltOnFailure=True
+    haltOnFailure=True,
+    submodules=True
 ))
 
 dethrace_factory.addStep(steps.SetPropertyFromCommand(

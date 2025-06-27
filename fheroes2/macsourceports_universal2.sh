@@ -52,9 +52,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 	..
     cmake --build . --parallel $NCPU
-    # cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 
 	ubsan_lib=$(find /Applications/Xcode.app -name libclang_rt.ubsan_osx_dynamic.dylib 2>/dev/null)
 	cp ${ubsan_lib} ${EXECUTABLE_FOLDER_PATH}

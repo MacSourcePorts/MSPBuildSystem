@@ -10,6 +10,7 @@ export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
+export STRIP=/usr/bin/strip
 
 cd ../../${PROJECT_NAME}
 
@@ -41,8 +42,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     ./osxbuild.sh --buildppc=0 --build86=0 --build64=1 --buildarm64=1 --debug=0 --main=1 --tools=0 --pack=0
     cd ..
     mv package/${PRODUCT_NAME}.app ${BUILT_PRODUCTS_DIR}
-    install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 else
     rm -rf ${X86_64_BUILD_FOLDER}
     mkdir ${X86_64_BUILD_FOLDER}

@@ -48,7 +48,6 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_CXX_STANDARD=11 \
     ..
     make -j$NCPU
-    # install_name_tool -add_rpath @executable_path/../Frameworks src/${EXECUTABLE_NAME}/${EXECUTABLE_NAME}
     cp src/${EXECUTABLE_NAME}/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
     "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 else
