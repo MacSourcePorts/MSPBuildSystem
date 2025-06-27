@@ -76,7 +76,7 @@ if [[ ! -f "$executable" ]]; then
     exit 1
 fi
 
-install_name_tool -add_rpath @executable_path/../Frameworks $executable
+install_name_tool -add_rpath @executable_path/../Frameworks "$executable"
 
 # Start the recursive copying process from the main executable
 copy_libraries "$executable"

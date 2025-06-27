@@ -10,3 +10,4 @@ twistd.*
 /buildbot/buildmaster/projects/__pycache__
 /buildbot/buildmaster/secrets
 /RBDOOM-3-BFG/data
+/uqm/dist-packages

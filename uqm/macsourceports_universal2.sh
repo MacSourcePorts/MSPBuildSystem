@@ -13,13 +13,17 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+	echo "Skipping git because we're on the build server"
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -28,8 +32,16 @@ mkdir ${X86_64_BUILD_FOLDER}
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 
+#create any app-specific directories
+if [ ! -d "dist-packages" ]; then
+	mkdir -p "dist-packages" || exit 1;
+    cp -a ../MSPBuildSystem/uqm/dist-packages/* dist-packages
+fi
+
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     ./build.sh uqm clean
+    cp "../MSPBuildSystem/uqm/config_unix.h" .
+    cp "../MSPBuildSystem/uqm/build.vars.x86_64" "build.vars"
     (ARCH=x86_64 ./build.sh uqm -j$NCPU)
     build/unix_installer/copy_mac_frameworks.pl
     mv "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/content/packages/uqm-0.8.0-3domusic.uqm" "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/content/addons"
@@ -37,6 +49,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     mv "${WRAPPER_NAME}" ${X86_64_BUILD_FOLDER}
 
     ./build.sh uqm clean
+    cp "../MSPBuildSystem/uqm/config_unix.h" .
+    cp "../MSPBuildSystem/uqm/build.vars.arm64" "build.vars"
     (ARCH=arm64 ./build.sh uqm -j$NCPU)
     build/unix_installer/copy_mac_frameworks.pl
     mv "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/content/packages/uqm-0.8.0-3domusic.uqm" "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/content/addons"
@@ -64,8 +78,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 
     cd ${BUILT_PRODUCTS_DIR}
-    install_name_tool -add_rpath @executable_path/. "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+    mkdir -p "${FRAMEWORKS_FOLDER_PATH}"
+    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${FRAMEWORKS_FOLDER_PATH}"
     cd ..
 else
     "../MSPBuildSystem/common/build_app_bundle.sh"
