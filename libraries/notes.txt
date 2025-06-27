@@ -110,6 +110,13 @@ SDL2 (Framework)
 Get the latest SDL2 release and put it in /Library/Frameworks
 As of right now we only have one project that needs it vs. dylibs and we may change that later but for now go with it
 
+fmod (for DOOM64)
+Go to https://www.fmod.com and get the latest API download (requires registration). As of this writing it's called
+
+/Volumes/tomkidd/Downloads/fmodstudioapi20308mac-installer.dmg
+
+Open it and drop the "FMOD Programmers API" folder into /Applications folder.
+
 cmake /Users/tomkidd/Downloads/ogg-master "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" -DBUILD_SHARED_LIBS=ON
 
 
