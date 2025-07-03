@@ -14,6 +14,7 @@ export AR=/usr/bin/ar
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="10.9"
 
 # Main game compilation
 cd ../../${PROJECT_NAME}

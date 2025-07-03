@@ -11,6 +11,7 @@ export GIT_DEFAULT_BRANCH="rpsubsets-and-pc"
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 

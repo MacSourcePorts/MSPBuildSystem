@@ -12,6 +12,7 @@ export GIT_DEFAULT_BRANCH="master"
 #constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 export ENTITLEMENTS_FILE="CorsixTH.entitlements"
 export HIGH_RESOLUTION_CAPABLE="true"
@@ -90,8 +91,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     install_name_tool -id @rpath/libSDL2-2.0.0.dylib ${PREFIX_DIR}lib/libSDL2-2.0.0.dylib
     (cd libxmp*; rm -rf build; cmake -Bbuild . -DCMAKE_INSTALL_PREFIX=${PREFIX_DIR} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"; cmake --build build/ --target install)
     install_name_tool -id @rpath/libxmp.4.6.0.dylib ${PREFIX_DIR}lib/libxmp.4.6.0.dylib
-    (cd wavpack*; ./configure --disable-apps --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64  -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
-    (cd ogg-*; ./autogen.sh; ./configure --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64  -mmacosx-version-min=10.7' LDFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
+    (cd wavpack*; ./configure --disable-apps --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
+    (cd ogg-*; ./autogen.sh; ./configure --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7' LDFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
     install_name_tool -id @rpath/libogg.0.dylib ${PREFIX_DIR}lib/libogg.0.dylib
     (cd opus-*; ./configure --disable-doc --disable-extra-programs --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64  -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
     install_name_tool -id @rpath/libopus.0.dylib ${PREFIX_DIR}lib/libopus.0.dylib
@@ -101,7 +102,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DSDL2MIXER_WAVPACK=ON -DSDL2MIXER_DEPS_SHARED=ON -DBUILD_SHARED_LIBS=ON -DSDL2MIXER_WAVE=ON \
     -DSDL2MIXER_OPUS=ON -DCMAKE_INSTALL_PREFIX=${PREFIX_DIR} -DSDL2_INCLUDE_DIR=${PREFIX_DIR}include/SDL2/ \
     -DOpusFile_INCLUDE_PATH=${PREFIX_DIR}include/opus/ -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-    -DSDL2_DIR=${PREFIX_DIR}lib/cmake/SDL2
+    -DSDL2_DIR=${PREFIX_DIR}lib/cmake/SDL2 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7
     cmake --build build/ --target install)
     install_name_tool -id @rpath/libSDL2_mixer-2.0.801.0.0.dylib ${PREFIX_DIR}lib/libSDL2_mixer-2.0.801.0.0.dylib
 
@@ -124,9 +125,6 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     make install
     "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH} ${PREFIX_DIR}
 else
-    # hotfix for issue with luarocks script
-    cp -rf "../MSPBuildSystem/CorsixTH/macos_luarocks" "scripts"
-
     rm -rf ${ARM64_BUILD_FOLDER}
     mkdir ${ARM64_BUILD_FOLDER}
     cd ${ARM64_BUILD_FOLDER}

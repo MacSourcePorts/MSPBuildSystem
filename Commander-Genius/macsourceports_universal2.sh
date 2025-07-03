@@ -11,6 +11,7 @@ export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.12"
 
 cd ../../${PROJECT_NAME}
 

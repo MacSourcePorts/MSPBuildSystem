@@ -13,6 +13,7 @@ export ENTITLEMENTS_FILE="../MSPBuildSystem/wrathplaces/wrathplaces.entitlements
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="10.9"
 export STRIP=/usr/bin/strip
 
 cd ../../${PROJECT_NAME}

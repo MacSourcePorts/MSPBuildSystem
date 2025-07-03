@@ -6,6 +6,7 @@ export PROJECT_NAME="dxx-rebirth"
 
 # constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.13"
 
 # this port is not HiDPI aware
 export HIGH_RESOLUTION_CAPABLE="false"

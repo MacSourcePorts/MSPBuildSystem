@@ -12,6 +12,7 @@ export GIT_DEFAULT_BRANCH="master"
 #constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 

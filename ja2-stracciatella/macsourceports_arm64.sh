@@ -16,6 +16,7 @@ export GIT_TAG="v0.21.0"
 #constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="11.0"
 
 export HIGH_RESOLUTION_CAPABLE="true"
 

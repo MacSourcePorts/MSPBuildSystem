@@ -8,6 +8,7 @@ export EXECUTABLE_NAME="openmohaa"
 export PKGINFO="APPLMOHA"
 export GIT_TAG="0.7"
 export GIT_DEFAULT_BRANCH="main"
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 #constants
 source ../common/constants.sh

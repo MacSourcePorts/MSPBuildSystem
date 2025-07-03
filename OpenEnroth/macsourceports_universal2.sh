@@ -11,6 +11,7 @@ export GIT_TAG="v0.1"
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
