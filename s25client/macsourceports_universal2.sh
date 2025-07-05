@@ -12,6 +12,7 @@ export ENTITLEMENTS_FILE="../MSPBuildSystem/Serious-Engine/Serious-Engine.entitl
 #constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="10.9"
 
 cd ../../${PROJECT_NAME}
 

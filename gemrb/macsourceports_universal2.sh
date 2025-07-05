@@ -12,6 +12,7 @@ export PYTHON_VERSION=3.12
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.12"
 
 export ENTITLEMENTS_FILE="../MSPBuildSystem/gemrb/gemrb.entitlements"
 export HIGH_RESOLUTION_CAPABLE="true"

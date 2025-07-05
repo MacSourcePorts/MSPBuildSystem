@@ -10,6 +10,7 @@ export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.9"
 
 # this port is not HiDPI aware
 export HIGH_RESOLUTION_CAPABLE="false"

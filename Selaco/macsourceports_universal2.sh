@@ -12,6 +12,7 @@ export ENTITLEMENTS_FILE="../MSPBuildSystem/selaco/selaco.entitlements"
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 

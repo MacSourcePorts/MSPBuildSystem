@@ -12,6 +12,7 @@ export GIT_TAG="1.2.0"
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="11.5"
 
 cd ../../${PROJECT_NAME}
 
