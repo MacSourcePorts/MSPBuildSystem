@@ -408,6 +408,8 @@ ifneq ($(FORCEDEBUG),0)
     override STRIP :=
 endif
 
+STRIP = /usr/bin/strip
+
 DBGLEVEL :=
 ifeq ($(RELEASE),0)
     OPTLEVEL := 0
