@@ -20,6 +20,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cd ${BUILT_PRODUCTS_DIR}
     cmake \
     -DMACOS_APP_BUNDLE=ON \
+    -DCMAKE_CXX_FLAGS="-Wno-c++11-narrowing" \
     -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
     -DCMAKE_PREFIX_PATH=/usr/local \
@@ -28,10 +29,9 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     # make -j$NCPU
     cmake --build . --parallel $NCPU
     mv src/${WRAPPER_NAME} .
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
     mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
-    cp -a ../data/* ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
+    cp -a ../../MSPBuildSystem/${PROJECT_NAME}/data/* ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
 else
     # create makefiles with cmake, perform builds with make
     rm -rf ${X86_64_BUILD_FOLDER}
@@ -47,7 +47,7 @@ else
     make -j$NCPU
     mv src/${WRAPPER_NAME} .
     mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
-    cp -a ../data/* ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
+    cp -a ../MSPBuildSystem/${PROJECT_NAME}/data/* ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
 
     cd ..
     rm -rf ${ARM64_BUILD_FOLDER}

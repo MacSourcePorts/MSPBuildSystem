@@ -11,3 +11,4 @@ twistd.*
 /buildbot/buildmaster/secrets
 /RBDOOM-3-BFG/data
 /uqm/dist-packages
+/Abuse_1996/data
