@@ -13,6 +13,7 @@ export ENTITLEMENTS_FILE="../MSPBuildSystem/Serious-Engine/Serious-Engine.entitl
 #constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
@@ -43,6 +44,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_CXX_STANDARD=17 \
     -DCMAKE_CXX_STANDARD_REQUIRED=ON \
     -DCMAKE_PREFIX_PATH=/usr/local \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
     -DTFE=TRUE \
     ../Sources
     mkdir -p ${EXECUTABLE_FOLDER_PATH}
