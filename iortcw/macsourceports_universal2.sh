@@ -21,6 +21,9 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	echo "Skipping git because we're on the build server"
 	
 	export RANLIB=/usr/bin/ranlib
+	export USE_INTERNAL_FREETYPE=0
+	export USE_INTERNAL_ZLIB=0
+	export PKG_CONFIG=pkg-config
 else
 	# reset to the main branch
 	echo git checkout ${GIT_DEFAULT_BRANCH}
@@ -63,6 +66,8 @@ cp -R build/release-darwin-universal2/"${WRAPPER_NAME}" "../${BUILT_PRODUCTS_DIR
 
 cd ..
 
+"../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
+"../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/renderer_sp_opengl1.dylib ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH} 
 cp "../MSPBuildSystem/iortcw/iortcwsp.icns" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 gsed -i 's|org.iortcw.iowolfsp|com.macsourceports.iowolfsp|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 gsed -i 's|<string>iortcw</string>|<string>iortcwsp</string>|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
@@ -85,6 +90,8 @@ export WRAPPER_NAME="${PRODUCT_NAME}.app"
 export BUNDLE_ID="com.macsourceports.${PRODUCT_NAME}"
 export CONTENTS_FOLDER_PATH="${WRAPPER_NAME}/Contents"
 export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
+export EXECUTABLE_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/MacOS"
+export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 
 if [ -d build ]; then
 	rm -rf build
@@ -96,6 +103,8 @@ cp -R build/release-darwin-universal2/"${WRAPPER_NAME}" "../${BUILT_PRODUCTS_DIR
 
 cd ..
 
+"../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
+"../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/renderer_mp_opengl1.dylib ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH} 
 cp "../MSPBuildSystem/iortcw/iortcwmp.icns" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 gsed -i 's|org.iortcw.iowolfmp|com.macsourceports.iowolfmp|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 gsed -i 's|<string>iortcw</string>|<string>iortcwmp</string>|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
