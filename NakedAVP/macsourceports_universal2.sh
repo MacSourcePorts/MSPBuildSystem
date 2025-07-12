@@ -1,12 +1,12 @@
 # game/app specific values
-export APP_VERSION="1.2.1"
+export APP_VERSION="1.2.2"
 export PRODUCT_NAME="NakedAVP"
 export PROJECT_NAME="NakedAVP"
 export PORT_NAME="NakedAVP"
 export ICONSFILENAME="NakedAVP"
 export EXECUTABLE_NAME="avp"
 export PKGINFO="APPLAVP"
-export GIT_TAG="1.2.1"
+export GIT_TAG="1.2.2"
 export GIT_DEFAULT_BRANCH="main"
 
 #constants
@@ -18,6 +18,9 @@ if [ -n "$3" ]; then
 	export APP_VERSION="${3/v/}"
 	export GIT_TAG="$3"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+
+    # Tweak until/unless fixed (this file needs to know about SDL.h)
+    gsed -i '1 i\#include <SDL3/SDL.h>' src/avp/win95/frontend/avp_menus.c
 else
     # because we do a patch, we need to reset any changes
     echo git reset --hard
@@ -54,9 +57,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     ..
     cmake --build . --parallel $NCPU
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_NAME}
     cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 else
     rm -rf ${X86_64_BUILD_FOLDER}
     mkdir ${X86_64_BUILD_FOLDER}
