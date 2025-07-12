@@ -20,6 +20,10 @@ if [ -n "$3" ]; then
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
 
+	# because we do a patch, we need to reset any changes
+	echo git reset --hard
+	git reset --hard
+
     # reset to the main branch
     echo git checkout ${GIT_DEFAULT_BRANCH}
     git checkout ${GIT_DEFAULT_BRANCH}
@@ -35,6 +39,14 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     gsed -i "s|<fp.h>|<math.h>|" ext/png/pngpriv.h
+
+    gsed -i '/# *define *fdopen *(fd, *mode) *NULL/ i\
+#if !defined(__APPLE__)
+' ext/zlib/zutil.h
+
+gsed -i '/# *define *fdopen *(fd, *mode) *NULL/ a\
+#endif
+' ext/zlib/zutil.h
 
     mkdir ${BUILT_PRODUCTS_DIR}
     cd ${BUILT_PRODUCTS_DIR}
