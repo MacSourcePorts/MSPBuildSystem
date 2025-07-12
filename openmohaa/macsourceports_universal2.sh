@@ -68,10 +68,10 @@ cmake -G Ninja \
 ../
 ninja
 mkdir -p "${EXECUTABLE_FOLDER_PATH}"
-cp openmohaa.x86_64 "${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}"
-cp omohaaded.x86_64 "${EXECUTABLE_FOLDER_PATH}"/omohaaded
-cp code/client/cgame/cgame.x86_64.dylib "${EXECUTABLE_FOLDER_PATH}"
-cp code/server/fgame/game.x86_64.dylib "${EXECUTABLE_FOLDER_PATH}"
+cp openmohaa "${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}"
+cp omohaaded "${EXECUTABLE_FOLDER_PATH}"/omohaaded
+cp code/client/cgame/cgame.dylib "${EXECUTABLE_FOLDER_PATH}"
+cp code/server/fgame/game.dylib "${EXECUTABLE_FOLDER_PATH}"
 
 cd ../${ARM64_BUILD_FOLDER}
 
@@ -84,10 +84,10 @@ cmake -G Ninja \
 ../
 ninja
 mkdir -p "${EXECUTABLE_FOLDER_PATH}"
-cp openmohaa.arm64 "${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}"
-cp omohaaded.arm64 "${EXECUTABLE_FOLDER_PATH}"/omohaaded
-cp code/client/cgame/cgame.arm64.dylib "${EXECUTABLE_FOLDER_PATH}"
-cp code/server/fgame/game.arm64.dylib "${EXECUTABLE_FOLDER_PATH}"
+cp openmohaa "${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}"
+cp omohaaded "${EXECUTABLE_FOLDER_PATH}"/omohaaded
+cp code/client/cgame/cgame.dylib "${EXECUTABLE_FOLDER_PATH}"
+cp code/server/fgame/game.dylib "${EXECUTABLE_FOLDER_PATH}"
 cd ..
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
