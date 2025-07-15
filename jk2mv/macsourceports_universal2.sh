@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="1.0"
+export APP_VERSION="1.4.1"
 export PRODUCT_NAME="jk2mvmp"
 export PROJECT_NAME="jk2mv"
 export PORT_NAME="jk2mv"

@@ -55,8 +55,7 @@ gsed -i '/# *define *fdopen *(fd, *mode) *NULL/ a\
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
     ..
     cmake --build . --parallel $NCPU
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 else
     # create makefiles with cmake, perform builds with make
     rm -rf ${X86_64_BUILD_FOLDER}

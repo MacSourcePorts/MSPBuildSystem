@@ -55,9 +55,6 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cmake --build . --parallel $NCPU
     "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 
-	ubsan_lib=$(find /Applications/Xcode.app -name libclang_rt.ubsan_osx_dynamic.dylib 2>/dev/null)
-	cp ${ubsan_lib} ${EXECUTABLE_FOLDER_PATH}
-
 	mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/h2d
 	cp ../files/data/resurrection.h2d ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/h2d
 	mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/translations
