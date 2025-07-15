@@ -1,6 +1,6 @@
 # Doom64EXPlus
 
-# Project where we build based off of our own fork and don't worry with tags, just build off latest
+# Project where we build based off of release tags from the project
 
 import os
 from buildbot.plugins import steps, util, changes, schedulers
@@ -28,8 +28,21 @@ Doom64EXPlus_factory.addStep(steps.Git(
     name="Git Pull Latest Doom64EX-Plus Code",
     haltOnFailure=True
 ))
+Doom64EXPlus_factory.addStep(steps.SetPropertyFromCommand(
+    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Doom64EX-Plus"),
+    property="Doom64EX-Plus_latest_tag",
+    name="Fetch Latest Doom64EX-Plus Tag",
+    haltOnFailure=True
+))
 Doom64EXPlus_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Doom64EX-Plus/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["git", "checkout", util.Property('Doom64EX-Plus_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Doom64EX-Plus"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
+Doom64EXPlus_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Doom64EX-Plus/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('Doom64EX-Plus_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Doom64EX-Plus"),
     name="Run Build Script",
     haltOnFailure=True
@@ -42,7 +55,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="Doom64EX-Plus-changes",
-        change_filter=util.ChangeFilter(project='Doom64EX-Plus', branch='master'),
+        change_filter=util.ChangeFilter(project='Doom64EX-Plus', branch='stable'),
         treeStableTimer=None,
         builderNames=["Doom64EX-Plus-builder"]),
     schedulers.ForceScheduler(
