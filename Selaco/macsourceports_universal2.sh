@@ -1,13 +1,13 @@
 # game/app specific values
-export APP_VERSION="0.89-BF"
+export APP_VERSION="0.90"
 export PRODUCT_NAME="Selaco"
 export PROJECT_NAME="Selaco"
 export PORT_NAME="Selaco"
 export ICONSFILENAME="selaco"
 export EXECUTABLE_NAME="Selaco"
 export PKGINFO="APPLGZSL"
-export GIT_TAG="v0.89-BF"
-export GIT_DEFAULT_BRANCH="macos/0.89-BF"
+export GIT_TAG="v0.90"
+export GIT_DEFAULT_BRANCH="macos/0.90"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/selaco/selaco.entitlements"
 
 #constants
@@ -63,7 +63,7 @@ cp /usr/local/lib/libmpg123.0.dylib release/Selaco.app/Contents/Frameworks
 cp /usr/local/lib/libvorbisenc.2.0.12.dylib release/Selaco.app/Contents/Frameworks
 
 gsed -i 's|org.drdteam.gzdoom|com.macsourceports.selaco|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
-gsed -i 's|Development Version|0.89-BF|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+gsed -i 's|Development Version|0.90|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 
 echo rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}";
 rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}";
