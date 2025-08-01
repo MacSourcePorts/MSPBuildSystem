@@ -26,7 +26,7 @@ PLIST="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <plist version=\"1.0\">
 <dict>
     <key>CFBundleExecutable</key>
-    <string>${EXECUTABLE_NAME}</string>
+    <string>${EXECUTABLE_NAME}${EXECUTABLE_SUFFIX}</string>
     <key>CFBundleIconFile</key>
     <string>${ICONSFILENAME}</string>
     <key>CFBundleIdentifier</key>
