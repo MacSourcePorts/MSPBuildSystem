@@ -121,6 +121,13 @@ cmake /Users/tomkidd/Downloads/ogg-master "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_6
 
 
 
+8/1/2025
+For now, until further notice, renaming the "ar" program from binutils so that the macOS version is found instead.
+In several projects I specify the macOS version but for Perimeter it's got a subproject not getting the message and the binutils
+version is hindering more than anything. 
+In the future might also do ranlib.
+
+sudo mv /usr/local/bin/ar /usr/local/bin/ar_hidden
 
 
 If these libraries become an issue in the future it's because my @rpath script went too far (or not far enough)
