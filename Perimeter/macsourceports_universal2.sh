@@ -18,17 +18,23 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ -n "$3" ]; then
+	export APP_VERSION="${3/v/}"
+	export GIT_TAG="$3"
+	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+else
+    # reset to the main branch
+    echo git checkout ${GIT_DEFAULT_BRANCH}
+    git checkout ${GIT_DEFAULT_BRANCH}
 
-# fetch the latest 
-echo git pull
-git pull
+    # fetch the latest 
+    echo git pull
+    git pull
 
-# check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+    # check out the latest release tag
+    # echo git checkout tags/${GIT_TAG}
+    # git checkout tags/${GIT_TAG}
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
