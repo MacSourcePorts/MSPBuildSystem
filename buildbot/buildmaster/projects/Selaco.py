@@ -14,7 +14,7 @@ change_source_list = [
         repourl='https://github.com/CrowEater/Selaco',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Selaco"),
         project="Selaco",
-        branches=True,
+        only_tags=True,
         pollInterval=3600  # Poll every hour
     )
 ]
@@ -29,8 +29,22 @@ Selaco_factory.addStep(steps.Git(
     haltOnFailure=True,
     submodules=True
 ))
+Selaco_factory.addStep(steps.SetPropertyFromCommand(
+    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Selaco"),
+    property="Selaco_latest_tag",
+    name="Fetch Latest Selaco Tag",
+    haltOnFailure=True
+))
 Selaco_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Selaco/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["git", "checkout", util.Property('Selaco_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Selaco"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
+
+Selaco_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Selaco/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('Selaco_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Selaco"),
     name="Run Build Script",
     haltOnFailure=True
