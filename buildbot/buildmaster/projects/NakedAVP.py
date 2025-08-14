@@ -35,12 +35,12 @@ NakedAVP_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest NakedAVP Tag",
     haltOnFailure=True
 ))
-NakedAVP_factory.addStep(steps.ShellCommand(
-    command=["git", "checkout", util.Property('NakedAVP_latest_tag')],
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/NakedAVP"),
-    name="Checkout Latest Tag",
-    haltOnFailure=True
-))
+# NakedAVP_factory.addStep(steps.ShellCommand(
+#     command=["git", "checkout", util.Property('NakedAVP_latest_tag')],
+#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/NakedAVP"),
+#     name="Checkout Latest Tag",
+#     haltOnFailure=True
+# ))
 NakedAVP_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('NakedAVP_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP"),
