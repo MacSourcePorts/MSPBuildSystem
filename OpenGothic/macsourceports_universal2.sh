@@ -33,6 +33,8 @@ else
     git checkout tags/${GIT_TAG}
 fi
 
+gsed -i "s|<fp.h>|<math.h>|" lib/Tempest/Engine/thirdparty/libpng/pngpriv.h
+
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
