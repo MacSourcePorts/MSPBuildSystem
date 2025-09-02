@@ -40,13 +40,14 @@ if [ -d build ]; then
 	rm -rf build
 fi
 
-"./make-macosx-ub2.sh" release
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel $NCPU
 
 if [ -d "${BUILT_PRODUCTS_DIR}" ]; then
 	rm -r "${BUILT_PRODUCTS_DIR}"
 fi
 mkdir "${BUILT_PRODUCTS_DIR}"
-cp -R build/release-darwin-universal2/"${WRAPPER_NAME}" "${BUILT_PRODUCTS_DIR}"
+cp -R build/Release/"${WRAPPER_NAME}" "${BUILT_PRODUCTS_DIR}"
 
 cp "../MSPBuildSystem/ioq3/ioquake3.icns" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 gsed -i 's|org.ioquake.ioquake3|com.macsourceports.ioquake3|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
