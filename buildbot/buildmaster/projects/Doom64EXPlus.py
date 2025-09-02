@@ -14,7 +14,7 @@ change_source_list = [
         repourl='https://github.com/atsb/Doom64EX-Plus',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Doom64EX-Plus"),
         project="Doom64EX-Plus",
-        branches=True,
+        only_tags=True,
         pollInterval=3600  # Poll every hour
     )
 ]
