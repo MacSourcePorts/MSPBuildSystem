@@ -45,16 +45,40 @@ export VULKAN_SDK=~/VulkanSDK/1.4.313.0/macOS
 export DYLD_LIBRARY_PATH=$VULKAN_SDK/lib:$DYLD_LIBRARY_PATH
 export CMAKE_PREFIX_PATH=$VULKAN_SDK:$CMAKE_PREFIX_PATH
 
-rm -rf ${BUILT_PRODUCTS_DIR}
+rm -rf ${X86_64_BUILD_FOLDER}
+mkdir ${X86_64_BUILD_FOLDER}
+rm -rf ${ARM64_BUILD_FOLDER}
+mkdir ${ARM64_BUILD_FOLDER}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	mkdir ${BUILT_PRODUCTS_DIR}
-	cd ${BUILT_PRODUCTS_DIR}
 
+	cd ${ARM64_BUILD_FOLDER}
 	cmake \
 	-G "Unix Makefiles" \
 	-DCMAKE_BUILD_TYPE=Release \
-	-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+	-DCMAKE_OSX_ARCHITECTURES="arm64" \
+	-DCMAKE_C_FLAGS_RELEASE="-DNDEBUG" \
+	-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+	-DCMAKE_PREFIX_PATH=/usr/local:$VULKAN_SDK \
+	-DSDL2_DIR:PATH=/usr/local/lib/cmake/SDL2 \
+	-DFFMPEG=OFF \
+	-DBINKDEC=ON \
+	-DUSE_MoltenVK=ON \
+	-DOPENAL_LIBRARY=/usr/local/lib/libopenal.dylib \
+	-DOPENAL_INCLUDE_DIR=/usr/local/include  \
+	../neo -Wno-dev
+
+    cmake --build . --parallel $NCPU
+
+	mkdir -p ${EXECUTABLE_FOLDER_PATH}
+	mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+	cd ..
+
+	cd ${X86_64_BUILD_FOLDER}
+	cmake \
+	-G "Unix Makefiles" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_OSX_ARCHITECTURES="x86_64" \
 	-DCMAKE_C_FLAGS_RELEASE="-DNDEBUG" \
 	-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 	-DCMAKE_PREFIX_PATH=/usr/local:$VULKAN_SDK \
@@ -71,12 +95,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	mkdir -p ${EXECUTABLE_FOLDER_PATH}
 	mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
 
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 else
-	rm -rf ${X86_64_BUILD_FOLDER}
-	mkdir ${X86_64_BUILD_FOLDER}
 	cd ${X86_64_BUILD_FOLDER}
-
 	cmake \
 	-G "Unix Makefiles" \
 	-DCMAKE_BUILD_TYPE=Release \
@@ -93,8 +113,6 @@ else
 	../neo -Wno-dev
 
 	cd ..
-	rm -rf ${ARM64_BUILD_FOLDER}
-	mkdir ${ARM64_BUILD_FOLDER}
 	cd ${ARM64_BUILD_FOLDER}
 
 	cmake \
@@ -130,7 +148,8 @@ cd ..
 
 # create the app bundle
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 else
 	"../MSPBuildSystem/common/build_app_bundle.sh"
 fi

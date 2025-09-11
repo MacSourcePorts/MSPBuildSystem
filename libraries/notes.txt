@@ -130,6 +130,17 @@ In the future might also do ranlib.
 sudo mv /usr/local/bin/ar /usr/local/bin/ar_hidden
 
 
+9/9/2025
+
+ispc
+
+https://github.com/ispc/ispc/releases/tag/v1.28.1
+
+sudo cp -v -R bin/. /usr/local/bin
+sudo cp -v -R include/. /usr/local/include
+sudo cp -v -R lib/. /usr/local/lib
+
+
 If these libraries become an issue in the future it's because my @rpath script went too far (or not far enough)
 
 
