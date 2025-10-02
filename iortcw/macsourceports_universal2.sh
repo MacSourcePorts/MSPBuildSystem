@@ -43,8 +43,12 @@ fi
 # For now, copying over the new ub2 script manually
 cp "../MSPBuildSystem/iortcw/make-macosx-ub2.sh" SP
 cp "../MSPBuildSystem/iortcw/make-macosx-app-sp.sh" SP/make-macosx-app.sh
+cp /usr/local/lib/libSDL2-2.0.0.dylib SP/code/libs/macosx/libSDL2-2.0.0.dylib
+cp /usr/local/lib/libSDL2main.a SP/code/libs/macosx/libSDL2main.a
 cp "../MSPBuildSystem/iortcw/make-macosx-ub2.sh" MP
 cp "../MSPBuildSystem/iortcw/make-macosx-app-mp.sh" MP/make-macosx-app.sh
+cp /usr/local/lib/libSDL2-2.0.0.dylib MP/code/libs/macosx/libSDL2-2.0.0.dylib
+cp /usr/local/lib/libSDL2main.a MP/code/libs/macosx/libSDL2main.a
 
 # creating the "release" folder here since there's two apps involved. 
 if [ -d "${BUILT_PRODUCTS_DIR}" ]; then
