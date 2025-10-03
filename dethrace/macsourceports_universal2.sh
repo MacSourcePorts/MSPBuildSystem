@@ -20,6 +20,7 @@ if [ -n "$3" ]; then
 	export GIT_TAG="$3"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
     # reset to the main branch
     echo git checkout ${GIT_DEFAULT_BRANCH}
     git checkout ${GIT_DEFAULT_BRANCH}
@@ -29,8 +30,8 @@ else
     git pull
 
     # check out the latest release tag
-    # echo git checkout tags/${GIT_TAG}
-    # git checkout tags/${GIT_TAG}
+    echo git checkout tags/${GIT_TAG}
+    git checkout tags/${GIT_TAG}
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -40,6 +41,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     cd ${BUILT_PRODUCTS_DIR}
     cmake \
     -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+    -DCMAKE_C_FLAGS="-Wno-error=int-conversion" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
     ..
     cmake --build . --parallel $NCPU
