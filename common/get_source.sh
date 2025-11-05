@@ -7,7 +7,7 @@ mkdir source
 cd source
 curl -JLO ${SOURCE_URL}
 if [[ ${SOURCE_URL} == *.zip ]]; then
-    unzip ${SOURCE_FILE}
+    yes | unzip ${SOURCE_FILE}
     if [ -z "${SOURCE_FOLDER}" ]; then
         SOURCE_FOLDER=${SOURCE_FILE%.*}
     fi

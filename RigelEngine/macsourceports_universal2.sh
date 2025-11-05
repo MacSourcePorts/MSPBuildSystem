@@ -44,6 +44,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
     -DCMAKE_PREFIX_PATH=/usr/local \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     ..
     cmake --build . --parallel $NCPU
     mv src/${WRAPPER_NAME} .

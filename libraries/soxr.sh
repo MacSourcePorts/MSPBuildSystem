@@ -1,9 +1,10 @@
 export SOURCE_URL="https://downloads.sourceforge.net/project/soxr/soxr-0.1.3-Source.tar.xz"
-export CMAKE_ARGS=""
-
+export CMAKE_ARGS="-DBUILD_TESTS=OFF -DBUILD_TESTING=OFF"
+export CPPFLAGS="-I/usr/local/include"
+export LDFLAGS="-L/usr/local/lib -lomp"
 source "../common/get_source.sh"
 
-curl -JLO https://raw.githubusercontent.com/Homebrew/formula-patches/76868b36263be42440501d3692fd3a258f507d82/libsoxr/arm64_defines.patch
+curl -JLO https://raw.githubusercontent.com/Homebrew/homebrew-core/1cf441a0/Patches/libsoxr/arm64_defines.patch
 mv arm64_defines.patch source
 patch -d source/${SOURCE_FOLDER} < source/arm64_defines.patch
 

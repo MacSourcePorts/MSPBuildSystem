@@ -8,4 +8,4 @@ source "../common/get_source.sh"
 cd source/rubberband-3.3.0
 
 meson setup build --cross-file=../../cross-file.txt -Dresampler=libsamplerate  --prefix=/usr/local
-ninja -C build install
+sudo ninja -C build install

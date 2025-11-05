@@ -11,4 +11,4 @@ source "../common/get_source.sh"
 cd source/${SOURCE_FOLDER}
 meson setup build
 meson compile -C build --verbose
-meson install -C build
+sudo meson install -C build

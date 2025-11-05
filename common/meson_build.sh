@@ -1,4 +1,15 @@
-export MACOSX_DEPLOYMENT_TARGET="10.7"
+if [ -z "${MACOSX_DEPLOYMENT_TARGET}" ]; then
+    export MACOSX_DEPLOYMENT_TARGET="10.7"
+fi
+
+if [ -z "${CROSS_FILE_X86_64}" ]; then
+    export CROSS_FILE_X86_64="../../../cross-x86_64.txt"
+fi
+
+if [ -z "${CROSS_FILE_ARM64}" ]; then
+    export CROSS_FILE_ARM64="../../../cross-arm64.txt"
+fi
+
 export PATH=$PATH:~/Library/Python/3.9/bin/
 
 if [ -z "${SOURCE_FOLDER}" ]; then
@@ -16,7 +27,7 @@ export CFLAGS="-arch x86_64"
 export LDFLAGS="-arch x86_64"
 
 cd build-x86_64
-meson setup ${MESON_FLAGS} --cross-file=../../../cross-x86_64.txt --prefix=/usr/local --libdir=lib --buildtype=release ../${SOURCE_DIR}
+meson setup ${MESON_FLAGS} --cross-file=${CROSS_FILE_X86_64} --prefix=/usr/local --libdir=lib --buildtype=release ../${SOURCE_DIR}
 ninja
 cd ..
 
@@ -24,7 +35,7 @@ export CFLAGS="-arch arm64"
 export LDFLAGS="-arch arm64"
 
 cd build-arm64
-meson setup ${MESON_FLAGS} --cross-file=../../../cross-arm64.txt --prefix=/usr/local --libdir=lib --buildtype=release ../${SOURCE_DIR}
+meson setup ${MESON_FLAGS} --cross-file=${CROSS_FILE_ARM64} --prefix=/usr/local --libdir=lib --buildtype=release ../${SOURCE_DIR}
 ninja
 
 # Apparently the "install" does more than just copy the dylibs

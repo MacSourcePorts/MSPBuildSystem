@@ -43,6 +43,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
         -DSDL2_MIXER_LIBRARIES=/usr/local/lib/libSDL2_mixer.dylib \
         -DENABLE_FLUIDSYNTH="BUNDLED" \
         -DFLUIDSYNTH_LIBRARY=/usr/local/lib/libfluidsynth.1.dylib \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
         -B. -S..
 
     cmake --build . --parallel $NCPU

@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="gemrb"
 export PKGINFO="APPLGRB"
 export GIT_TAG="v0.9.3"
 export GIT_DEFAULT_BRANCH="master"
-export PYTHON_VERSION=3.12
+export PYTHON_VERSION=3.14
 
 #constants
 source ../common/constants.sh

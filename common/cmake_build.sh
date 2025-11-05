@@ -6,6 +6,6 @@ export NCPU=`sysctl -n hw.ncpu`
 rm -rf build
 mkdir build
 cd build
-cmake ../source/${SOURCE_FOLDER} "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" ${CMAKE_ARGS}
+cmake ../source/${SOURCE_FOLDER} -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" ${CMAKE_ARGS}
 cmake --build . --parallel $NCPU
 sudo cmake --install .

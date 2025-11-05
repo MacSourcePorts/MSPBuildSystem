@@ -1,4 +1,4 @@
-export SOURCE_URL="https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz"
+export SOURCE_URL="https://github.com/libffi/libffi/releases/download/v3.5.2/libffi-3.5.2.tar.gz"
 export CONFIGURE_ARGS="--disable-static"
 
 source "../common/get_source.sh"

@@ -89,7 +89,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 
     (cd SDL2-*; ./configure --disable-joystick --disable-haptic --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64  -mmacosx-version-min=10.7' LDFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
     install_name_tool -id @rpath/libSDL2-2.0.0.dylib ${PREFIX_DIR}lib/libSDL2-2.0.0.dylib
-    (cd libxmp*; rm -rf build; cmake -Bbuild . -DCMAKE_INSTALL_PREFIX=${PREFIX_DIR} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"; cmake --build build/ --target install)
+    (cd libxmp*; rm -rf build; cmake -Bbuild . -DCMAKE_INSTALL_PREFIX=${PREFIX_DIR} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"  -DCMAKE_POLICY_VERSION_MINIMUM=3.5; cmake --build build/ --target install)
     install_name_tool -id @rpath/libxmp.4.6.0.dylib ${PREFIX_DIR}lib/libxmp.4.6.0.dylib
     (cd wavpack*; ./configure --disable-apps --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
     (cd ogg-*; ./autogen.sh; ./configure --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7' LDFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
@@ -102,7 +102,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DSDL2MIXER_WAVPACK=ON -DSDL2MIXER_DEPS_SHARED=ON -DBUILD_SHARED_LIBS=ON -DSDL2MIXER_WAVE=ON \
     -DSDL2MIXER_OPUS=ON -DCMAKE_INSTALL_PREFIX=${PREFIX_DIR} -DSDL2_INCLUDE_DIR=${PREFIX_DIR}include/SDL2/ \
     -DOpusFile_INCLUDE_PATH=${PREFIX_DIR}include/opus/ -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-    -DSDL2_DIR=${PREFIX_DIR}lib/cmake/SDL2 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7
+    -DSDL2_DIR=${PREFIX_DIR}lib/cmake/SDL2 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     cmake --build build/ --target install)
     install_name_tool -id @rpath/libSDL2_mixer-2.0.801.0.0.dylib ${PREFIX_DIR}lib/libSDL2_mixer-2.0.801.0.0.dylib
 
@@ -120,6 +120,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DWITH_LUAROCKS=on \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
     -DLUA_LIBRARY=/usr/local/lib/liblua.5.4.dylib \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
     make CorsixTH -j8
     make install
