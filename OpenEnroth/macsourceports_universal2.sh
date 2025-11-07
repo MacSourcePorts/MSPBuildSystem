@@ -57,6 +57,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_LIBRARY_PATH=/usr/local/lib \
     -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
     -DOpenAL_DIR=/usr/local/opt/openal-soft \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     ..
     cmake --build . --parallel $NCPU
     mv src/Bin/OpenEnroth/${WRAPPER_NAME} .
@@ -75,6 +76,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_LIBRARY_PATH=/usr/local/lib \
     -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
     -DOpenAL_DIR=/usr/local/opt/openal-soft \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     ..
     cmake --build . --parallel $NCPU
     mv src/Bin/OpenEnroth/${WRAPPER_NAME} .
