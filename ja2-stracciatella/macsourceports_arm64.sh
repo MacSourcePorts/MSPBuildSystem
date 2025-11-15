@@ -2,7 +2,7 @@
 # I believe to fix it the project needs to pass architecture info to the Rust compiler it uses for static libraries.
 
 # game/app specific values
-export APP_VERSION="0.21.0"
+export APP_VERSION="0.22.1"
 export PRODUCT_NAME="ja2-stracciatella"
 export PROJECT_NAME="ja2-stracciatella"
 export PORT_NAME="JA2 Stracciatella"
@@ -11,7 +11,7 @@ export EXECUTABLE_NAME="ja2-launcher"
 export PKGINFO="APPLJA2"
 export GIT_DEFAULT_BRANCH="master"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/ja2-stracciatella/ja2-stracciatella.entitlements"
-export GIT_TAG="v0.21.0"
+export GIT_TAG="v0.22.1"
 
 #constants
 source ../common/constants.sh
@@ -41,6 +41,12 @@ else
     git checkout tags/${GIT_TAG}
 fi
 
+# Fix issue with static Homebrew linking
+# gsed -i 's|/opt/homebrew/opt/fltk@1.3/|/usr/local/|g' src/launcher/CMakeLists.txt
+gsed -i 's|/opt/homebrew/opt/fltk@1.3/lib/libfltk_forms.a /opt/homebrew/opt/fltk@1.3/lib/libfltk_images.a /opt/homebrew/opt/fltk@1.3/lib/libfltk.a|/usr/local/lib/libfltk_forms.dylib /usr/local/lib/libfltk_images.dylib /usr/local/lib/libfltk.dylib|g' src/launcher/CMakeLists.txt
+
+
+
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}
 mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
@@ -51,7 +57,12 @@ mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
 mkdir -p ${EXECUTABLE_FOLDER_PATH}
 mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
-cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-macos.cmake  -DCPACK_GENERATOR=Bundle -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 ..
+cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain-macos.cmake \
+    -DCPACK_GENERATOR=Bundle \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 \
+    -DWITH_UNITTESTS=OFF \
+    -DLOCAL_LUA_LIB=OFF \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
 make
 
 cd ..
