@@ -18,33 +18,32 @@ if [ -n "$3" ]; then
 	export APP_VERSION="${3/v/}"
 	export GIT_TAG="$3"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
-
-    # Tweak until/unless fixed (this file needs to know about SDL.h)
-    gsed -i '1 i\#include <SDL3/SDL.h>' src/avp/win95/frontend/avp_menus.c
 else
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+
     # because we do a patch, we need to reset any changes
-    echo git reset --hard
-    git reset --hard
+    # echo git reset --hard
+    # git reset --hard
 
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
+    # # reset to the main branch
+    # echo git checkout ${GIT_DEFAULT_BRANCH}
+    # git checkout ${GIT_DEFAULT_BRANCH}
 
-    # # fetch the latest 
-    echo git pull
-    git pull
+    # # # fetch the latest 
+    # echo git pull
+    # git pull
 
-    # check out the latest release tag
-    echo git checkout tags/${GIT_TAG}
-    git checkout tags/${GIT_TAG}
-
-    # tweak one file
-    # gsed -i 's|#include \"SDL.h\"|#include <SDL2/SDL.h>|' src/files.c
+    # # check out the latest release tag
+    # echo git checkout tags/${GIT_TAG}
+    # git checkout tags/${GIT_TAG}
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
+    # Tweak until/unless fixed (this file needs to know about SDL.h)
+    gsed -i '1 i\#include <SDL3/SDL.h>' src/avp/win95/frontend/avp_menus.c
+
     rm -rf ${BUILT_PRODUCTS_DIR}
     mkdir ${BUILT_PRODUCTS_DIR}
     mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
@@ -53,6 +52,8 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_C_FLAGS="-Wno-error=incompatible-function-pointer-types -I/usr/local/include/" \
     -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
+    -DOPENAL_LIBRARY=/usr/local/lib/libopenal.dylib \
+    -DOPENAL_INCLUDE_DIR=/usr/local/include/AL \
     -DCMAKE_PREFIX_PATH=/usr/local \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     ..
