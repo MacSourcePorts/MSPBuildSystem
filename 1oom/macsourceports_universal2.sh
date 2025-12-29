@@ -35,6 +35,7 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 mkdir -p ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
+mkdir -p ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 
 cd ${BUILT_PRODUCTS_DIR}
 ../configure --disable-hwsdl1gl CFLAGS="-arch arm64 -arch x86_64  -mmacosx-version-min=10.7"
@@ -43,6 +44,8 @@ mv src/1oom_* ${EXECUTABLE_FOLDER_PATH}
 make clean
 
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cp ../../MSPBuildSystem/1oom/music.sf2 ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
+
 cd ..
 
 # create the app bundle

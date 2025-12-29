@@ -19,3 +19,5 @@ gsed -i "s|    count = 0;|    //count = 0;|" src/midi/fluid_seq.c
 cd ../..
 
 source "../common/cmake_build.sh"
+
+sudo install_name_tool -id @rpath/libfluidsynth.1.dylib /usr/local/lib/libfluidsynth.1.dylib

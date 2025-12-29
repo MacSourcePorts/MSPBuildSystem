@@ -11,7 +11,7 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/1oom-fork/1oom',
+        repourl='https://github.com/MacSourcePorts/1oom',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/1oom"),
         project="moo1",
         branches=True,
@@ -21,7 +21,7 @@ change_source_list = [
 
 moo1_factory = util.BuildFactory()
 moo1_factory.addStep(steps.Git(
-    repourl='https://github.com/1oom-fork/1oom',
+    repourl='https://github.com/MacSourcePorts/1oom',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/1oom"),
@@ -36,12 +36,12 @@ moo1_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest 1oom Tag",
     haltOnFailure=True
 ))
-# moo1_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('moo1_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/1oom"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True
-# ))
+moo1_factory.addStep(steps.ShellCommand(
+    command=["git", "checkout", "master-vanilla-beta"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/1oom"),
+    name="Checkout master-vanilla-beta",
+    haltOnFailure=True
+))
 moo1_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/1oom/macsourceports_universal2.sh"), "notarize", "buildserver", "1.11.7"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/1oom"),
