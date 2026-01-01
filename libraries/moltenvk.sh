@@ -11,7 +11,7 @@ export VK_LAYER_PATH="$VULKAN_SDK/share/vulkan/explicit_layer.d"
 rm -rf source
 mkdir source
 cd source
-git clone --branch v1.2.9 https://github.com/KhronosGroup/MoltenVK.git
+git clone --branch v1.4.1 https://github.com/KhronosGroup/MoltenVK.git
 cd MoltenVK
 
 ./fetchDependencies
