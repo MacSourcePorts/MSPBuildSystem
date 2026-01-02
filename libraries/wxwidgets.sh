@@ -59,3 +59,5 @@ sudo install_name_tool -change /usr/local/lib/libwx_osx_cocoau_html-3.3.1.0.0.dy
 sudo install_name_tool -change /usr/local/lib/libwx_baseu_xml-3.3.1.0.0.dylib @rpath/libwx_baseu_xml-3.3.1.0.0.dylib /usr/local/lib/libwx_osx_cocoau_qa-3.3.1.0.0.dylib
 sudo install_name_tool -change /usr/local/lib/libwx_baseu_xml-3.3.1.0.0.dylib @rpath/libwx_baseu_xml-3.3.1.0.0.dylib /usr/local/lib/libwx_osx_cocoau_richtext-3.3.1.0.0.dylib
 sudo install_name_tool -change /usr/local/lib/libwx_baseu_xml-3.3.1.0.0.dylib @rpath/libwx_baseu_xml-3.3.1.0.0.dylib /usr/local/lib/libwx_osx_cocoau_xrc-3.3.1.0.0.dylib
+
+sudo install_name_tool -add_rpath /usr/local/lib /usr/local/bin/wxrc-3.3
