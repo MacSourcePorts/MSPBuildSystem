@@ -1,14 +1,14 @@
 # game/app specific values
-export APP_VERSION="0.90"
-export PRODUCT_NAME="Selaco"
-export PROJECT_NAME="Selaco"
-export PORT_NAME="Selaco"
-export ICONSFILENAME="selaco"
+export APP_VERSION="0.92a"
+export PRODUCT_NAME="GZSelaco"
+export PROJECT_NAME="GZSelaco"
+export PORT_NAME="GZSelaco"
+export ICONSFILENAME="GZSelaco"
 export EXECUTABLE_NAME="Selaco"
 export PKGINFO="APPLGZSL"
-export GIT_TAG="v0.90"
-export GIT_DEFAULT_BRANCH="macos/0.90"
-export ENTITLEMENTS_FILE="../MSPBuildSystem/selaco/selaco.entitlements"
+export GIT_TAG="v0.92a"
+export GIT_DEFAULT_BRANCH="macos/0.92a"
+export ENTITLEMENTS_FILE="../MSPBuildSystem/GZSelaco/GZSelaco.entitlements"
 
 #constants
 source ../common/constants.sh
@@ -47,26 +47,30 @@ gsed -i 's|opt|usr|' "build_osx.sh"
 gsed -i 's|opt|usr|' "build_osx.sh"
 gsed -i 's|opt|usr|' "build_osx.sh"
 gsed -i 's| build| release|' "build_osx.sh"
+gsed -i 's|-DCMAKE_BUILD_TYPE=Release|-DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5|' build_osx.sh
 install_name_tool -change /opt/local/lib/libglib-2.0.0.dylib /usr/local/lib/libglib-2.0.0.dylib bin/osx/zmusic/lib/libzmusic.1.1.14.dylib
 install_name_tool -change /opt/local/lib/libglib-2.0.0.dylib /usr/local/lib/libglib-2.0.0.dylib bin/osx/zmusic/lib/libzmusiclite.1.1.14.dylib
 
 ./build_osx.sh
 
-cp /usr/local/lib/libintl.8.dylib release/Selaco.app/Contents/Frameworks 
-cp /usr/local/lib/libpcre2-8.0.dylib release/Selaco.app/Contents/Frameworks
-cp /usr/local/lib/libvorbis.0.4.9.dylib release/Selaco.app/Contents/Frameworks
-cp /usr/local/lib/libogg.0.dylib release/Selaco.app/Contents/Frameworks
-cp /usr/local/lib/libmp3lame.0.dylib release/Selaco.app/Contents/Frameworks
-cp /usr/local/lib/libopus.0.dylib release/Selaco.app/Contents/Frameworks
-cp /usr/local/lib/libFLAC.12.dylib release/Selaco.app/Contents/Frameworks
-cp /usr/local/lib/libmpg123.0.dylib release/Selaco.app/Contents/Frameworks
-cp /usr/local/lib/libvorbisenc.2.0.12.dylib release/Selaco.app/Contents/Frameworks
+mv release/Selaco.app release/GZSelaco.app
 
-gsed -i 's|org.drdteam.gzdoom|com.macsourceports.selaco|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
-gsed -i 's|Development Version|0.90|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+cp /usr/local/lib/libintl.8.dylib release/GZSelaco.app/Contents/Frameworks 
+cp /usr/local/lib/libpcre2-8.0.dylib release/GZSelaco.app/Contents/Frameworks
+cp /usr/local/lib/libvorbis.0.4.9.dylib release/GZSelaco.app/Contents/Frameworks
+cp /usr/local/lib/libogg.0.dylib release/GZSelaco.app/Contents/Frameworks
+cp /usr/local/lib/libmp3lame.0.dylib release/GZSelaco.app/Contents/Frameworks
+cp /usr/local/lib/libopus.0.dylib release/GZSelaco.app/Contents/Frameworks
+cp /usr/local/lib/libFLAC.12.dylib release/GZSelaco.app/Contents/Frameworks
+cp /usr/local/lib/libmpg123.0.dylib release/GZSelaco.app/Contents/Frameworks
+cp /usr/local/lib/libvorbisenc.2.0.12.dylib release/GZSelaco.app/Contents/Frameworks
 
-echo rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}";
-rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}";
+gsed -i 's|org.drdteam.gzdoom|com.macsourceports.gzselaco|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+gsed -i 's|0.90|0.92a|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+gsed -i 's|selaco.icns|GZSelaco.icns|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+
+echo rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Selaco.icns";
+rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Selaco.icns";
 echo cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 
