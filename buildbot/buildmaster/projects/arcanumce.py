@@ -24,7 +24,7 @@ arcanumce_factory.addStep(steps.Git(
     repourl='https://github.com/alexbatalov/arcanum-ce',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/arcanumce"),
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/arcanum-ce"),
     name="Git Pull Latest arcanumce Code",
     haltOnFailure=True
 ))
