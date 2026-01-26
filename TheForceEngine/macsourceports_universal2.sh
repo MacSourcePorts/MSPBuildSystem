@@ -4,7 +4,7 @@ export PRODUCT_NAME="TheForceEngine"
 export PROJECT_NAME="TheForceEngine"
 export PORT_NAME="TheForceEngine"
 export ICONSFILENAME="TheForceEngine"
-export EXECUTABLE_NAME="theforceengine_macos"
+export EXECUTABLE_NAME="theforceengine_osx"
 export PKGINFO="APPLTFE"
 export GIT_DEFAULT_BRANCH="main"
 
