@@ -11,7 +11,7 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/TheForceEngine',
+        repourl='https://github.com/luciusDXL/TheForceEngine',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/TheForceEngine"),
         project="TheForceEngine",
         only_tags=True,
@@ -21,7 +21,7 @@ change_source_list = [
 
 TheForceEngine_factory = util.BuildFactory()
 TheForceEngine_factory.addStep(steps.Git(
-    repourl='https://github.com/MacSourcePorts/TheForceEngine',
+    repourl='https://github.com/luciusDXL/TheForceEngine',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/TheForceEngine"),
