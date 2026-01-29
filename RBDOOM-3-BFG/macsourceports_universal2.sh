@@ -7,7 +7,7 @@ export EXECUTABLE_NAME="RBDoom3BFG"
 export ICONSFILENAME="RBDoom3BFG"
 export PKGINFO="APPLRBD3"
 export GIT_TAG="v1.6.0"
-export GIT_DEFAULT_BRANCH="rpsubsets-and-pc"
+export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

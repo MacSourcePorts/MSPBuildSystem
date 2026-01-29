@@ -11,7 +11,7 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/SRSaunders/RBDOOM-3-BFG',
+        repourl='https://github.com/RobertBeckebans/RBDOOM-3-BFG',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/RBDOOM-3-BFG"),
         project="RBDOOM-3-BFG",
         branches=True,
@@ -21,7 +21,7 @@ change_source_list = [
 
 RBDOOM3BFG_factory = util.BuildFactory()
 RBDOOM3BFG_factory.addStep(steps.Git(
-    repourl='https://github.com/SRSaunders/RBDOOM-3-BFG',
+    repourl='https://github.com/RobertBeckebans/RBDOOM-3-BFG',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/RBDOOM-3-BFG"),
@@ -43,7 +43,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="RBDOOM-3-BFG-changes",
-        change_filter=util.ChangeFilter(project='RBDOOM-3-BFG', branch='rpsubsets-and-pc'),
+        change_filter=util.ChangeFilter(project='RBDOOM-3-BFG', branch='master'),
         treeStableTimer=None,
         builderNames=["RBDOOM-3-BFG-builder"]),
     schedulers.ForceScheduler(
