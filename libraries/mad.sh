@@ -1,23 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/mad/libmad/0.15.1b/libmad-0.15.1b.tar.gz"
-export CONFIGURE_ARGS="-disable-debugging --enable-fpm=64bit"
-export CFLAGS=""
-export LDFLAGS=""
+export SOURCE_URL="https://codeberg.org/tenacityteam/libmad/releases/download/0.16.4/libmad-0.16.4.tar.gz"
+export SOURCE_FOLDER="libmad"
+export CMAKE_ARGS=""
 
 source "../common/get_source.sh"
-
-if [ -z "${SOURCE_FOLDER}" ]; then
-    cd source/${SOURCE_FILE}
-else
-    cd source/${SOURCE_FOLDER}
-fi
-
-touch "NEWS"
-touch "AUTHORS"
-touch "ChangeLog"
-autoreconf -fiv
-
-cd ../..
-
-source "../common/make_build.sh"
-
-sudo install_name_tool -id "@rpath/libmad.0.dylib" /usr/local/lib/libmad.0.dylib
+source "../common/cmake_build.sh"
