@@ -1,7 +1,6 @@
 # ja2stracciatella
 
 # Project where we build based off of release tags from the project
-# This one is arm64 only at this time
 
 import os
 from buildbot.plugins import steps, util, changes, schedulers
@@ -44,7 +43,7 @@ ja2stracciatella_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 ja2stracciatella_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ja2-stracciatella/macsourceports_arm64.sh"), "notarize", "buildserver", util.Property('ja2stracciatella_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ja2-stracciatella/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('ja2stracciatella_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ja2-stracciatella"),
     name="Run Build Script",
     haltOnFailure=True
