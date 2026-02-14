@@ -110,18 +110,24 @@
 	
 23. Install git-lfs
 
-	https://github.com/git-lfs/git-lfs/releases 
+	https://github.com/git-lfs/git-lfs/releases
 
-24. Install the libraries (script to come)
+24. Install rust and cargo
 
-25. Install Buildbot
+```
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+25. Install the libraries (script to come)
+
+26. Install Buildbot
 
 ```
 	pip3 install 'buildbot[bundle]'
 	pip3 install 'buildbot[tls]'
 ```
 
-26. Get secret files from another box (or just use the username and app-specific password from gmail or whatnot and put them in text files)
+27. Get secret files from another box (or just use the username and app-specific password from gmail or whatnot and put them in text files)
 
 	`smtpUser` (username for sending email)
 
@@ -157,4 +163,4 @@
 	
 31. Open up `~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/` and ensure `buildbotURL` is set to http://localhost:8010 (or whatever URL you want to hit, machine name if outside local machine)
 
-22. Go to http://localhost:8010 in a browser (or whatever URL you want to hit, machine name if outside local machine)
+32. Go to http://localhost:8010 in a browser (or whatever URL you want to hit, machine name if outside local machine)
