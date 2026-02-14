@@ -48,20 +48,4 @@ sudo cp -v -R include/* /usr/local/include
 sudo cp -v -R lib/* /usr/local/lib
 sudo cp -v -R share/* /usr/local/share
 
-# sudo make install
-
-# cd source/${SOURCE_FOLDER}
-
-# mkdir installed
-# echo $PWD/source/${SOURCE_FOLDER}installed
-# export $PWD/source/${SOURCE_FOLDER}installed
-
-# source "../common/get_source.sh"
-# source "../common/make_build_lipo.sh"
-
-
-# make CC="clang -arch arm64 -arch x86_64" \
-#     CXX="clang++ -arch arm64 -arch x86_64" \
-#     CPP="clang -E" CXXCPP="clang -E" \
-#     INSTALLPREFIX=$PWD/installed \
-#     install
+sudo gsed -i "s|/Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/source/miniupnpc-2.3.2/build-arm64|/usr/local|" /usr/local/lib/pkgconfig/miniupnpc.pc
