@@ -89,6 +89,9 @@ cd ..
 
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ja2 ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ja2 -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2" -create
 
+install_name_tool -change @rpath/SDL2.framework/Versions/A/SDL2 @rpath/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2"
+install_name_tool -change @rpath/SDL2.framework/Versions/A/SDL2 @rpath/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2-launcher"
+
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2-launcher
 
