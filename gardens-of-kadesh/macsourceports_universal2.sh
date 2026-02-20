@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="1.2.0"
+export APP_VERSION="1.2.1"
 export PRODUCT_NAME="Gardens of Kadesh"
 export PROJECT_NAME="gardens-of-kadesh"
 export PORT_NAME="gardens-of-kadesh"
@@ -7,7 +7,7 @@ export ICONSFILENAME="gardens-of-kadesh"
 export EXECUTABLE_NAME="Homeworld"
 export PKGINFO="APPLGOFK"
 export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="1.2.0"
+export GIT_TAG="1.2.1"
 
 # constants
 source ../common/constants.sh
@@ -25,14 +25,14 @@ echo git pull
 git pull
 
 # check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+echo git checkout tags/${GIT_TAG}
+git checkout tags/${GIT_TAG}
 
 cd tools/kas2c
 "./kas2c-macOS-compile.sh"
 cd ../..
 
-unzip "../MSPBuildSystem/${PROJECT_NAME}/SDL2framework.zip" -d Mac
+unzip -o "../MSPBuildSystem/${PROJECT_NAME}/SDL2framework.zip" -d Mac
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 

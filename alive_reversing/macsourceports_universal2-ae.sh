@@ -38,6 +38,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_PREFIX_PATH=/usr/local \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     -DCMAKE=/usr/local/bin/cmake \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -DCMAKE_C_FLAGS="-Wno-error=single-bit-bitfield-constant-conversion -Wno-error=unused-but-set-variable" \
     -DAEGAME=ON \
     ..

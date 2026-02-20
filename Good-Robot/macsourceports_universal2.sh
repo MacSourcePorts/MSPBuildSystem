@@ -35,6 +35,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DGLEW_LIBRARY_DEBUG=/usr/local/lib/libGLEW.dylib \
     -DGLEW_LIBRARY_RELEASE=/usr/local/lib/libGLEW.dylib \
     -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -DBoost_DIR=/usr/local/lib/cmake/Boost-1.86.0 ..
     mkdir -p ${EXECUTABLE_FOLDER_PATH}
     mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
