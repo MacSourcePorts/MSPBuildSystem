@@ -4,6 +4,7 @@
 ./autoconf.sh
 ./automake.sh
 ./gnu-sed.sh
+./create-dmg.sh
 
 # libs
 ./b2.sh
