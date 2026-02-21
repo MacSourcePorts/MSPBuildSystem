@@ -12,9 +12,9 @@
 
 6. Copy over "signing_values.local" and the ".p8" file from an existing build server into the "common" subfolder of MSPBuildSystem. If you don't have this you'll need to recreate them using the help in the sign_and_notarize.sh file
 
-7. Download and install these three certificates from Apple. Without them the developer certificate isn't trusted
+7. Download and install these three certificates from Apple into the "login" keychain. Without them the developer certificate isn't trusted
 
-    https://www.apple.com/certificateauthority/AppleWWDRCAG3.ce
+    https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer
    
     https://www.apple.com/certificateauthority/AppleWWDRCAG4.cer
 
@@ -22,7 +22,7 @@
 
 9. Export the `"Developer ID Application: Your Name (XXXXXXXXX)"` certificate and private key pair from a working machine into a .p12 file and import it on the new build server. 
     If you don't have this you'll need to create one with your paid Apple Developer account.
-    When done correctly you will see the key nested under the certificate in Keychain Access and labeled as valid. If it's labeled as invalid odds are it's the three root certificates from above at fault.
+    When done correctly you will see the key nested under the certificate in Keychain Access and labeled as valid when viewed from the "Certificates" tab in Keychain Access. If it's labeled as invalid odds are it's the three root certificates from above at fault.
 
 10. Install Appparency. Not required for building but very easy to use with regards to figuring out if the signing/notarizing worked.
 
@@ -50,7 +50,8 @@
 
 16. Install fmod SDK
 
-	https://www.fmod.com/download
+	https://www.fmod.com/download (under "FMOD Engine")
+
 	`fmodstudioapi20308mac-installer.dmg`
 	
 	Drag the FMOD Programmers API folder to /Applications
