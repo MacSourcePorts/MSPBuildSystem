@@ -20,3 +20,11 @@ sudo lipo -create -output /usr/local/lib/libavfilter.10.1.100.dylib source/${SOU
 sudo lipo -create -output /usr/local/lib/libavdevice.61.1.100.dylib source/${SOURCE_FOLDER}/build-arm64/libavdevice/libavdevice.61.dylib source/${SOURCE_FOLDER}/build-x86_64/libavdevice/libavdevice.61.dylib
 sudo lipo -create -output /usr/local/lib/libavformat.61.1.100.dylib source/${SOURCE_FOLDER}/build-arm64/libavformat/libavformat.61.dylib source/${SOURCE_FOLDER}/build-x86_64/libavformat/libavformat.61.dylib
 sudo lipo -create -output /usr/local/lib/libavcodec.61.3.100.dylib source/${SOURCE_FOLDER}/build-arm64/libavcodec/libavcodec.61.dylib source/${SOURCE_FOLDER}/build-x86_64/libavcodec/libavcodec.61.dylib
+sudo lipo -create -output /usr/local/lib/libavutil.59.8.100.dylib source/${SOURCE_FOLDER}/build-arm64/libavutil/libavutil.59.dylib source/${SOURCE_FOLDER}/build-x86_64/libavutil/libavutil.59.dylib
+sudo lipo -create -output /usr/local/lib/libswscale.8.1.100.dylib source/${SOURCE_FOLDER}/build-arm64/libswscale/libswscale.8.dylib source/${SOURCE_FOLDER}/build-x86_64/libswscale/libswscale.8.dylib
+sudo lipo -create -output /usr/local/lib/libswresample.5.1.100.dylib source/${SOURCE_FOLDER}/build-arm64/libswresample/libswresample.5.dylib source/${SOURCE_FOLDER}/build-x86_64/libswresample/libswresample.5.dylib
+
+
+
+
+

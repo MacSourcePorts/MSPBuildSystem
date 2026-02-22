@@ -1,6 +1,7 @@
 export SOURCE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/openmp-18.1.8.src.tar.xz"
-export CMAKE_ARGS="-DLIBOMP_INSTALL_ALIASES=OFF"
-export SOURCE_FOLDER="llvm-project/openmp"
+export CMAKE_ARGS="-DLLVM_ENABLE_RUNTIMES=openmp"
+export SOURCE_FOLDER="llvm-project/runtimes"
+export MACOSX_DEPLOYMENT_TARGET="10.15"
 
 # as of 8/5/2024 the zipped entry above doesn't build. For now checking out the HEAD is easier. 
 rm -rf source
