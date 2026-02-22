@@ -68,10 +68,11 @@
 
 	https://github.com/git-lfs/git-lfs/releases
 
-20. Install rust and cargo
+20. Install rust, cargo and the x86_64 target
 
 ```
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	rustup target add x86_64-apple-darwin
 ```
 
 21. Install the libraries
