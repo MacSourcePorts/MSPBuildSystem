@@ -1,9 +1,10 @@
-export SOURCE_URL="https://github.com/libjxl/libjxl/archive/refs/tags/v0.10.3.tar.gz"
-export SOURCE_FILE="libjxl-0.10.3.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${JPEGXL_URL}
 export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON -DJPEGXL_FORCE_SYSTEM_BROTLI=ON -DJPEGXL_FORCE_SYSTEM_LCMS2=ON -DJPEGXL_FORCE_SYSTEM_HWY=ON -DJPEGXL_ENABLE_DEVTOOLS=ON -DJPEGXL_ENABLE_JNI=OFF -DJPEGXL_ENABLE_JPEGLI=OFF -DJPEGXL_ENABLE_SKCMS=OFF -DJPEGXL_ENABLE_MANPAGES=ON -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12"
 
 source "../common/get_source.sh"
-cd source/libjxl-0.10.3
+cd source/${SOURCE_FOLDER}
 ./deps.sh
 cd ../..
 source "../common/cmake_build.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://codeberg.org/tenacityteam/libmad/releases/download/0.16.4/libmad-0.16.4.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${MAD_URL}
 export SOURCE_FOLDER="libmad"
 export CMAKE_ARGS=""
 

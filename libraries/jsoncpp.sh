@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/open-source-parsers/jsoncpp/archive/refs/tags/1.9.6.tar.gz"
-export SOURCE_FILE="jsoncpp-1.9.6.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${JSONCPP_URL}
 export MESON_FLAGS=""
 
 source "../common/get_source.sh"

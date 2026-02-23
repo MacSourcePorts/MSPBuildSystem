@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/ArtifexSoftware/jbig2dec/archive/refs/tags/0.20.tar.gz"
-export SOURCE_FILE="jbig2dec-0.20.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${JBIG2DEC_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-silent-rules --without-libpng"
 
 source "../common/get_source.sh"

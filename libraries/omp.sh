@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-18.1.8/openmp-18.1.8.src.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${OMP_URL}
 export CMAKE_ARGS="-DLLVM_ENABLE_RUNTIMES=openmp"
 export SOURCE_FOLDER="llvm-project/runtimes"
 export MACOSX_DEPLOYMENT_TARGET="10.15"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/adah1972/libunibreak/releases/download/libunibreak_6_1/libunibreak-6.1.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${UNIBREAK_URL}
 export CONFIGURE_ARGS="--disable-silent-rules"
 
 source "../common/get_source.sh"

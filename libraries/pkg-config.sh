@@ -1,4 +1,6 @@
-export SOURCE_URL="https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${PKGCONF_URL}
 export CFLAGS="-Wno-int-conversion"
 export CXXFLAGS="-Wno-int-conversion"
 export LDFLAGS="-framework CoreFoundation -framework Carbon"

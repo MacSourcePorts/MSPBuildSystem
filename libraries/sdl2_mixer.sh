@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.0/SDL2_mixer-2.8.0.zip"
+source "./source_urls.sh"
 
+export SOURCE_URL=${SDL2_MIXER_URL}
 
 if [ $# -eq 0 ]; then
     export CONFIGURE_ARGS="--enable-music-wave \

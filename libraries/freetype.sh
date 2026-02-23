@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/freetype/freetype2/2.13.2/freetype-2.13.2.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${FREETYPE_URL}
 export CONFIGURE_ARGS="--enable-freetype-config --without-harfbuzz"
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${FLEX_URL}
 export CONFIGURE_ARGS="--disable-silent-rules --disable-shared"
 
 source "../common/get_source.sh"

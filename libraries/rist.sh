@@ -1,4 +1,6 @@
-export SOURCE_URL="https://code.videolan.org/rist/librist/-/archive/v0.2.10/librist-v0.2.10.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${RIST_URL}
 export MESON_FLAGS="--default-library both -Dfallback_builtin=false"
 
 source "../common/get_source.sh"

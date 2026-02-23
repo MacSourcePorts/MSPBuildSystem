@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/xiph/speexdsp/archive/refs/tags/SpeexDSP-1.2.1.tar.gz"
-export SOURCE_FILE="speexdsp-SpeexDSP-1.2.1.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${SPEEXDSP_URL}
 export CONFIGURE_ARGS="--disable-debug --disable-dependency-tracking"
 
 source "../common/get_source.sh"

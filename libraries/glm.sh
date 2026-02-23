@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/g-truc/glm/archive/refs/tags/1.0.1.tar.gz"
-export SOURCE_FILE="glm-1.0.1.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${GLM_URL}
 export CMAKE_ARGS="-DGLM_BUILD_TESTS=OFF -DBUILD_SHARED_LIBS=ON"
 
 source "../common/get_source.sh"

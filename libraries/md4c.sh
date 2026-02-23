@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/mity/md4c/archive/refs/tags/release-0.5.2.tar.gz"
-export SOURCE_FILE="md4c-release-0.5.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${MD4C_URL}
 export CMAKE_ARGS=""
 
 source "../common/get_source.sh"

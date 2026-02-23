@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/libsdl-org/SDL_net/releases/download/release-2.2.0/SDL2_net-2.2.0.zip"
+source "./source_urls.sh"
+
+export SOURCE_URL=${SDL2_NET_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-sdltest"
 
 source "../common/get_source.sh"

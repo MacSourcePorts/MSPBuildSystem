@@ -1,3 +1,5 @@
+source "./source_urls.sh"
+
 rm -rf source
 mkdir source
 cd source
@@ -7,7 +9,7 @@ sudo rm -rf /usr/local/share/ghostscript/fonts
 sudo mv fonts /usr/local/share/ghostscript
 cd ..
 
-export SOURCE_URL="https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10031/ghostpdl-10.03.1.tar.xz"
+export SOURCE_URL=${GHOSTSCRIPT_URL}
 export CONFIGURE_ARGS="--disable-compile-inits --disable-cups --disable-gtk --with-system-libtiff --without-x --enable-shared"
 
 source "../common/get_source.sh"

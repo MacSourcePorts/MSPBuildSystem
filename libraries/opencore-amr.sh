@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-0.1.6.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${OPENCOREAMR_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking"
 
 source "../common/get_source.sh"

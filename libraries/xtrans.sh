@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.x.org/archive/individual/lib/xtrans-1.5.0.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${XTRANS_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-silent-rules --enable-docs=no"
 
 source "../common/get_source.sh"

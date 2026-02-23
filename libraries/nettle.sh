@@ -1,6 +1,8 @@
 # Note: not building at the moment.
 
-export SOURCE_URL="https://ftp.gnu.org/gnu/nettle/nettle-3.10.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${NETTLE_URL}
 export CONFIGURE_ARGS="--enable-shared"
 
 export RANLIB=/usr/bin/ranlib

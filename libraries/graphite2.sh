@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/silnrsi/graphite/releases/download/1.3.14/graphite2-1.3.14.tgz"
-export SOURCE_FOLDER="graphite2-1.3.14"
+source "./source_urls.sh"
+
+export SOURCE_URL=${GRAPHITE2_URL}
 export CMAKE_ARGS=""
 
 source "../common/get_source.sh"

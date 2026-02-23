@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.xiph.org/releases/opus/opus-1.5.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${OPUS_URL}
 export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON"
 
 source "../common/get_source.sh"

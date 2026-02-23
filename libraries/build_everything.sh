@@ -40,7 +40,6 @@
 ./lua.sh
 ./lz4.sh
 ./lzo.sh
-./m4	X.sh
 ./mad.sh
 ./mbedtls.sh
 ./md4c.sh

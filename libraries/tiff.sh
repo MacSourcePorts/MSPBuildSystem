@@ -1,4 +1,6 @@
-export SOURCE_URL="https://download.osgeo.org/libtiff/tiff-4.6.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${TIFF_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-webp --enable-zstd --enable-lzma --without-x"
 
 source "../common/get_source.sh"

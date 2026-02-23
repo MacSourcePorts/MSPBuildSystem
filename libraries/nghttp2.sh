@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/nghttp2/nghttp2/releases/download/v1.61.0/nghttp2-1.61.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${NGHTTP2_URL}
 export CONFIGURE_ARGS="--enable-lib-only"
 
 source "../common/get_source.sh"

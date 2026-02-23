@@ -1,14 +1,17 @@
 # Note: this one builds but fails to install normally
 
+source "./source_urls.sh"
+
 export MACOSX_DEPLOYMENT_TARGET="10.7"
-export SOURCE_URL="https://miniupnp.tuxfamily.org/files/download.php?file=miniupnpc-2.3.2.tar.gz"
+export SOURCE_URL=${MINIUPNPC_URL}
 export SOURCE_FILE="download.php"
-export SOURCE_FOLDER="miniupnpc-2.3.2"
 export PATH="/usr/bin:$PATH"
 
 source "../common/get_source.sh"
 
-cd source/${SOURCE_FOLDER}
+cd source
+export SOURCE_FOLDER=$(ls -t | head -n1)
+cd ${SOURCE_FOLDER}
 
 mkdir build-arm64 build-x86_64 build-universal2
 

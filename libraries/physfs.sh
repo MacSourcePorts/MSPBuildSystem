@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/icculus/physfs/archive/refs/tags/release-3.2.0.tar.gz"
-export SOURCE_FILE="physfs-release-3.2.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${PHYSFS_URL}
 export CMAKE_ARGS="-DPHYSFS_BUILD_TEST=TRUE"
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.gnu.org/gnu/automake/automake-1.18.1.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${AUTOMAKE_URL}
 
 source "../common/get_source.sh"
 

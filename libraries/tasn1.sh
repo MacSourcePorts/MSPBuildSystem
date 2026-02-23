@@ -1,7 +1,9 @@
 # NOTE: Has an issue when installing, but libtasn dylibs are stll installed. 
 # Unsure if this is going to be an issue but moving on for now.
 
-export SOURCE_URL="https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.19.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${TASN1_URL}
 export CONFIGURE_ARGS="--disable-silent-rules --disable-dependency-tracking"
 
 source "../common/get_source.sh"

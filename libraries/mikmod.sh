@@ -1,6 +1,8 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/mikmod/libmikmod/3.3.11.1/libmikmod-3.3.11.1.tar.gz"
+source "./source_urls.sh"
 
-export CONFIGURE_ARGS="--disable-alsa --disable-sam9407 --disable-ultra"
+export SOURCE_URL=${MIKMOD_URL}
+
+export CONFIGURE_ARGS="--disable-debug --disable-dependency-tracking"
 
 source "../common/get_source.sh"
 source "../common/make_build.sh"

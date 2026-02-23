@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/lcms/lcms/2.16/lcms2-2.16.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${LITTLECMS2_URL}
 export CONFIGURE_ARGS=""
 
 source "../common/get_source.sh"

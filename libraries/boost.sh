@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/boostorg/boost/releases/download/boost-1.86.0/boost-1.86.0-b2-nodocs.tar.xz"
-export SOURCE_DIR="boost-1.86.0"
+source "./source_urls.sh"
+
+export SOURCE_URL=${BOOST_URL}
 INSTALL_PREFIX="universal2"
 
 export MACOSX_DEPLOYMENT_TARGET="10.8"
@@ -14,7 +15,8 @@ mkdir source
 cd source
 curl -JLO ${SOURCE_URL}
 tar -xzvf ${SOURCE_FILE}
-cd ${SOURCE_DIR}
+export SOURCE_FOLDER=$(ls -d * | head -n1)
+cd ${SOURCE_FOLDER}
 
 # *** modified from brew.sh site
 # ./bootstrap.sh --without-libraries=python,mpi

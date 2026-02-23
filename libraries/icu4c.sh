@@ -1,7 +1,9 @@
 # NOTE: Has an issue when installing, but libicu dylibs are stll installed. 
 # Unsure if this is going to be an issue but moving on for now.
 
-export SOURCE_URL="https://github.com/unicode-org/icu/releases/download/release-74-2/icu4c-74_2-src.tgz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${ICU4C78_URL}
 export SOURCE_FOLDER="icu/source"
 export CONFIGURE_ARGS="--disable-samples --disable-tests --enable-static --with-library-bits=64"
 

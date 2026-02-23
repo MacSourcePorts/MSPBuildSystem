@@ -1,4 +1,6 @@
-export SOURCE_URL="https://deb.debian.org/debian/pool/main/f/freealut/freealut_1.1.0.orig.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${FREEALUT_URL}
 export SOURCE_FOLDER="freealut-1.1.0"
 export CONFIGURE_ARGS="--disable-debug --disable-dependency-tracking"
 

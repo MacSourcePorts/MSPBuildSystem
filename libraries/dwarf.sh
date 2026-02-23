@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/davea42/libdwarf-code/releases/download/v2.2.0/libdwarf-2.2.0.tar.xz"
-export SOURCE_FILE="libdwarf-2.2.0.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${DWARF_URL}
 
 export CONFIGURE_ARGS="--enable-shared"
 

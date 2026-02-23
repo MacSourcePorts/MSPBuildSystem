@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz"
-export SOURCE_FILE="brotli-1.1.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${BROTLI_URL}
 export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON"
 
 source "../common/get_source.sh"

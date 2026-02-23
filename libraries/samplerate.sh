@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/libsndfile/libsamplerate/archive/refs/tags/0.2.2.tar.gz"
-export SOURCE_FILE="libsamplerate-0.2.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${SAMPLERATE_URL}
 export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON -DLIBSAMPLERATE_EXAMPLES=OFF -DBUILD_TESTING=OFF"
 
 source "../common/get_source.sh"

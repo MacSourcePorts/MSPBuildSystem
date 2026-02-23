@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.gnu.org/gnu/m4/m4-1.4.21.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${M4_URL}
 
 source "../common/get_source.sh"
 

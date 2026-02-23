@@ -1,4 +1,6 @@
-export SOURCE_URL="https://nlnetlabs.nl/downloads/unbound/unbound-1.20.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${UNBOUND_URL}
 export CONFIGURE_ARGS="--enable-event-api --enable-tfo-client --enable-tfo-server"
 
 source "../common/get_source.sh"

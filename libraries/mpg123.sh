@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.mpg123.de/download/mpg123-1.32.6.tar.bz2"
+source "./source_urls.sh"
+
+export SOURCE_URL=${MPG123_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-static --enable-shared --with-default-audio=coreaudio" 
 
 source "../common/get_source.sh"

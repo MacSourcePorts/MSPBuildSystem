@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/ebiggers/libdeflate/archive/refs/tags/v1.25.tar.gz"
-export SOURCE_FILE="libdeflate-1.25.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${DEFLATE_URL}
 export CMAKE_ARGS=""
 
 source "../common/get_source.sh"

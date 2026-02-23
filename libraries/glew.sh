@@ -1,6 +1,8 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/glew/glew/2.2.0/glew-2.2.0.tgz"
-export SOURCE_FOLDER="glew-2.2.0/build/cmake"
+source "./source_urls.sh"
+
+export SOURCE_URL=${GLEW_URL}
 export CMAKE_ARGS=""
 
 source "../common/get_source.sh"
+export SOURCE_FOLDER="${SOURCE_FOLDER}/build/cmake"
 source "../common/cmake_build.sh"

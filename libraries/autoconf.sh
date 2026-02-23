@@ -1,4 +1,6 @@
-export SOURCE_URL="http://mirrors.ibiblio.org/gnu/autoconf/autoconf-2.72.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${AUTOCONF_URL}
 
 source "../common/get_source.sh"
 

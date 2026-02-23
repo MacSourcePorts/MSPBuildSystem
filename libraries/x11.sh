@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.x.org/archive/individual/lib/libX11-1.8.9.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${X11_URL}
 export CONFIGURE_ARGS="--disable-silent-rules --enable-unix-transport --enable-tcp-transport --enable-ipv6 --enable-loadable-i18n --enable-xthreads --enable-specs=no"
 
 source "../common/get_source.sh"

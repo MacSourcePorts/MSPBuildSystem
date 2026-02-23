@@ -1,4 +1,6 @@
-export SOURCE_URL="https://download.libsodium.org/libsodium/releases/libsodium-1.0.20.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${SODIUM_URL}
 export CONFIGURE_ARGS="--disable-debug --disable-dependency-tracking"
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.ferzkopp.net/Software/SDL_gfx-2.0/SDL_gfx-2.0.27.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${SDL_GFX_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-sdltest"
 export CONFIGURE_ARM64_ARGS="--disable-mmx"
 

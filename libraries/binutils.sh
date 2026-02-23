@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.bz2"
+source "./source_urls.sh"
+
+export SOURCE_URL=${BINUTILS_URL}
 export RANLIB=/usr/bin/ranlib
 export AR=/usr/bin/ar
 

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/giflib/giflib-5.2.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${GIFLIB_URL}
 export CONFIGURE_ARGS=""
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/xmp/libxmp/4.6.0/libxmp-4.6.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${XMP_URL}
 export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON"
 
 source "../common/get_source.sh"

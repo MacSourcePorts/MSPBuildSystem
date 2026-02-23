@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.x.org/archive/individual/lib/libXrender-0.9.11.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${XRENDER_URL}
 export CONFIGURE_ARGS="--disable-silent-rules --disable-silent-rules"
 
 source "../common/get_source.sh"

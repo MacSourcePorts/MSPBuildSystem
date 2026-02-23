@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/libexpat/libexpat/releases/download/R_2_6_2/expat-2.6.2.tar.lz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${EXPAT_URL}
 export CONFIGURE_ARGS=""
 
 source "../common/get_source.sh"

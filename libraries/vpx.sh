@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/webmproject/libvpx/archive/refs/tags/v1.14.1.zip"
-export SOURCE_FILE="libvpx-1.14.1.zip"
+source "./source_urls.sh"
+
+export SOURCE_URL=${VPX_URL}
 export CONFIGURE_ARGS="--disable-static --enable-shared --disable-dependency-tracking --disable-examples --disable-unit-tests --enable-pic --enable-vp9-highbitdepth"
 export CONFIGURE_ARM64_ARGS="--target=arm64-darwin23-gcc"
 export CONFIGURE_X86_64_ARGS="--target=x86_64-darwin23-gcc"

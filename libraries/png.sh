@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/libpng/libpng16/1.6.43/libpng-1.6.43.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${PNG_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-silent-rules"
 
 source "../common/get_source.sh"

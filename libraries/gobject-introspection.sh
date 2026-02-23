@@ -1,5 +1,7 @@
+source "./source_urls.sh"
+
 export PATH=/usr/local/bin:$PATH:~/Library/Python/3.9/bin/
-export SOURCE_URL="https://download.gnome.org/sources/gobject-introspection/1.80/gobject-introspection-1.80.1.tar.xz"
+export SOURCE_URL=${GOBJECTINTROSPECTION_URL}
 export MESON_FLAGS=""
 export GI_SCANNER_DISABLE_CACHE=true
 

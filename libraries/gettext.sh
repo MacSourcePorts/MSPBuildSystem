@@ -1,6 +1,8 @@
 # Note: has build issues but still installs dylibs, moving on for now
 
-export SOURCE_URL="https://ftp.gnu.org/gnu/gettext/gettext-0.22.5.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${GETTEXT_URL}
 export CONFIGURE_ARGS="--disable-static --enable-shared --disable-silent-rules --with-included-glib --with-included-libcroco --with-included-libunistring --with-included-libxml --with-emacs --disable-java --disable-csharp --without-git --without-cvs --without-xz --with-included-gettext"
 
 export RANLIB=/usr/bin/ranlib

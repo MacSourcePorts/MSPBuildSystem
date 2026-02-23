@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/fmtlib/fmt/releases/download/11.2.0/fmt-11.2.0.zip"
+source "./source_urls.sh"
+
+export SOURCE_URL=${FMT_URL}
 export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON"
 
 source "../common/get_source.sh"

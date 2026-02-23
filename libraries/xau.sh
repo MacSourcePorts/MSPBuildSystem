@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.x.org/archive/individual/lib/libXau-1.0.11.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${XAU_URL}
 export CONFIGURE_ARGS="--disable-silent-rules --disable-dependency-tracking"
 
 source "../common/get_source.sh"

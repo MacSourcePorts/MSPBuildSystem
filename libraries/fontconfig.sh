@@ -1,5 +1,7 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/freetype/freetype2/2.13.2/freetype-2.13.2.tar.xz"
-export CONFIGURE_ARGS="--disable-dependency-tracking --disable-silent-rules --disable-docs --enable-static--with-add-fonts=/System/Library/Fonts,/Library/Fonts,~/Library/Fonts"
+source "./source_urls.sh"
+
+export SOURCE_URL="https://gitlab.freedesktop.org/fontconfig/fontconfig/-/archive/2.17.1/fontconfig-2.17.1.tar.gz"
+export CONFIGURE_ARGS="--default-library=both -Ddoc=disabled -Dtests=disabled -Dtools=enabled -Dcache-build=disabled -Dadditional-fonts-dirs==/System/Library/Fonts,/Library/Fonts,~/Library/Fonts"
 
 source "../common/get_source.sh"
-source "../common/make_build.sh"
+source "../common/meson_build.sh"

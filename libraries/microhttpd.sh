@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-1.0.1.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${MICROHTTPD_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-silent-rules --enable-https"
 
 source "../common/get_source.sh"

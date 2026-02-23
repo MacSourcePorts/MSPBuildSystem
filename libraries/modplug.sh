@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/modplug-xmms/libmodplug/0.8.9.0/libmodplug-0.8.9.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${MODPLUG_URL}
 export CONFIGURE_ARGS="--disable-debug --disable-dependency-tracking --disable-silent-rules --disable-static"
 
 source "../common/get_source.sh"

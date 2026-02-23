@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/tukaani-project/xz/releases/download/v5.4.6/xz-5.4.6.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${XZ_URL}
 export CONFIGURE_ARGS="--disable-silent-rules --disable-nls --enable-static"
 
 source "../common/get_source.sh"

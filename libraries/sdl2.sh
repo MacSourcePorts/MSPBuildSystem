@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/libsdl-org/SDL/releases/download/release-2.30.3/SDL2-2.30.3.zip"
+source "./source_urls.sh"
+
+export SOURCE_URL=${SDL2_URL}
 export CMAKE_ARGS=""
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${READLINE_URL}
 export CONFIGURE_ARGS="--disable-static --enable-shared --with-curses"
 
 source "../common/get_source.sh"

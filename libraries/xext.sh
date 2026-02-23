@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.x.org/archive/individual/lib/libXext-1.3.6.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${XEXT_URL}
 export CONFIGURE_ARGS="--disable-silent-rules --disable-silent-rules --enable-specs=no"
 
 source "../common/get_source.sh"

@@ -1,11 +1,12 @@
-export SOURCE_URL="https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.1/wxWidgets-3.3.1.tar.bz2"
-export SOURCE_FILE="wxWidgets-3.3.1.tar.bz2"
+source "./source_urls.sh"
+
+export SOURCE_URL=${WXWIDGETS_URL}
 export CONFIGURE_ARGS="--enable-clipboard --enable-controls --enable-dataviewctrl --enable-display --enable-dnd --enable-graphics_ctx --enable-svg --enable-webviewwebkit --with-expat --with-libjpeg --with-libpng --with-libtiff --with-libwebp --with-opengl --with-zlib --disable-tests --disable-precomp-headers --disable-monolithic --with-osx_cocoa --with-libiconv"
 export MAKE_ARGS="-j`sysctl -n hw.ncpu`"
 
 source "../common/get_source.sh"
 
-gsed -i "s|-framework AGL||" source/wxWidgets-3.3.1/configure.ac
+gsed -i "s|-framework AGL||" source/${SOURCE_DIR}/configure.ac
 
 source "../common/make_build.sh"
 

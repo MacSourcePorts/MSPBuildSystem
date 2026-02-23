@@ -1,4 +1,6 @@
-export SOURCE_URL="https://dev-www.libreoffice.org/src/cppunit-1.15.1.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${CPPUNIT_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking"
 
 source "../common/get_source.sh"

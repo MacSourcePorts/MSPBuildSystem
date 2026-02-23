@@ -1,7 +1,9 @@
 # NOTE: Has an issue when building, but libunistring dylibs are stll installed. 
 # Unsure if this is going to be an issue but moving on for now.
 
-export SOURCE_URL="https://ftp.gnu.org/gnu/libunistring/libunistring-1.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${UNISTRING_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --disable-silent-rules"
 
 source "../common/get_source.sh"

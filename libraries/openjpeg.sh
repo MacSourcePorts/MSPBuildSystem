@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/uclouvain/openjpeg/archive/refs/tags/v2.5.2.tar.gz"
-export SOURCE_FILE="openjpeg-2.5.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${OPENJPEG_URL}
 export CMAKE_ARGS="-DBUILD_DOC=ON"
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://luarocks.org/releases/luarocks-3.11.1.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${LUAROCKS_URL}
 export CONFIGURE_ARGS="--prefix=/usr/local --with-lua=/usr/local --with-lua-include=/usr/local/include/lua"
 
 source "../common/get_source.sh"

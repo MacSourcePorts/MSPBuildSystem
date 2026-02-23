@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/fribidi/fribidi/releases/download/v1.0.15/fribidi-1.0.15.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${FRIBIDI_URL}
 export CONFIGURE_ARGS="-disable-debug --disable-dependency-tracking --disable-silent-rules --enable-static"
 
 source "../common/get_source.sh"

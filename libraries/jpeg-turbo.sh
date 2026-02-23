@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.0.3/libjpeg-turbo-3.0.3.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${JPEGTURBO_URL}
 export CMAKE_ARGS="-DWITH_JPEG8=1 -DCMAKE_EXE_LINKER_FLAGS=-Wl"
 
 source "../common/get_source.sh"

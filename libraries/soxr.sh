@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/soxr/soxr-0.1.3-Source.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${SOXR_URL}
 export CMAKE_ARGS="-DBUILD_TESTS=OFF -DBUILD_TESTING=OFF"
 export CPPFLAGS="-I/usr/local/include"
 export LDFLAGS="-L/usr/local/lib -lomp"

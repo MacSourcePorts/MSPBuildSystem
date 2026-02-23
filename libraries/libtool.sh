@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.gnu.org/gnu/libtool/libtool-2.5.4.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${LIBTOOL_URL}
 export CONFIGURE_ARGS="--prefix=/usr/local --disable-dependency-tracking --disable-silent-rules --enable-ltdl-install"
 export SED="sed"
 

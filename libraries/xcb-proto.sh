@@ -1,4 +1,6 @@
-export SOURCE_URL="https://xorg.freedesktop.org/archive/individual/proto/xcb-proto-1.17.0.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${XCBPROTO_URL}
 export CONFIGURE_ARGS="--disable-silent-rules"
 
 source "../common/get_source.sh"

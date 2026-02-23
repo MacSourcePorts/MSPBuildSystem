@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/Netflix/vmaf/archive/refs/tags/v3.0.0.tar.gz"
-export SOURCE_FILE="vmaf-3.0.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${VMAF_URL}
 export SOURCE_DIR="libvmaf/"
 export MESON_FLAGS=""
 

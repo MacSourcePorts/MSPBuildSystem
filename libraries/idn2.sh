@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.gnu.org/gnu/libidn/libidn2-2.3.7.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${IDN2_URL}
 export CONFIGURE_ARGS="--disable-silent-rules"
 
 export RANLIB=/usr/bin/ranlib

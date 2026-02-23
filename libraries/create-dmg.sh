@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/create-dmg/create-dmg/archive/refs/tags/v1.2.3.zip"
-export SOURCE_FILE="create-dmg-1.2.3.zip"
+source "./source_urls.sh"
+
+export SOURCE_URL=${CREATEDMG_URL}
 
 source "../common/get_source.sh"
 

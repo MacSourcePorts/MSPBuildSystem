@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/zeromq/libzmq/releases/download/v4.3.5/zeromq-4.3.5.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${ZEROMQ_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --with-libsodium"
 
 source "../common/get_source.sh"

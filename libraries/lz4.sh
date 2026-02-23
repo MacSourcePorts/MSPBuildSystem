@@ -1,4 +1,6 @@
-export SOURCE_URL="https://github.com/lz4/lz4/releases/download/v1.9.4/lz4-1.9.4.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${LZ4_URL}
 export CONFIGURE_ARGS=""
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://downloads.sourceforge.net/project/openil/DevIL/1.8.0/DevIL-1.8.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${DEVIL_URL}
 export SOURCE_FOLDER="DevIL"
 export CMAKE_ARGS=""
 

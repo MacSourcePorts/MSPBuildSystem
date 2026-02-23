@@ -1,7 +1,8 @@
-export SOURCE_URL="https://code.videolan.org/jeeb/aribb24/-/archive/v1.0.4/aribb24-v1.0.4.tar.bz2"
+source "./source_urls.sh"
+
+export SOURCE_URL=${ARIBB24_URL}
 export CONFIGURE_ARGS="--disable-silent-rules"
 
-# export CFLAGS="-I/usr/local/libz/include"
 export LDFLAGS="-L/usr/lib/libz.1.dylib"
 
 source "../common/get_source.sh"

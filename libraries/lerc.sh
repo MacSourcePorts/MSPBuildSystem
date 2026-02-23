@@ -1,5 +1,6 @@
-export SOURCE_URL="https://github.com/Esri/lerc/archive/refs/tags/v4.0.0.tar.gz"
-export SOURCE_FILE="lerc-4.0.0.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${LERC_URL}
 export CMAKE_ARGS=""
 
 source "../common/get_source.sh"

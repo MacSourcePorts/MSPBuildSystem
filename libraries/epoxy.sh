@@ -1,4 +1,6 @@
-export SOURCE_URL="https://download.gnome.org/sources/libepoxy/1.5/libepoxy-1.5.10.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${EPOXY_URL}
 export MESON_FLAGS=""
 
 source "../common/get_source.sh"

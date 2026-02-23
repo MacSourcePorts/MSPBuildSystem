@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${LZO_URL}
 export CONFIGURE_ARGS="--disable-dependency-tracking --enable-shared"
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.osuosl.org/pub/xiph/releases/flac/flac-1.4.3.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${FLAC_URL}
 export CMAKE_ARGS="-DBUILD_SHARED_LIBS=ON -DINSTALL_MANPAGES=OFF"
 
 source "../common/get_source.sh"

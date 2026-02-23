@@ -1,4 +1,6 @@
-export SOURCE_URL="https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${GMP_URL}
 export CONFIGURE_ARGS="--enable-cxx --with-pic"
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://www.x.org/archive/individual/util/util-macros-1.20.1.tar.xz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${UTILMACROS_URL}
 export CONFIGURE_ARGS=""
 
 source "../common/get_source.sh"

@@ -1,4 +1,6 @@
-export SOURCE_URL="https://zlib.net/zlib-1.3.2.tar.gz"
+source "./source_urls.sh"
+
+export SOURCE_URL=${ZLIB_URL}
 export CONFIGURE_ARGS=""
 
 source "../common/get_source.sh"
