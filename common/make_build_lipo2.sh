@@ -46,5 +46,14 @@ for i in `find . -name "*.dylib" -type f`; do
     lipo -create -output ../build-universal2/${LIB_PATH} ../build-arm64/${LIB_PATH} ../build-x86_64/${LIB_PATH}
 done
 
+for i in `find . -name "*.a" -type f`; do
+    # echo "$i"
+    LIB_NAME=${i##*/}
+    LIB_PATH=${i##./}
+
+    echo lipo -create -output ../build-universal2/${LIB_PATH} ../build-arm64/${LIB_PATH} ../build-x86_64/${LIB_PATH}
+    lipo -create -output ../build-universal2/${LIB_PATH} ../build-arm64/${LIB_PATH} ../build-x86_64/${LIB_PATH}
+done
+
 cd ../build-universal2
 sudo make install
