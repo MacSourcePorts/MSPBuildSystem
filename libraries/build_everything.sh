@@ -170,6 +170,8 @@
 ./jsoncpp.sh
 ./lerc.sh
 ./protobuf.sh
+./zmusic.sh
+./openmpt.sh
 
 
 
