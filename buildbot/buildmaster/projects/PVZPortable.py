@@ -11,7 +11,7 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/PvZ-Portable',
+        repourl='https://github.com/wszqkzqk/PvZ-Portable',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/PvZ-Portable"),
         project="PvZ-Portable",
         only_tags=True,
@@ -21,7 +21,7 @@ change_source_list = [
 
 PvZPortable_factory = util.BuildFactory()
 PvZPortable_factory.addStep(steps.Git(
-    repourl='https://github.com/MacSourcePorts/PvZ-Portable',
+    repourl='https://github.com/wszqkzqk/PvZ-Portable',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/PvZ-Portable"),
@@ -35,14 +35,14 @@ PvZPortable_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest PvZ-Portable Tag",
     haltOnFailure=True
 ))
-# PvZPortable_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('PvZPortable_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/PvZ-Portable"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True
-# ))
 PvZPortable_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable/macsourceports_universal2.sh"), "notarize", "buildserver", "0.1.16"],
+    command=["git", "checkout", util.Property('PvZPortable_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/PvZ-Portable"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
+PvZPortable_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('PvZPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable"),
     name="Run Build Script",
     haltOnFailure=True

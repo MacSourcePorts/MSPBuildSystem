@@ -30,6 +30,8 @@ else
     git pull
 fi
 
+gsed -i 's|SDL_GetBasePath()|SDL_GetPrefPath("io.github.wszqkzqk", "PvZPortable")|' src/SexyAppFramework/SexyAppBase.cpp
+
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 mkdir ${BUILT_PRODUCTS_DIR}
