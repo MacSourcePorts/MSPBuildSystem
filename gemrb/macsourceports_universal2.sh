@@ -48,6 +48,9 @@ gsed -i '/get_filename_component(SDL_FULL_PATH "${SDL_LIB}" REALPATH)/a\
 
 gsed -i 's|\(ADD_CUSTOM_COMMAND(TARGET gemrb PRE_BUILD COMMAND ${CMAKE_INSTALL_NAME_TOOL} -id "@loader_path/../Frameworks/${SDL_BASENAME}"\) "${SDL_FULL_PATH}"|\1 "${BUNDLE_FRAMEWORK_PATH}/${SDL_FULL_NAME}"|' gemrb/CMakeLists.txt
 
+# Fix for crash with 0.9.5, remove when no longer needed
+gsed -i "s|FreeBSD|Darwin|" gemrb/CMakeLists.txt
+
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     rm -rf ${BUILT_PRODUCTS_DIR}
     mkdir ${BUILT_PRODUCTS_DIR}
