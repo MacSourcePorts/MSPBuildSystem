@@ -14,7 +14,7 @@ change_source_list = [
         repourl='https://github.com/AlisterT/openjazz',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenJazz"),
         project="OpenJazz",
-        branches=True,
+        only_tags=True,
         pollInterval=3600  # Poll every hour
     )
 ]
@@ -28,8 +28,21 @@ OpenJazz_factory.addStep(steps.Git(
     name="Git Pull Latest OpenJazz Code",
     haltOnFailure=True
 ))
+OpenJazz_factory.addStep(steps.SetPropertyFromCommand(
+    command=["bash", "-c", "git tag --sort=-creatordate | grep -v '^continuous$' | head -n 1"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenJazz"),
+    property="OpenJazz_latest_tag",
+    name="Fetch Latest OpenJazz Tag",
+    haltOnFailure=True
+))
 OpenJazz_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["git", "checkout", util.Property('OpenJazz_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenJazz"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
+OpenJazz_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('OpenJazz_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz"),
     name="Run Build Script",
     haltOnFailure=True
@@ -42,7 +55,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="OpenJazz-changes",
-        change_filter=util.ChangeFilter(project='OpenJazz', branch='master'),
+        change_filter=util.ChangeFilter(project='OpenJazz'),
         treeStableTimer=None,
         builderNames=["OpenJazz-builder"]),
     schedulers.ForceScheduler(

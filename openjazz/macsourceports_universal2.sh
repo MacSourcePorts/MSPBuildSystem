@@ -13,11 +13,13 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# If we're on the build server, assume we have the latest code
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
+if [ -n "$3" ]; then
+	export APP_VERSION="${3/v/}"
+	export GIT_TAG="$3"
+	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
-    # reset to the main branch
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+
     echo git checkout ${GIT_DEFAULT_BRANCH}
     git checkout ${GIT_DEFAULT_BRANCH}
 

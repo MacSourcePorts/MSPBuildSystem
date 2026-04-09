@@ -14,7 +14,7 @@ change_source_list = [
         repourl='https://github.com/alexbatalov/arcanum-ce',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/arcanumce"),
         project="arcanumce",
-        only_tags=True,
+        branches=True,
         pollInterval=3600  # Poll every hour
     )
 ]

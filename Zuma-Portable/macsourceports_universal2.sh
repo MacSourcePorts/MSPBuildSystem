@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="0.3"
+export APP_VERSION="0.4"
 export PRODUCT_NAME="Zuma-Portable"
 export PROJECT_NAME="Zuma-Portable"
 export PORT_NAME="Zuma-Portable"

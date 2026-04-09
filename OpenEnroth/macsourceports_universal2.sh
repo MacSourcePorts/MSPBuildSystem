@@ -39,6 +39,8 @@ else
     # git checkout tags/${GIT_TAG}rm -rf ${BUILT_PRODUCTS_DIR}
 fi 
 
+gsed -i 's/IMSTB_TEXTEDIT_CHARTYPE empty_string;/IMSTB_TEXTEDIT_CHARTYPE empty_string = 0;/' thirdparty/imgui/imgui/imgui_widgets.cpp
+
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
