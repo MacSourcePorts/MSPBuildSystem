@@ -46,12 +46,12 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     export OpenAL_DIR=/usr/local/opt/openal-soft
 
-    rm -rf ${ARM64_BUILD_FOLDER}
-    mkdir ${ARM64_BUILD_FOLDER}
-    cd ${ARM64_BUILD_FOLDER}
+    rm -rf ${X86_64_BUILD_FOLDER}
+    mkdir ${X86_64_BUILD_FOLDER}
+    cd ${X86_64_BUILD_FOLDER}
     cmake \
     -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
-    -DCMAKE_OSX_ARCHITECTURES="arm64" \
+    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
     -DCMAKE_PREFIX_PATH=/usr/local \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
@@ -60,17 +60,20 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
     -DOpenAL_DIR=/usr/local/opt/openal-soft \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DCMAKE_SYSTEM_NAME=Darwin \
+    -DCMAKE_CROSSCOMPILING=ON \
+    -DCMAKE_C_COMPILER="/usr/bin/clang" \
     ..
     cmake --build . --parallel $NCPU
     mv src/Bin/OpenEnroth/${WRAPPER_NAME} .
 
     cd ..
-    rm -rf ${X86_64_BUILD_FOLDER}
-    mkdir ${X86_64_BUILD_FOLDER}
-    cd ${X86_64_BUILD_FOLDER}
+    rm -rf ${ARM64_BUILD_FOLDER}
+    mkdir ${ARM64_BUILD_FOLDER}
+    cd ${ARM64_BUILD_FOLDER}
     cmake \
     -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
-    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+    -DCMAKE_OSX_ARCHITECTURES="arm64" \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
     -DCMAKE_PREFIX_PATH=/usr/local \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
