@@ -81,8 +81,6 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     rsync -a --exclude 'lib' --exclude 'Resources/English.lproj' --exclude 'Python.app' /Library/Frameworks/Python.framework release/gemrb.app/Contents/Frameworks/
 
     # Hotfix for packaging issue
-    rm -rf release/gemrb.app/Contents/Frameworks/Python.framework/Versions/3.12
-
     rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/libpython${PYTHON_VERSION}.dylib release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/
     rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/*.py release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/
     rsync -a /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/collections release/gemrb.app/Contents/Frameworks/Python.framework/Versions/${PYTHON_VERSION}/lib/python${PYTHON_VERSION}/

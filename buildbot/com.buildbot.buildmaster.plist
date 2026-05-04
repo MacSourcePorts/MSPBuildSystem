@@ -6,7 +6,7 @@
     <string>com.buildbot.buildmaster</string>
     <key>ProgramArguments</key>
     <array>
-      <string>/Library/Frameworks/Python.framework/Versions/3.12/bin/buildbot</string>
+      <string>/Library/Frameworks/Python.framework/Versions/3.14/bin/buildbot</string>
       <string>start</string>
       <string>/Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster</string>
     </array>
