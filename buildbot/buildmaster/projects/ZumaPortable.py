@@ -36,19 +36,6 @@ ZumaPortable_factory.addStep(steps.Git(
     name="Git Pull Latest Zuma-Portable Code",
     haltOnFailure=True
 ))
-# ZumaPortable_factory.addStep(steps.SetPropertyFromCommand(
-#     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable"),
-#     property="ZumaPortable_latest_tag",
-#     name="Fetch Latest Zuma-Portable Tag",
-#     haltOnFailure=True
-# ))
-# ZumaPortable_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('ZumaPortable_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/PvZ-Portable"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True
-# ))
 ZumaPortable_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable/scripts/create_flat_directory.sh")],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable"),
@@ -63,8 +50,21 @@ ZumaPortable_factory.addStep(steps.Git(
     name="Git Pull Latest CircleShoot Code",
     haltOnFailure=True
 ))
+ZumaPortable_factory.addStep(steps.SetPropertyFromCommand(
+    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Zuma-Portable/src/CircleShoot"),
+    property="ZumaPortable_latest_tag",
+    name="Fetch Latest Zuma-Portable Tag",
+    haltOnFailure=True
+))
 ZumaPortable_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["git", "checkout", util.Property('ZumaPortable_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable/src/CircleShoot"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
+ZumaPortable_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('ZumaPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable"),
     name="Run Build Script",
     haltOnFailure=True
