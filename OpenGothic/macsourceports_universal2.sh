@@ -47,6 +47,7 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_PREFIX_PATH=/usr/local \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DCMAKE_CXX_FLAGS="-Wno-error=nonnull" \
     ..
     cmake --build . --target Gothic2Notr -j $NCPU
     cp opengothic/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
