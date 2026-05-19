@@ -33,7 +33,7 @@ else
     git checkout tags/${GIT_TAG}
 fi
 
-gsed -i "s|<fp.h>|<math.h>|" lib/Tempest/Engine/thirdparty/libpng/pngpriv.h
+gsed -i "s|<fp.h>|<math.h>|" lib/Tempest/Engine/thirdparty/libpng/libpng/pngpriv.h
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -50,8 +50,6 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     ..
     cmake --build . --target Gothic2Notr -j $NCPU
     cp opengothic/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
-    cp opengothic/libTempest.dylib ${EXECUTABLE_FOLDER_PATH}
-    install_name_tool -add_rpath @executable_path/. ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
     "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
 else
     rm -rf ${X86_64_BUILD_FOLDER}
