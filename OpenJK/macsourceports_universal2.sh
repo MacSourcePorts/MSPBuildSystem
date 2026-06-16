@@ -80,6 +80,7 @@ export BUNDLE_ID="com.macsourceports.${PRODUCT_NAME}"
 export EXECUTABLE_NAME="openjk_sp"
 export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
 export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
+export ICONSFILENAME="openjk-sp"
 
 # the file names always have the host OS even when cross compiling. Trying to use CMAKE_SYSTEM_PROCESSOR break things. Have to do this by hand.
 rm -rf ${X86_64_BUILD_FOLDER}/openjk_sp.x86_64.app
@@ -170,6 +171,7 @@ export BUNDLE_ID="com.macsourceports.${PRODUCT_NAME}"
 export EXECUTABLE_NAME="openjk_mp"
 export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
 export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
+export ICONSFILENAME="openjk-mp"
 
 rm -rf ${X86_64_BUILD_FOLDER}/openjk.x86_64.app
 if [ -d ${X86_64_BUILD_FOLDER}/install/JediAcademy/openjk.x86_64.app ]; then 
@@ -281,6 +283,7 @@ export BUNDLE_ID="com.macsourceports.${PRODUCT_NAME}"
 export EXECUTABLE_NAME="openjo_sp"
 export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
 export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
+export ICONSFILENAME="openjo"
 
 rm -rf ${X86_64_BUILD_FOLDER}/openjo_sp.x86_64.app
 
