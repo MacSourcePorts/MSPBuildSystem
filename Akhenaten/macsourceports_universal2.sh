@@ -38,24 +38,29 @@ fi
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    gsed -i "s|<fp.h>|<math.h>|" ext/png/pngpriv.h
+    gsed -i "s|v1.3.1|v1.3.2|" CMakeLists.txt
 
-    gsed -i '/# *define *fdopen *(fd, *mode) *NULL/ i\
-#if !defined(__APPLE__)
-' ext/zlib/zutil.h
-
-gsed -i '/# *define *fdopen *(fd, *mode) *NULL/ a\
-#endif
-' ext/zlib/zutil.h
-
-    mkdir ${BUILT_PRODUCTS_DIR}
-    cd ${BUILT_PRODUCTS_DIR}
+    rm -rf ${X86_64_BUILD_FOLDER}
+    mkdir ${X86_64_BUILD_FOLDER}
+    cd ${X86_64_BUILD_FOLDER}
     cmake \
-    -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
+    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
     ..
     cmake --build . --parallel $NCPU
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+
+    cd ..
+    rm -rf ${ARM64_BUILD_FOLDER}
+    mkdir ${ARM64_BUILD_FOLDER}
+    cd ${ARM64_BUILD_FOLDER}
+    cmake \
+    -DCMAKE_OSX_ARCHITECTURES="arm64" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+    ..
+    cmake --build . --parallel $NCPU
+
+    install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/build/build_arm64/lib/libssl.3.dylib  @rpath/libssl.3.dylib "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+    install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/build/build_arm64/lib/libcrypto.3.dylib  @rpath/libcrypto.3.dylib "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 else
     # create makefiles with cmake, perform builds with make
     rm -rf ${X86_64_BUILD_FOLDER}
@@ -76,7 +81,11 @@ cd ..
 
 # create the app bundle
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+    
+    cd ${BUILT_PRODUCTS_DIR}
+    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+    cd ..
 else
     "../MSPBuildSystem/common/build_app_bundle.sh"
 fi
