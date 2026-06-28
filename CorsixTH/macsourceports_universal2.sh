@@ -118,9 +118,10 @@ if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
     -DCMAKE_INSTALL_PREFIX=${SCRIPT_DIR}/${BUILT_PRODUCTS_DIR} \
     -DCMAKE_PREFIX_PATH=${PREFIX_DIR} \
     -DWITH_LUAROCKS=on \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
     -DLUA_LIBRARY=/usr/local/lib/liblua.5.4.dylib \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DWITH_MIDI_DEVICE=OFF \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
     make CorsixTH -j8
     make install
