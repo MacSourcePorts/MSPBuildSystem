@@ -2,6 +2,7 @@ export ABSEIL_URL="https://github.com/abseil/abseil-cpp/archive/refs/tags/202601
 export AOM_URL="https://aomedia.googlesource.com/aom.git"
 export ARIBB24_URL="https://code.videolan.org/jeeb/aribb24/-/archive/v1.0.4/aribb24-v1.0.4.tar.bz2"
 export ASS_URL="https://github.com/libass/libass/releases/download/0.17.4/libass-0.17.4.tar.xz"
+export AUTOCONFARCHIVE_URL="https://ftpmirror.gnu.org/gnu/autoconf-archive/autoconf-archive-2024.10.16.tar.xz"
 export AUTOCONF_URL="https://ftpmirror.gnu.org/gnu/autoconf/autoconf-2.73.tar.gz"
 export AUTOMAKE_URL="https://ftpmirror.gnu.org/gnu/automake/automake-1.18.1.tar.xz"
 export AVIF_URL="https://github.com/AOMediaCodec/libavif/archive/refs/tags/v1.4.1.tar.gz"
