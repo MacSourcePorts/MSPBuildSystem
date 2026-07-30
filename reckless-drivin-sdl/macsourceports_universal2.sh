@@ -39,7 +39,8 @@ mkdir ${BUILT_PRODUCTS_DIR}
 
 ./build-mac-app.sh
 
-mv build/${WRAPPER_NAME} ${BUILT_PRODUCTS_DIR}
+# mv build/${WRAPPER_NAME} ${BUILT_PRODUCTS_DIR}
+mv build/Reckless\ Drivin\'.app ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 
