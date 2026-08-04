@@ -10,8 +10,9 @@ export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh
-export MINIMUM_SYSTEM_VERSION="10.9"
-
+export MACOSX_DEPLOYMENT_TARGET="10.9"
+export CFLAGS=-mmacosx-version-min=10.9
+export LDFLAGS=-mmacosx-version-min=10.9
 cd ../../${PROJECT_NAME}
 
 export APP_VERSION="1.32"
