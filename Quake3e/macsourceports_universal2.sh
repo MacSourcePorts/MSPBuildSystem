@@ -15,7 +15,7 @@ export CFLAGS=-mmacosx-version-min=10.9
 export LDFLAGS=-mmacosx-version-min=10.9
 cd ../../${PROJECT_NAME}
 
-export APP_VERSION="1.32"
+export APP_VERSION="1.32e"
 
 if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
 	echo "Skipping git because we're on the build server"
