@@ -11,3 +11,5 @@ echo $PWD
 sed -i '' 's/-Werror//g' source/portaudio/configure
 
 source "../common/make_build.sh"
+
+sudo install_name_tool -id @rpath/libportaudio.2.dylib /usr/local/lib/libportaudio.2.dylib
