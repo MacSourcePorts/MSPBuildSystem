@@ -68,28 +68,34 @@
 
 	https://github.com/git-lfs/git-lfs/releases
 
-20. Install rust, cargo and the x86_64 target
+20. Install Metal Toolchain
+
+```
+	xcodebuild -downloadComponent MetalToolchain
+```
+
+21. Install rust, cargo and the x86_64 target
 
 ```
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	rustup target add x86_64-apple-darwin
 ```
 
-21. Install the libraries
+22. Install the libraries
 
 ```
 	cd libraries
 	./build_everything.sh
 ```
 
-22. Install Buildbot
+23. Install Buildbot
 
 ```
 	pip3 install 'buildbot[bundle]'
 	pip3 install 'buildbot[tls]'
 ```
 
-23. Get secret files from another box (or just use the username and app-specific password from gmail or whatnot and put them in text files)
+24. Get secret files from another box (or just use the username and app-specific password from gmail or whatnot and put them in text files)
 
 	`smtpUser` (username for sending email)
 
@@ -107,22 +113,22 @@
 	
 	`chmod 400 ~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster/secrets/*`
 
-24. Run the upgrade tool on the buildmaster database. Not sure why we need to do this but whatever
+25. Run the upgrade tool on the buildmaster database. Not sure why we need to do this but whatever
 
 	`buildbot upgrade-master ~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster`
 
-25. Start the buildbot buildmaster
+26. Start the buildbot buildmaster
 
 	in `~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/`
 
     `buildbot start buildmaster`
 
-26. Start the buildbot worker
+27. Start the buildbot worker
 
 	in `~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/`
 
 	`buildbot-worker start worker1`
 	
-27. Open up `~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/` and ensure `buildbotURL` is set to http://localhost:8010 (or whatever URL you want to hit, machine name if outside local machine)
+28. Open up `~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/` and ensure `buildbotURL` is set to http://localhost:8010 (or whatever URL you want to hit, machine name if outside local machine)
 
-28. Go to http://localhost:8010 in a browser (or whatever URL you want to hit, machine name if outside local machine)
+29. Go to http://localhost:8010 in a browser (or whatever URL you want to hit, machine name if outside local machine)
