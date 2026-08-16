@@ -1,4 +1,4 @@
-# BDD3
+# aviaozinhoachievements
 
 # Project where we build based the latest code because we can't update the original
 
@@ -6,39 +6,39 @@ import os
 from buildbot.plugins import steps, util, changes, schedulers
 
 project_list = [ 
-    util.Project(name="BDD3",description="BDD3 source port project")
+    util.Project(name="aviaozinhoachievements",description="aviaozinhoachievements source port project")
 ]
 
 change_source_list = [
     changes.GitPoller(
         repourl='https://github.com/MacSourcePorts/aviaozinhoachievements',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/aviaozinhoachievements"),
-        project="BDD3",
+        project="aviaozinhoachievements",
         only_tags=True,
         pollInterval=3600  # Poll every hour
     )
 ]
 
-BDD3_factory = util.BuildFactory()
-BDD3_factory.addStep(steps.Git(
+aviaozinhoachievements_factory = util.BuildFactory()
+aviaozinhoachievements_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/aviaozinhoachievements',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/aviaozinhoachievements"),
-    name="Git Pull Latest BDD3 Code",
+    name="Git Pull Latest aviaozinhoachievements Code",
     haltOnFailure=True
 ))
 
 # Brazlian Drug Dealer 3
-BDD3_factory.addStep(steps.ShellCommand(
+aviaozinhoachievements_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_bdd3.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements"),
-    name="Run BDD3 Build Script",
+    name="Run aviaozinhoachievements Build Script",
     haltOnFailure=True
 ))
 
 # Brazlian Drug Dealer 4
-BDD3_factory.addStep(steps.ShellCommand(
+aviaozinhoachievements_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_bdd4.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements"),
     name="Run BDD4 Build Script",
@@ -46,7 +46,7 @@ BDD3_factory.addStep(steps.ShellCommand(
 ))
 
 # FLESHCANCER
-BDD3_factory.addStep(steps.ShellCommand(
+aviaozinhoachievements_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_fleshcancer.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements"),
     name="Run FLESHCANCER Build Script",
@@ -54,16 +54,16 @@ BDD3_factory.addStep(steps.ShellCommand(
 ))
 
 builder_configs = [
-    util.BuilderConfig(name="BDD3-builder", workernames=["worker1"], factory=BDD3_factory, project="BDD3")
+    util.BuilderConfig(name="aviaozinhoachievements-builder", workernames=["worker1"], factory=aviaozinhoachievements_factory, project="aviaozinhoachievements")
 ]
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="BDD3-releases",
-        change_filter=util.ChangeFilter(project='BDD3'),
+        name="aviaozinhoachievements-releases",
+        change_filter=util.ChangeFilter(project='aviaozinhoachievements'),
         treeStableTimer=None,
-        builderNames=["BDD3-builder"]),
+        builderNames=["aviaozinhoachievements-builder"]),
     schedulers.ForceScheduler(
-        name="BDD3-force",
-        builderNames=["BDD3-builder"])
+        name="aviaozinhoachievements-force",
+        builderNames=["aviaozinhoachievements-builder"])
 ]
