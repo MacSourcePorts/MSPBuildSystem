@@ -11,8 +11,8 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/aviaozinhoachievements-mac',
-        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/aviaozinhoachievements-mac"),
+        repourl='https://github.com/MacSourcePorts/aviaozinhoachievements',
+        workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/aviaozinhoachievements"),
         project="BDD3",
         only_tags=True,
         pollInterval=3600  # Poll every hour
@@ -21,30 +21,35 @@ change_source_list = [
 
 BDD3_factory = util.BuildFactory()
 BDD3_factory.addStep(steps.Git(
-    repourl='https://github.com/MacSourcePorts/aviaozinhoachievements-mac',
+    repourl='https://github.com/MacSourcePorts/aviaozinhoachievements',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/aviaozinhoachievements-mac"),
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/aviaozinhoachievements"),
     name="Git Pull Latest BDD3 Code",
     haltOnFailure=True
 ))
-BDD3_factory.addStep(steps.SetPropertyFromCommand(
-    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/aviaozinhoachievements-mac"),
-    property="BDD3_latest_tag",
-    name="Fetch Latest BDD3 Tag",
+
+# Brazlian Drug Dealer 3
+BDD3_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_bdd3.sh"), "notarize"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements"),
+    name="Run BDD3 Build Script",
     haltOnFailure=True
 ))
-# BDD3_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('BDD3_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/aviaozinhoachievements-mac"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True
-# ))
+
+# Brazlian Drug Dealer 4
 BDD3_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements-mac/macsourceports_universal2.sh"), "notarize"],
-    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements-mac"),
-    name="Run Build Script",
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_bdd4.sh"), "notarize"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements"),
+    name="Run BDD4 Build Script",
+    haltOnFailure=True
+))
+
+# FLESHCANCER
+BDD3_factory.addStep(steps.ShellCommand(
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_fleshcancer.sh"), "notarize"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements"),
+    name="Run FLESHCANCER Build Script",
     haltOnFailure=True
 ))
 

@@ -1,11 +1,11 @@
 # game/app specific values
 export APP_VERSION="1.6.2"
-export PRODUCT_NAME="BDD3"
-export PROJECT_NAME="aviaozinhoachievements-mac"
-export PORT_NAME="BDD3"
-export ICONSFILENAME="bdd3"
+export PRODUCT_NAME="FLESHCANCER"
+export PROJECT_NAME="aviaozinhoachievements"
+export PORT_NAME="FLESHCANCER"
+export ICONSFILENAME="fleshcancer"
 export EXECUTABLE_NAME="AVIAO3GAME"
-export PKGINFO="APPLBDD3"
+export PKGINFO="APPLFCAN"
 export GIT_DEFAULT_BRANCH="main"
 
 #constants
@@ -20,14 +20,6 @@ if [ -n "$3" ]; then
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
-
-    # reset to the main branch
-    # echo git checkout ${GIT_DEFAULT_BRANCH}
-    # git checkout ${GIT_DEFAULT_BRANCH}
-
-    # # fetch the latest 
-    # echo git pull
-    # git pull
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -38,6 +30,7 @@ mkdir -p ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 cd ${BUILT_PRODUCTS_DIR}
 cmake \
 -DQS_PREFIX=/usr/local \
+-DQS_FLESH=ON \
 -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
 ..
@@ -54,4 +47,4 @@ cd ..
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
 # #create dmg
-"../MSPBuildSystem/common/package_dmg.sh"
+"../MSPBuildSystem/common/package_dmg.sh" "skipdelete"
