@@ -30,7 +30,7 @@ UZDoom_factory.addStep(steps.Git(
     submodules=True
 ))
 UZDoom_factory.addStep(steps.SetPropertyFromCommand(
-    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
+    command=["bash", "-c", "git ls-remote --tags --sort='-version:refname' https://github.com/UZDoom/UZDoom.git | awk -F'/' '{print $3}' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/UZDoom"),
     property="UZDoom_latest_tag",
     name="Fetch Latest UZDoom Tag",
@@ -44,7 +44,7 @@ UZDoom_factory.addStep(steps.ShellCommand(
 ))
 
 UZDoom_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/UZDoom/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/UZDoom/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('UZDoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/UZDoom"),
     name="Run Build Script",
     haltOnFailure=True
@@ -57,7 +57,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="UZDoom-changes",
-        change_filter=util.ChangeFilter(project='UZDoom', branch='main'),
+        change_filter=util.ChangeFilter(project='UZDoom', branch='trunk'),
         treeStableTimer=None,
         builderNames=["UZDoom-builder"]),
     schedulers.ForceScheduler(
