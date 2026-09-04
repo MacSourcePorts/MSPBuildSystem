@@ -11,8 +11,8 @@ if [ "$1" != "skiplipo" ]; then
 fi
 
 # remove any existing app bundle
-echo rm -rf "./${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
-rm -rf "./${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
+# echo rm -rf "./${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
+# rm -rf "./${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
 
 # make the app bundle directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" ]; then
@@ -60,6 +60,7 @@ echo "${PLIST}" > "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 
 if [ "$1" != "skiplipo" ]; then
     #lipo the executable
+    echo lipo "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
     lipo "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
 
     #copy resources
@@ -73,6 +74,8 @@ if [ "$1" != "skiplipo" ]; then
 fi
 
 # doing the icons last in case we need to overwrite theirs
+# deleting their icon first to eliminate case insensivity issues
+rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}";
 cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 
 echo "bundle done."

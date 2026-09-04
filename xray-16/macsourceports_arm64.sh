@@ -47,7 +47,7 @@ mkdir -p "${EXECUTABLE_FOLDER_PATH}"
 mkdir -p "${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 # mkdir -p "${CONTENTS_FOLDER_PATH}/libs"
 
-cp "../bin/arm64/Release/${EXECUTABLE_NAME}" "${EXECUTABLE_FOLDER_PATH}"
+cp "../bin/arm64/ReleaseMasterGold/${EXECUTABLE_NAME}" "${EXECUTABLE_FOLDER_PATH}"
 cp ../bin/arm64/Release/*.dylib "${EXECUTABLE_FOLDER_PATH}"
 cp ../bin/arm64/Release/*.a "${EXECUTABLE_FOLDER_PATH}"
 cp /opt/homebrew/opt/sdl2/lib/libSDL2-2.0.0.dylib "${EXECUTABLE_FOLDER_PATH}"
