@@ -11,7 +11,7 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/Prey2006',
+        repourl='https://github.com/FriskTheFallenHuman/Prey2006',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Prey2006"),
         project="Prey2006",
         only_tags=True,
@@ -21,7 +21,7 @@ change_source_list = [
 
 Prey2006_factory = util.BuildFactory()
 Prey2006_factory.addStep(steps.Git(
-    repourl='https://github.com/MacSourcePorts/Prey2006',
+    repourl='https://github.com/FriskTheFallenHuman/Prey2006',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Prey2006"),
