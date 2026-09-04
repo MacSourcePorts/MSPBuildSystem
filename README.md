@@ -1,6 +1,16 @@
 # MSPBuildSystem
 Mac Source Ports Build System
 
+---
+
+As of 9/4/2026 this this branch, formerly rhe `main` branch, is now the `local` branch, to reflect that it is what I use/used to build against my main laptop using Homebrew. Increasingly I have been making things work on just the `buildserver` branch so I'm going to make that be the new `main` branch and get rid of the work on making one scipt do both. 
+
+Anyone who wants to replicate or contibute to my work should see the `main` (formerly `buildserver` branch)
+
+The original README is below
+
+---
+
 This repo contains the Mac Source Ports build system files. As much as possible I'm trying to break away from using MSP-specific forks and instead use the original project's code, this makes it easier to incorporate their latest code and release strategies. 
 
 In the scripts:
