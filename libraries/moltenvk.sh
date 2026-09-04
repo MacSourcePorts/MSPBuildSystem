@@ -2,7 +2,7 @@
 # https://sdk.lunarg.com/sdk/download/1.4.304.1/mac/vulkansdk-macos-1.4.304.1.zip
 # In the future this can be automated with https://vulkan.lunarg.com/content/view/latest-sdk-version-api 
 
-export VULKAN_SDK=/Users/tomkidd/VulkanSDK/1.4.304.1/macOS
+export VULKAN_SDK=/Users/tomkidd/VulkanSDK/1.4.357.1/macOS
 export PATH="$VULKAN_SDK/bin:$PATH"
 export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib:$DYLD_LIBRARY_PATH"
 export VK_ICD_FILENAMES="$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
@@ -11,7 +11,7 @@ export VK_LAYER_PATH="$VULKAN_SDK/share/vulkan/explicit_layer.d"
 rm -rf source
 mkdir source
 cd source
-git clone --branch v1.4.1 https://github.com/KhronosGroup/MoltenVK.git
+git clone --branch v1.4.2 https://github.com/KhronosGroup/MoltenVK.git
 cd MoltenVK
 
 ./fetchDependencies
