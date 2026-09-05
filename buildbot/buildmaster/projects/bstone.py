@@ -42,7 +42,7 @@ bstone_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 bstone_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bstone/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('bstone_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bstone/macsourceports_universal2.sh"), "notarize", util.Property('bstone_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bstone"),
     name="Run Build Script",
     haltOnFailure=True

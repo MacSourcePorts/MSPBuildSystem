@@ -42,7 +42,7 @@ rawgl_factory.addStep(steps.SetPropertyFromCommand(
 #     haltOnFailure=True
 # ))
 rawgl_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/rawgl/macsourceports_universal2.sh"), "notarize", "buildserver", "0.2.1"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/rawgl/macsourceports_universal2.sh"), "notarize", "0.2.1"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/rawgl"),
     name="Run Build Script",
     haltOnFailure=True

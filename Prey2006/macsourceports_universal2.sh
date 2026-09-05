@@ -14,22 +14,12 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
-	# reset to the main branch
-	echo git checkout ${GIT_DEFAULT_BRANCH}
-	git checkout ${GIT_DEFAULT_BRANCH}
-
-	# fetch the latest 
-	echo git pull
-	git pull
-
-	# check out the latest release tag
-	echo git checkout tags/${GIT_TAG}
-	git checkout tags/${GIT_TAG}
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
 fi
 
 # For whatever reason,
@@ -53,11 +43,7 @@ cp output/macosx/base/pak007.pk4 "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 
 # create the app bundle
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
-else
-    "../MSPBuildSystem/common/build_app_bundle.sh"
-fi
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 #create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" ]; then

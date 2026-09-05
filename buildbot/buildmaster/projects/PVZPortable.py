@@ -42,7 +42,7 @@ PvZPortable_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 PvZPortable_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('PvZPortable_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable/macsourceports_universal2.sh"), "notarize", util.Property('PvZPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable"),
     name="Run Build Script",
     haltOnFailure=True

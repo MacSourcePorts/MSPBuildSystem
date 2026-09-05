@@ -14,16 +14,13 @@ export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
+if [ -n "$2" ]; then
 	# turns crispy-doom-7.1.0 into 7.1.0
-	export APP_VERSION="${3/crispy-doom-/}"
-	export GIT_TAG="$3"
+	export APP_VERSION="${2/crispy-doom-/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
-
-    echo git reset --hard
-	git reset --hard
 fi
 
 ./autogen.sh

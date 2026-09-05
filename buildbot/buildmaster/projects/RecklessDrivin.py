@@ -42,7 +42,7 @@ RecklessDrivin_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 RecklessDrivin_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/reckless-drivin-sdl/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('RecklessDrivin_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/reckless-drivin-sdl/macsourceports_universal2.sh"), "notarize", util.Property('RecklessDrivin_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/reckless-drivin-sdl"),
     name="Run Build Script",
     haltOnFailure=True

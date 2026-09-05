@@ -30,7 +30,7 @@ darkplaces_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 darkplaces_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/darkplaces/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/darkplaces/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/darkplaces"),
     name="Run Build Script",
     haltOnFailure=True

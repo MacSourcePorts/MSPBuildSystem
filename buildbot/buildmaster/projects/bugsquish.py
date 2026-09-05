@@ -29,7 +29,7 @@ bugsquish_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 bugsquish_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bugsquish/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bugsquish/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bugsquish"),
     name="Run Build Script",
     haltOnFailure=True

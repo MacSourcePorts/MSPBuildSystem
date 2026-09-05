@@ -29,7 +29,7 @@ disasteroids3d_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 disasteroids3d_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/disasteroids3d/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/disasteroids3d/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/disasteroids3d"),
     name="Run Build Script",
     haltOnFailure=True

@@ -42,7 +42,7 @@ Doom64EXPlus_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 Doom64EXPlus_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Doom64EX-Plus/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('Doom64EX-Plus_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Doom64EX-Plus/macsourceports_universal2.sh"), "notarize", util.Property('Doom64EX-Plus_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Doom64EX-Plus"),
     name="Run Build Script",
     haltOnFailure=True

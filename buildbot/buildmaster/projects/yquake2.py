@@ -130,7 +130,7 @@ yquake2_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 yquake2_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/yquake2/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('yquake2_latest_tag'), util.Property('xatrix_latest_tag'), util.Property('rogue_latest_tag'), util.Property('ctf_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/yquake2/macsourceports_universal2.sh"), "notarize", util.Property('yquake2_latest_tag'), util.Property('xatrix_latest_tag'), util.Property('rogue_latest_tag'), util.Property('ctf_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/yquake2"),
     name="Run Build Script",
     haltOnFailure=True

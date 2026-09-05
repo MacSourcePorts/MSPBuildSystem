@@ -13,18 +13,6 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
-else
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
-fi
-
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}

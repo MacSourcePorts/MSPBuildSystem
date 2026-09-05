@@ -16,23 +16,7 @@ export HIGH_RESOLUTION_CAPABLE="false"
 
 cd ../../${PROJECT_NAME}
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
-
-# temp debug
-    # echo git reset --hard
-	# git reset --hard
-
-    gsed -i "s|LDFLAGS =|LDFLAGS = -arch \$\(MACH_TYPE\) -L/usr/local/lib -lSDL|g" engine/hexen2/Makefile
-else
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # # fetch the latest 
-    echo git pull
-    git pull
-fi
+gsed -i "s|LDFLAGS =|LDFLAGS = -arch \$\(MACH_TYPE\) -L/usr/local/lib -lSDL|g" engine/hexen2/Makefile
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -59,16 +43,12 @@ make clean
 cd ../../
 
 # create the app bundle
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
-    install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-    "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+"../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 
-    # copy over sdl2 manually as shim for sdl12-compat
-    cp /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
-else 
-    "../MSPBuildSystem/common/build_app_bundle.sh"
-fi
+# copy over sdl2 manually as shim for sdl12-compat
+cp /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
 
 # #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

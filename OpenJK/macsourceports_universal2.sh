@@ -17,25 +17,11 @@ export HIGH_RESOLUTION_CAPABLE="false"
 
 cd ../../${PROJECT_NAME}
 
-export ARM64_PREFIX_PATH=/opt/Homebrew
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
-    export ARM64_PREFIX_PATH=/usr/local
-	export RANLIB=/usr/bin/ranlib
+export RANLIB=/usr/bin/ranlib
 
-    gsed -i "s|<fp.h>|<math.h>|" lib/libpng/pngpriv.h
-else
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
-fi
+gsed -i "s|<fp.h>|<math.h>|" lib/libpng/pngpriv.h
 
 # this one doesn't do releases, we just build latest
-
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 #create makefiles with cmake, perform builds with make
@@ -63,7 +49,7 @@ cmake \
 -DBuildJK2SPEngine=ON \
 -DBuildJK2SPGame=ON \
 -DBuildJK2SPRdVanilla=ON \
--DCMAKE_PREFIX_PATH=$ARM64_PREFIX_PATH\
+-DCMAKE_PREFIX_PATH=/usr/local \
 -DCMAKE_BUILD_TYPE=Release \
 ..
 cmake --build . --parallel -j$NCPU --target install
@@ -114,45 +100,21 @@ fi
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
 mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" || exit 1;
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-else
-    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib" -create
-    cp -a ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-fi
+install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 
 mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK"
 
 cd ${X86_64_BUILD_FOLDER}
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    dylibbundler -od -b -x ./${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib -d ./${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-fi
 
 cd ..
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamex86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
-    cp -a "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
-fi
-
-cd ${ARM64_BUILD_FOLDER}
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    dylibbundler -od -b -x ./${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_arm64.dylib -d ./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
-fi
-cd ..
 
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_arm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamearm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    # cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-else
-    mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
-    cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
-fi
+"../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
@@ -217,21 +179,11 @@ fi
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
 mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" || exit 1;
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-else
-    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib" -create
-    cp -a ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-fi
+install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 
 mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK"
 mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base"
 
-cd ${X86_64_BUILD_FOLDER}
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    dylibbundler -od -b -x ./${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib -d ./${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-fi
-cd ..
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jampgamex86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/cgamex86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
@@ -239,16 +191,7 @@ cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/uix86_64.dylib ${BUIL
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/jampgamex86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/cgamex86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uix86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
-    cp -a "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
-fi
 
-cd ${ARM64_BUILD_FOLDER}
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    dylibbundler -od -b -x ./${EXECUTABLE_FOLDER_PATH}/rd-vanilla_arm64.dylib -d ./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
-fi
-cd ..
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_arm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jampgamearm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/cgamearm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
@@ -257,14 +200,8 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/jampgamearm64.dylib ${BU
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/cgamearm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uiarm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    # cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-else
-    mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
-    cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
-fi
+"../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
@@ -319,44 +256,18 @@ fi
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
 mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" || exit 1;
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-else
-    lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libSDL2-2.0.0.dylib" -create
-    cp -a ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libSDL2.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-fi
+install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 
 mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK"
 
-cd ${X86_64_BUILD_FOLDER}
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    dylibbundler -od -b -x ./${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib -d ./${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-fi
-cd ..
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamex86_64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
-    cp -a "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}"
-fi
 
-cd ${ARM64_BUILD_FOLDER}
-if [ "$1" != "buildserver" ] && [ "$2" != "buildserver" ]; then
-    dylibbundler -od -b -x ./${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_arm64.dylib -d ./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
-fi
-
-cd ..
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_arm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamearm64.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/OpenJK
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-    # cp /usr/local/lib/libz.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
-else
-    mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
-    cp -a "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}"
-fi
+"../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

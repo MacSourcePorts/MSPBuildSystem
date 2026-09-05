@@ -29,13 +29,13 @@ SeriousEngine_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 SeriousEngine_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine/macsourceports_universal2-ssfe.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine/macsourceports_universal2-ssfe.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine"),
     name="Run Build Script for First Encounter",
     haltOnFailure=True
 ))
 SeriousEngine_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine/macsourceports_universal2-ssse.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine/macsourceports_universal2-ssse.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine"),
     name="Run Build Script for Second Encounter",
     haltOnFailure=True

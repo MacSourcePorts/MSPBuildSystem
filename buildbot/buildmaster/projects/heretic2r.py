@@ -46,7 +46,7 @@ heretic2r_factory.addStep(steps.Git(
 # ))
 
 heretic2r_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Heretic2r-UNIX/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Heretic2r-UNIX/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Heretic2r-UNIX"),
     name="Run Build Script",
     haltOnFailure=True

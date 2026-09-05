@@ -42,7 +42,7 @@ OpenJazz_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 OpenJazz_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('OpenJazz_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz/macsourceports_universal2.sh"), "notarize", util.Property('OpenJazz_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJazz"),
     name="Run Build Script",
     haltOnFailure=True

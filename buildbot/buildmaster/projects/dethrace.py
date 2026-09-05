@@ -44,7 +44,7 @@ dethrace_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 dethrace_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dethrace/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('dethrace_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dethrace/macsourceports_universal2.sh"), "notarize", util.Property('dethrace_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dethrace"),
     name="Run Build Script",
     haltOnFailure=True

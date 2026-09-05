@@ -43,7 +43,7 @@ chocolatedoom_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 chocolatedoom_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/chocolate-doom/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('chocolatedoom_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/chocolate-doom/macsourceports_universal2.sh"), "notarize", util.Property('chocolatedoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/chocolate-doom"),
     name="Run Build Script",
     haltOnFailure=True

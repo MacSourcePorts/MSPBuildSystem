@@ -42,7 +42,7 @@ CorsixTH_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 CorsixTH_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/CorsixTH/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('CorsixTH_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/CorsixTH/macsourceports_universal2.sh"), "notarize", util.Property('CorsixTH_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/CorsixTH"),
     name="Run Build Script",
     haltOnFailure=True

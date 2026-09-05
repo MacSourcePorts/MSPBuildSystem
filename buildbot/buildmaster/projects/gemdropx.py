@@ -29,7 +29,7 @@ gemdropx_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 gemdropx_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gemdropx/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gemdropx/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gemdropx"),
     name="Run Build Script",
     haltOnFailure=True

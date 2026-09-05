@@ -43,7 +43,7 @@ OpenJKDF2_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 OpenJKDF2_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJKDF2/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('OpenJKDF2_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJKDF2/macsourceports_universal2.sh"), "notarize", util.Property('OpenJKDF2_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJKDF2"),
     name="Run Build Script",
     haltOnFailure=True

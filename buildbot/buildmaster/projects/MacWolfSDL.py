@@ -42,7 +42,7 @@ MacWolfSDL_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 MacWolfSDL_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/MacWolfSDL/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('MacWolfSDL_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/MacWolfSDL/macsourceports_universal2.sh"), "notarize", util.Property('MacWolfSDL_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/MacWolfSDL"),
     name="Run Build Script",
     haltOnFailure=True

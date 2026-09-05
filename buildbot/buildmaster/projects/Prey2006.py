@@ -42,7 +42,7 @@ Prey2006_factory.addStep(steps.Git(
 #     haltOnFailure=True
 # ))
 Prey2006_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Prey2006/macsourceports_universal2.sh"), "notarize", "buildserver", "1.5.4"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Prey2006/macsourceports_universal2.sh"), "notarize", "1.5.4"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Prey2006"),
     name="Run Build Script",
     haltOnFailure=True

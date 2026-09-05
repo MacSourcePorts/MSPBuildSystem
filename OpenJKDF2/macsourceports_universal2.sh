@@ -15,29 +15,19 @@ export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
-
-    # check out the latest release tag
-    echo git checkout tags/${GIT_TAG}
-    git checkout tags/${GIT_TAG}
-
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 #because this port does so much of the packaging itself all we need to do is run the script
+gsed -i 's|opt/homebrew/opt/llvm@19/bin|usr/bin|' "distpkg_macos.sh"
+export VERBOSE=1
 ./distpkg_macos.sh
 
 mkdir ${BUILT_PRODUCTS_DIR}

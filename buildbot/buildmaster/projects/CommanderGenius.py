@@ -42,7 +42,7 @@ CommanderGenius_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 CommanderGenius_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Commander-Genius/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('CommanderGenius_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Commander-Genius/macsourceports_universal2.sh"), "notarize", util.Property('CommanderGenius_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Commander-Genius"),
     name="Run Build Script",
     haltOnFailure=True

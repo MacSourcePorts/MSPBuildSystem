@@ -30,7 +30,7 @@ RBDOOM3BFG_factory.addStep(steps.Git(
     submodules=True
 ))
 RBDOOM3BFG_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/RBDOOM-3-BFG/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/RBDOOM-3-BFG/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/RBDOOM-3-BFG"),
     name="Run Build Script",
     haltOnFailure=True

@@ -42,7 +42,7 @@ dhewm3_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 dhewm3_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dhewm3/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('dhewm3_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dhewm3/macsourceports_universal2.sh"), "notarize", util.Property('dhewm3_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dhewm3"),
     name="Run Build Script",
     haltOnFailure=True

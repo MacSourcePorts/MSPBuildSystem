@@ -15,45 +15,15 @@ export GIT_TAG_CTF="CTF_1_10"
 # constants
 source ../common/constants.sh
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	ARM64_CFLAGS="-mmacosx-version-min=10.7"
-	ARM64_LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names"
-	x86_64_CFLAGS="-mmacosx-version-min=10.7"
-	x86_64_LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names"
-else
-	ARM64_CFLAGS="-I/opt/homebrew/include -I/opt/homebrew/opt/openal-soft/include -mmacosx-version-min=10.7"
-	ARM64_LDFLAGS="-L/opt/homebrew/lib -L/opt/homebrew/opt/openal-soft/lib -mmacosx-version-min=10.7"
-	x86_64_CFLAGS="-mmacosx-version-min=10.7"
-	x86_64_LDFLAGS="-mmacosx-version-min=10.7"
-fi
-
-# Command line arguments:
-# $3: yquake2 tag
-# $4: xatrix tag
-# $5: rogue tag
-# $6: ctf tag
+ARM64_CFLAGS="-mmacosx-version-min=10.7"
+ARM64_LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names"
+x86_64_CFLAGS="-mmacosx-version-min=10.7"
+x86_64_LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names"
 
 # build the expansion pack libraries first
 
 # Mission Pack 1: The Reckoning (XATRIX)
 cd ../../xatrix
-
-if [ -n "$4" ]; then
-	export GIT_TAG_XATRIX="$4"
-	echo "Setting Xatrix (mp1) tag to: " "$GIT_TAG_XATRIX"
-else
-	# reset to the main branch
-	echo git checkout ${GIT_DEFAULT_BRANCH}
-	git checkout ${GIT_DEFAULT_BRANCH}
-
-	# fetch the latest 
-	echo git pull
-	git pull
-
-	# check out the latest release tag
-	echo git checkout tags/${GIT_TAG_XATRIX}
-	git checkout tags/${GIT_TAG_XATRIX}
-fi 
 
 (YQ2_ARCH=x86_64 make clean) || exit 1;
 (YQ2_ARCH=x86_64 CFLAGS=$x86_64_CFLAGS  LDFLAGS=$x86_64_LDFLAGS make -j$NCPU) || exit 1;
@@ -70,23 +40,6 @@ rm -rd release
 # Mission Pack 2: Ground Zero (ROGUE)
 cd ../rogue
 
-if [ -n "$5" ]; then
-	export GIT_TAG_ROGUE="$5"
-	echo "Setting Rogue (mp2) tag to: " "$GIT_TAG_ROGUE"
-else
-	# reset to the main branch
-	echo git checkout ${GIT_DEFAULT_BRANCH}
-	git checkout ${GIT_DEFAULT_BRANCH}
-
-	# fetch the latest 
-	echo git pull
-	git pull
-
-	# check out the latest release tag
-	echo git checkout tags/${GIT_TAG_ROGUE}
-	git checkout tags/${GIT_TAG_ROGUE}
-fi
-
 (YQ2_ARCH=x86_64 make clean) || exit 1;
 (YQ2_ARCH=x86_64 CFLAGS=$x86_64_CFLAGS  LDFLAGS=$x86_64_LDFLAGS make -j$NCPU) || exit 1;
 mkdir -p ${X86_64_BUILD_FOLDER}
@@ -101,23 +54,6 @@ rm -rd release
 
 # ThreeWave Capture the Flag (CTF)
 cd ../ctf
-
-if [ -n "$6" ]; then
-	export GIT_TAG_CTF="$6"
-	echo "Setting CTF tag to: " "$GIT_TAG_CTF"
-else
-	# reset to the main branch
-	echo git checkout ${GIT_DEFAULT_BRANCH}
-	git checkout ${GIT_DEFAULT_BRANCH}
-
-	# fetch the latest 
-	echo git pull
-	git pull
-
-	# check out the latest release tag
-	echo git checkout tags/${GIT_TAG_CTF}
-	git checkout tags/${GIT_TAG_CTF}
-fi
 
 (YQ2_ARCH=x86_64 make clean) || exit 1;
 (YQ2_ARCH=x86_64 CFLAGS=$x86_64_CFLAGS  LDFLAGS=$x86_64_LDFLAGS make -j$NCPU) || exit 1;
@@ -134,24 +70,14 @@ rm -rd release
 # Main game compilation
 cd ../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
+if [ -n "$2" ]; then
 	# turns QUAKE2_8_41 into 8.41
-	export APP_VERSION="${3/QUAKE2_/}"
+	export APP_VERSION="${2/QUAKE2_/}"
 	export APP_VERSION="${APP_VERSION/_/.}"
-	export GIT_TAG="$3"
+	export GIT_TAG="$2"
 	echo "Setting yquake2 version / tag to : " "$APP_VERSION" / "$GIT_TAG"
 else
-	# reset to the main branch
-	echo git checkout ${GIT_DEFAULT_BRANCH}
-	git checkout ${GIT_DEFAULT_BRANCH}
-
-	# fetch the latest 
-	echo git pull
-	git pull
-
-	# check out the latest release tag
-	echo git checkout tags/${GIT_TAG}
-	git checkout tags/${GIT_TAG}
+	echo "Leaving yquake2 version / tag at : " "$APP_VERSION" / "$GIT_TAG"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -171,20 +97,7 @@ mv release/* ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 rm -rd release
 
 # create the app bundle
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
-else 
-	"../MSPBuildSystem/common/build_app_bundle.sh"
-	#dylibbundler the quake2 libs
-	dylibbundler -od -b -x ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib -d ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-	dylibbundler -od -b -x ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib -d ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-	dylibbundler -od -b -x ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_soft.dylib -d ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-	dylibbundler -od -b -x ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/baseq2/game.dylib -d ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-	dylibbundler -od -b -x ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib -d ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
-	dylibbundler -od -b -x ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib -d ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
-	dylibbundler -od -b -x ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ref_soft.dylib -d ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
-	dylibbundler -od -b -x ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/baseq2/game.dylib -d ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
-fi
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 
 #create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/baseq2" ]; then
@@ -212,14 +125,12 @@ lipo ../xatrix/${X86_64_BUILD_FOLDER}/game.dylib ../xatrix/${ARM64_BUILD_FOLDER}
 lipo ../rogue/${X86_64_BUILD_FOLDER}/game.dylib ../rogue/${ARM64_BUILD_FOLDER}/game.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rogue/game.dylib" -create
 lipo ../ctf/${X86_64_BUILD_FOLDER}/game.dylib ../ctf/${ARM64_BUILD_FOLDER}/game.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ctf/game.dylib" -create
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	cd ${BUILT_PRODUCTS_DIR}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" ${FRAMEWORKS_FOLDER_PATH}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib" ${FRAMEWORKS_FOLDER_PATH}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib" ${FRAMEWORKS_FOLDER_PATH}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_soft.dylib" ${FRAMEWORKS_FOLDER_PATH}
-	cd ..
-fi
+cd ${BUILT_PRODUCTS_DIR}
+"../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" ${FRAMEWORKS_FOLDER_PATH}
+"../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_gl1.dylib" ${FRAMEWORKS_FOLDER_PATH}
+"../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_gl3.dylib" ${FRAMEWORKS_FOLDER_PATH}
+"../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/ref_soft.dylib" ${FRAMEWORKS_FOLDER_PATH}
+cd ..
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

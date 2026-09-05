@@ -30,13 +30,13 @@ relive_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 relive_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing/macsourceports_universal2-ae.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing/macsourceports_universal2-ae.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing"),
     name="Run Build Script (AE)",
     haltOnFailure=True
 ))
 relive_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing/macsourceports_universal2-ao.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing/macsourceports_universal2-ao.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing"),
     name="Run Build Script (AO)",
     haltOnFailure=True

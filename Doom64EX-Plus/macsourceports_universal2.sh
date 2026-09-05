@@ -14,31 +14,14 @@ export MINIMUM_SYSTEM_VERSION="10.13"
 
 cd ../../${PROJECT_NAME}
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	cp ../MSPBuildSystem/${PROJECT_NAME}/Libs/* Xcode
-fi
+cp ../MSPBuildSystem/${PROJECT_NAME}/Libs/* Xcode
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at: " "$APP_VERSION" / "$GIT_TAG"
-    # # because we do a patch, we need to reset any changes
-    # echo git reset --hard
-    # git reset --hard
-
-    # # reset to the main branch
-    # echo git checkout ${GIT_DEFAULT_BRANCH}
-    # git checkout ${GIT_DEFAULT_BRANCH}
-
-    # # fetch the latest 
-    # echo git pull
-    # git pull
-
-    # # check out the latest release tag
-    # echo git checkout tags/${GIT_TAG}
-    # git checkout tags/${GIT_TAG}
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

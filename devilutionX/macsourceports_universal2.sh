@@ -15,97 +15,41 @@ export MINIMUM_SYSTEM_VERSION="10.12"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
-
-    # check out the latest release tag
-    echo git checkout tags/${GIT_TAG}
-    git checkout tags/${GIT_TAG}
-
-    rm -rf ${BUILT_PRODUCTS_DIR}
+	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
 fi
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    rm -rf ${X86_64_BUILD_FOLDER}
-    mkdir ${X86_64_BUILD_FOLDER}
-    cd ${X86_64_BUILD_FOLDER}
-    cmake  \
-    -DBUILD_TESTING=OFF  \
-    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCMAKE_BUILD_TYPE=Release  \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7  \
-    ..  \
-    -Wno-dev
+rm -rf ${X86_64_BUILD_FOLDER}
+mkdir ${X86_64_BUILD_FOLDER}
+cd ${X86_64_BUILD_FOLDER}
+cmake  \
+-DBUILD_TESTING=OFF  \
+-DCMAKE_OSX_ARCHITECTURES="x86_64" \
+-DCMAKE_BUILD_TYPE=Release  \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.7  \
+..  \
+-Wno-dev
 
-    cmake --build . --parallel $NCPU
+cmake --build . --parallel $NCPU
 
-    cd ..
+cd ..
 
-    rm -rf ${ARM64_BUILD_FOLDER}
-    mkdir ${ARM64_BUILD_FOLDER}
-    cd ${ARM64_BUILD_FOLDER}
-    cmake  \
-    -DBUILD_TESTING=OFF  \
-    -DCMAKE_OSX_ARCHITECTURES="arm64" \
-    -DCMAKE_BUILD_TYPE=Release  \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7  \
-    ..  \
-    -Wno-dev
+rm -rf ${ARM64_BUILD_FOLDER}
+mkdir ${ARM64_BUILD_FOLDER}
+cd ${ARM64_BUILD_FOLDER}
+cmake  \
+-DBUILD_TESTING=OFF  \
+-DCMAKE_OSX_ARCHITECTURES="arm64" \
+-DCMAKE_BUILD_TYPE=Release  \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.7  \
+..  \
+-Wno-dev
 
-    cmake --build . --parallel $NCPU
-else
-    # create makefiles with cmake
-    rm -rf ${X86_64_BUILD_FOLDER}
-    mkdir ${X86_64_BUILD_FOLDER}
-    cd ${X86_64_BUILD_FOLDER}
-    sodium_INCLUDE_DIR=/usr/local/include
-    sodium_LIBRARY_DEBUG=/usr/local/lib/libsodium.dylib
-    sodium_LIBRARY_RELEASE=/usr/local/lib/libsodium.dylib
-    /usr/local/bin/cmake -G "Unix Makefiles" \
-    -DBUILD_TESTING=OFF  \
-    -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
-    -DCMAKE_C_FLAGS_RELEASE="-arch x86_64"  \
-    -DCMAKE_BUILD_TYPE=Release  \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12  \
-    -DSDL2_DIR=/usr/local/opt/sdl2/lib/cmake/SDL2  \
-    -DSDL2_INCLUDE_DIRS=/usr/local/opt/sdl2/include/SDL2  \
-    -DSDL2_image_DIR=/usr/local/lib/cmake/SDL2_image \
-    -DSDL2_LIBRARIES=/usr/local/opt/sdl2/lib  \
-    -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config  \
-    -DDEVILUTIONX_SYSTEM_LIBFMT=OFF  \
-    ..  \
-    -Wno-dev
-
-    cd ..
-    rm -rf ${ARM64_BUILD_FOLDER}
-    mkdir ${ARM64_BUILD_FOLDER}
-    cd ${ARM64_BUILD_FOLDER}
-    cmake -G "Unix Makefiles"  \
-    -DBUILD_TESTING=OFF  \
-    -DCMAKE_BUILD_TYPE=Release  \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12  \
-    ..  \
-    -Wno-dev
-
-    # perform builds with make
-    cd ..
-    cd ${X86_64_BUILD_FOLDER}
-    make -j$NCPU
-
-    cd ..
-    cd ${ARM64_BUILD_FOLDER}
-    make -j$NCPU
-fi
+cmake --build . --parallel $NCPU
 
 cd ..
 
@@ -116,15 +60,11 @@ export EXTRA_INFO_PLIST_ENTRIES="
 	<string>parent</string>"
 
 # create the app bundle
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
-    
-    cd ${BUILT_PRODUCTS_DIR}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
-    cd ..
-else
-    "../MSPBuildSystem/common/build_app_bundle.sh"
-fi
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+
+cd ${BUILT_PRODUCTS_DIR}
+"../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cd ..
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

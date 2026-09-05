@@ -14,10 +14,10 @@ export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
+if [ -n "$2" ]; then
 	# turns chocolate-quake-2.0.0 into 2.0.0
-	export APP_VERSION="${3/chocolate-quake-/}"
-	export GIT_TAG="$3"
+	export APP_VERSION="${2/chocolate-quake-/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"

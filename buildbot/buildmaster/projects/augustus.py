@@ -42,7 +42,7 @@ augustus_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 augustus_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/augustus/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('augustus_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/augustus/macsourceports_universal2.sh"), "notarize", util.Property('augustus_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/augustus"),
     name="Run Build Script",
     haltOnFailure=True

@@ -30,7 +30,7 @@ wrathplaces_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 wrathplaces_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/wrathplaces/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/wrathplaces/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/wrathplaces"),
     name="Run Build Script",
     haltOnFailure=True

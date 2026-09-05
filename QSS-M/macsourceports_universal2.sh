@@ -13,9 +13,9 @@ export MINIMUM_SYSTEM_VERSION="10.13"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at: " "$APP_VERSION" / "$GIT_TAG"

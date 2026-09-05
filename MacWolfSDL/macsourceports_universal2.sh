@@ -14,20 +14,12 @@ export MINIMUM_SYSTEM_VERSION="10.14"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
-
-    # reset to the main branch
-    # echo git checkout ${GIT_DEFAULT_BRANCH}
-    # git checkout ${GIT_DEFAULT_BRANCH}
-
-    # # fetch the latest 
-    # echo git pull
-    # git pull
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -41,7 +33,6 @@ cmake \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
 ..
 cmake --build . --parallel $NCPU
-# cp source/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 
 cd ..

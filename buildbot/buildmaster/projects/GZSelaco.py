@@ -44,7 +44,7 @@ GZSelaco_factory.addStep(steps.ShellCommand(
 ))
 
 GZSelaco_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/GZSelaco/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('GZSelaco_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/GZSelaco/macsourceports_universal2.sh"), "notarize", util.Property('GZSelaco_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/GZSelaco"),
     name="Run Build Script",
     haltOnFailure=True

@@ -42,7 +42,7 @@ msptest_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 msptest_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/msptest/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('msptest_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/msptest/macsourceports_universal2.sh"), "notarize", util.Property('msptest_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/msptest"),
     name="Run Build Script",
     haltOnFailure=True

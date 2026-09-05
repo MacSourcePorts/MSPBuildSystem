@@ -42,7 +42,7 @@ NakedAVP_factory.addStep(steps.SetPropertyFromCommand(
 #     haltOnFailure=True
 # ))
 NakedAVP_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('NakedAVP_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP/macsourceports_universal2.sh"), "notarize", util.Property('NakedAVP_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP"),
     name="Run Build Script",
     haltOnFailure=True

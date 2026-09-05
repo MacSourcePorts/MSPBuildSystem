@@ -42,7 +42,7 @@ Akhenaten_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 Akhenaten_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Akhenaten/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('Akhenaten_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Akhenaten/macsourceports_universal2.sh"), "notarize", util.Property('Akhenaten_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Akhenaten"),
     name="Run Build Script",
     haltOnFailure=True

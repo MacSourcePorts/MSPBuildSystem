@@ -42,7 +42,7 @@ BurgerDoom_factory.addStep(steps.SetPropertyFromCommand(
 #     haltOnFailure=True
 # ))
 BurgerDoom_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/BurgerDoom/macsourceports_universal2.sh"), "notarize", "buildserver", "1.1.0"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/BurgerDoom/macsourceports_universal2.sh"), "notarize", "1.1.0"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/BurgerDoom"),
     name="Run Build Script",
     haltOnFailure=True

@@ -43,7 +43,7 @@ chocolatequake_factory.addStep(steps.SetPropertyFromCommand(
 #     haltOnFailure=True
 # ))
 chocolatequake_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/chocolate-quake/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('chocolatequake_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/chocolate-quake/macsourceports_universal2.sh"), "notarize", util.Property('chocolatequake_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/chocolate-quake"),
     name="Run Build Script",
     haltOnFailure=True

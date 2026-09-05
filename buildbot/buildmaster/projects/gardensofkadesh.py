@@ -29,7 +29,7 @@ gardensofkadesh_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 gardensofkadesh_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gardens-of-kadesh/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gardens-of-kadesh/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gardens-of-kadesh"),
     name="Run Build Script",
     haltOnFailure=True

@@ -42,7 +42,7 @@ Perimeter_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 Perimeter_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Perimeter/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('Perimeter_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Perimeter/macsourceports_universal2.sh"), "notarize", util.Property('Perimeter_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Perimeter"),
     name="Run Build Script",
     haltOnFailure=True

@@ -17,21 +17,7 @@ cd ../../${PROJECT_NAME}
 
 export APP_VERSION="1.32e"
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
-	
-	export RANLIB=/usr/bin/ranlib
-else
-	# reset to the main branch
-	echo git checkout ${GIT_DEFAULT_BRANCH}
-	git checkout ${GIT_DEFAULT_BRANCH}
-
-	# fetch the latest 
-	echo git pull
-	git pull
-
-	# skipping checkout since we just use the latest on this one
-fi
+export RANLIB=/usr/bin/ranlib
 
 if [ -d build ]; then
 	rm -rf build

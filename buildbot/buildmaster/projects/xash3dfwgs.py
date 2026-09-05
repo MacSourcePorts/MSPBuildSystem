@@ -47,7 +47,7 @@ xash3dfwgs_factory.addStep(steps.Git(
 ))
 
 xash3dfwgs_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/xash3d-fwgs/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/xash3d-fwgs/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/xash3d-fwgs"),
     name="Run Build Script",
     haltOnFailure=True

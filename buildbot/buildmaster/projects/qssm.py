@@ -42,7 +42,7 @@ qssm_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 qssm_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/QSS-M/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('qssm_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/QSS-M/macsourceports_universal2.sh"), "notarize", util.Property('qssm_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/QSS-M"),
     name="Run Build Script",
     haltOnFailure=True

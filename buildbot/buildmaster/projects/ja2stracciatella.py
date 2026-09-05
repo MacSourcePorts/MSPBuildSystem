@@ -43,7 +43,7 @@ ja2stracciatella_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 ja2stracciatella_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ja2-stracciatella/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('ja2stracciatella_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ja2-stracciatella/macsourceports_universal2.sh"), "notarize", util.Property('ja2stracciatella_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ja2-stracciatella"),
     name="Run Build Script",
     haltOnFailure=True

@@ -42,7 +42,7 @@ TheForceEngine_factory.addStep(steps.SetPropertyFromCommand(
 #     haltOnFailure=True
 # ))
 TheForceEngine_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/TheForceEngine/macsourceports_universal2.sh"), "notarize", "buildserver", "1.22.420"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/TheForceEngine/macsourceports_universal2.sh"), "notarize", "1.22.420"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/TheForceEngine"),
     name="Run Build Script",
     haltOnFailure=True

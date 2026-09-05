@@ -20,27 +20,15 @@ export MINIMUM_SYSTEM_VERSION="10.13"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
-
-    # check out the latest release tag
-    echo git checkout tags/${GIT_TAG}
-    git checkout tags/${GIT_TAG}
 fi
 
 # Fix issue with static Homebrew linking
-# gsed -i 's|/opt/homebrew/opt/fltk@1.3/|/usr/local/|g' src/launcher/CMakeLists.txt
 gsed -i 's|/opt/homebrew/opt/fltk@1.3/lib/libfltk_forms.a /opt/homebrew/opt/fltk@1.3/lib/libfltk_images.a /opt/homebrew/opt/fltk@1.3/lib/libfltk.a|/usr/local/lib/libfltk_forms.dylib /usr/local/lib/libfltk_images.dylib /usr/local/lib/libfltk.dylib|g' src/launcher/CMakeLists.txt
 
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -112,7 +100,6 @@ cp -a ${ARM64_BUILD_FOLDER}/mods/* "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PA
 
 mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/unittests"
 cp -a ${ARM64_BUILD_FOLDER}/unittests/* "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/unittests"
-
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements

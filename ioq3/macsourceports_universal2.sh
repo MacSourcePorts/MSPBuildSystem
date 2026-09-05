@@ -15,22 +15,7 @@ export MINIMUM_SYSTEM_VERSION="10.9"
 cd ../../${PROJECT_NAME}
 
 export APP_VERSION=`grep '^VERSION=' Makefile | sed -e 's/.*=\(.*\)/\1/'`
-
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
-	
-	export RANLIB=/usr/bin/ranlib
-else
-	# reset to the main branch
-	echo git checkout ${GIT_DEFAULT_BRANCH}
-	git checkout ${GIT_DEFAULT_BRANCH}
-
-	# fetch the latest 
-	echo git pull
-	git pull
-
-	# skipping checkout since we just use the latest on this one
-fi
+export RANLIB=/usr/bin/ranlib
 
 # ioq3 has everything scripted out so we just need to delete the last build
 # and fire off a script. Formerly the MSP build script recreated portions of

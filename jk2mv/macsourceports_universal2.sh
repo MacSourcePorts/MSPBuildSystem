@@ -14,32 +14,7 @@ export MINIMUM_SYSTEM_VERSION="10.12"
 
 cd ../../${PROJECT_NAME}
 
-export ARM64_PREFIX_PATH=/opt/Homebrew
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
-    export ARM64_PREFIX_PATH=/usr/local
-	export RANLIB=/usr/bin/ranlib
-else
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
-
-    # for this one we have to check out latest on the mvsdk repo as well
-    # TODO: still necessary? 
-    echo cd src/mvsdk
-    cd src/mvsdk
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-    echo git pull
-    git pull
-    echo cd ../../
-    cd ../../
-
-fi
+export RANLIB=/usr/bin/ranlib
 
 # we just do the latest on this one as they haven't had a release tag since 2018
 
@@ -70,7 +45,7 @@ cmake \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
 -DCMAKE_INSTALL_PREFIX=./install \
 -DCMAKE_OSX_ARCHITECTURES=arm64 \
--DCMAKE_PREFIX_PATH=$ARM64_PREFIX_PATH\
+-DCMAKE_PREFIX_PATH=/usr/local \
 -DCMAKE_TOOLCHAIN_FILE=../../MSPBuildSystem/jk2mv/arm64.cmake \
 ..
 cmake --build . --parallel -j$NCPU
@@ -83,15 +58,11 @@ cp ${ARM64_BUILD_FOLDER}/out/Release/jk2mvmenu_arm64.dylib ${ARM64_BUILD_FOLDER}
 mv ${ARM64_BUILD_FOLDER}/out/Release/jk2mvmp.app ${ARM64_BUILD_FOLDER}
 
 # create the app bundle
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
-    
-    cd ${BUILT_PRODUCTS_DIR}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
-    cd ..
-else
-    "../MSPBuildSystem/common/build_app_bundle.sh"
-fi
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+
+cd ${BUILT_PRODUCTS_DIR}
+"../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cd ..
 
 mkdir "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base"
 echo cp -a "${X86_64_BUILD_FOLDER}/out/Release/base/." "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base"

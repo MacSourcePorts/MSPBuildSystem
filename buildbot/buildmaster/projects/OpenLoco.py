@@ -44,7 +44,7 @@ OpenLoco_factory.addStep(steps.ShellCommand(
 ))
 
 OpenLoco_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenLoco/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('OpenLoco_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenLoco/macsourceports_universal2.sh"), "notarize", util.Property('OpenLoco_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenLoco"),
     name="Run Build Script",
     haltOnFailure=True

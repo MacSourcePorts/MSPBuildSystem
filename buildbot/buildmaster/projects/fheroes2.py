@@ -43,7 +43,7 @@ fheroes2_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 fheroes2_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/fheroes2/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('fheroes2_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/fheroes2/macsourceports_universal2.sh"), "notarize", util.Property('fheroes2_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/fheroes2"),
     name="Run Build Script",
     haltOnFailure=True

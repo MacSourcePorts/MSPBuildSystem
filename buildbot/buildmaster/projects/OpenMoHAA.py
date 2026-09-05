@@ -43,7 +43,7 @@ OpenMoHAA_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 OpenMoHAA_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenMoHAA/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('OpenMoHAA_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenMoHAA/macsourceports_universal2.sh"), "notarize", util.Property('OpenMoHAA_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenMoHAA"),
     name="Run Build Script",
     haltOnFailure=True

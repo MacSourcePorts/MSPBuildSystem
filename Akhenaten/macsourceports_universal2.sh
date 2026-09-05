@@ -13,82 +13,48 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
-
-	# because we do a patch, we need to reset any changes
-	echo git reset --hard
-	git reset --hard
-
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
-
-	# skipping checkout since we just use the latest on this one
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    gsed -i "s|v1.3.1|v1.3.2|" CMakeLists.txt
+gsed -i "s|v1.3.1|v1.3.2|" CMakeLists.txt
 
-    rm -rf ${X86_64_BUILD_FOLDER}
-    mkdir ${X86_64_BUILD_FOLDER}
-    cd ${X86_64_BUILD_FOLDER}
-    cmake \
-    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
-    ..
-    cmake --build . --parallel $NCPU
+rm -rf ${X86_64_BUILD_FOLDER}
+mkdir ${X86_64_BUILD_FOLDER}
+cd ${X86_64_BUILD_FOLDER}
+cmake \
+-DCMAKE_OSX_ARCHITECTURES="x86_64" \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+..
+cmake --build . --parallel $NCPU
 
-    cd ..
-    rm -rf ${ARM64_BUILD_FOLDER}
-    mkdir ${ARM64_BUILD_FOLDER}
-    cd ${ARM64_BUILD_FOLDER}
-    cmake \
-    -DCMAKE_OSX_ARCHITECTURES="arm64" \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
-    ..
-    cmake --build . --parallel $NCPU
+cd ..
+rm -rf ${ARM64_BUILD_FOLDER}
+mkdir ${ARM64_BUILD_FOLDER}
+cd ${ARM64_BUILD_FOLDER}
+cmake \
+-DCMAKE_OSX_ARCHITECTURES="arm64" \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+..
+cmake --build . --parallel $NCPU
 
-    install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/build/build_arm64/lib/libssl.3.dylib  @rpath/libssl.3.dylib "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-    install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/build/build_arm64/lib/libcrypto.3.dylib  @rpath/libcrypto.3.dylib "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-else
-    # create makefiles with cmake, perform builds with make
-    rm -rf ${X86_64_BUILD_FOLDER}
-    mkdir ${X86_64_BUILD_FOLDER}
-    cd ${X86_64_BUILD_FOLDER}
-    /usr/local/bin/cmake ..
-    make -j$NCPU
-
-    cd ..
-    rm -rf ${ARM64_BUILD_FOLDER}
-    mkdir ${ARM64_BUILD_FOLDER}
-    cd ${ARM64_BUILD_FOLDER}
-    cmake ..
-    make -j$NCPU
-fi
+install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/build/build_arm64/lib/libssl.3.dylib  @rpath/libssl.3.dylib "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+install_name_tool -change /Users/tomkidd/Documents/GitHub/MacSourcePorts/MSPBuildSystem/libraries/build/build_arm64/lib/libcrypto.3.dylib  @rpath/libcrypto.3.dylib "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 
 cd ..
 
 # create the app bundle
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
-    
-    cd ${BUILT_PRODUCTS_DIR}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
-    cd ..
-else
-    "../MSPBuildSystem/common/build_app_bundle.sh"
-fi
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+
+cd ${BUILT_PRODUCTS_DIR}
+"../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cd ..
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

@@ -15,38 +15,15 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
 fi
 
-export ARM64_PREFIX_PATH=/usr/local
-export X86_64_PREFIX_PATH=/opt/Homebrew
-export ARM64_AL_PATH=/usr/local/opt/openal-soft
-export X86_64_AL_PATH=/opt/Homebrew/opt/openal-soft
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-	echo "Skipping git because we're on the build server"
-    export PATH=$PATH:~/Library/Python/3.9/bin/
-    export ARM64_PREFIX_PATH=/usr/local
-    export X86_64_PREFIX_PATH=/usr/local
-    export ARM64_AL_PATH=/usr/local
-    export X86_64_AL_PATH=/usr/local
-else
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
-
-    # check out the latest release tag
-    echo git checkout tags/${GIT_TAG}
-    git checkout tags/${GIT_TAG}
-fi
+export PATH=$PATH:~/Library/Python/3.9/bin/
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -63,8 +40,8 @@ cmake -G Ninja \
 -DOPENAL_INCLUDE_DIR=$X86_64_AL_PATH/include/AL \
 -DCMAKE_OSX_ARCHITECTURES=x86_64 \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=$X86_64_PREFIX_PATH \
--DCMAKE_INSTALL_PREFIX=$X86_64_PREFIX_PATH \
+-DCMAKE_PREFIX_PATH=/usr/local \
+-DCMAKE_INSTALL_PREFIX=/usr/local \
 ../
 ninja
 mkdir -p "${EXECUTABLE_FOLDER_PATH}"
@@ -79,8 +56,8 @@ cmake -G Ninja \
 -DOPENAL_INCLUDE_DIR=$ARM64_AL_PATH/include/AL \
 -DCMAKE_OSX_ARCHITECTURES=arm64 \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=$ARM64_PREFIX_PATH \
--DCMAKE_INSTALL_PREFIX=$ARM64_PREFIX_PATH \
+-DCMAKE_PREFIX_PATH=/usr/local \
+-DCMAKE_INSTALL_PREFIX=/usr/local \
 ../
 ninja
 mkdir -p "${EXECUTABLE_FOLDER_PATH}"
@@ -90,19 +67,12 @@ cp code/client/cgame/cgame.dylib "${EXECUTABLE_FOLDER_PATH}"
 cp code/server/fgame/game.dylib "${EXECUTABLE_FOLDER_PATH}"
 cd ..
 
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
-    
-    cd ${BUILT_PRODUCTS_DIR}
-    "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
-    cp /usr/local/lib/libopenal.1.dylib ${FRAMEWORKS_FOLDER_PATH}/
-    cd ..
-else
-    echo lipo /usr/local/opt/openal-soft/lib/libopenal.1.dylib /opt/Homebrew/opt/openal-soft/lib/libopenal.1.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libopenal.1.dylib" -create
-    lipo /usr/local/opt/openal-soft/lib/libopenal.1.dylib /opt/Homebrew/opt/openal-soft/lib/libopenal.1.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libopenal.1.dylib" -create
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 
-    "../MSPBuildSystem/common/build_app_bundle.sh"
-fi
+cd ${BUILT_PRODUCTS_DIR}
+"../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cp /usr/local/lib/libopenal.1.dylib ${FRAMEWORKS_FOLDER_PATH}/
+cd ..
 
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/*.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/*.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}

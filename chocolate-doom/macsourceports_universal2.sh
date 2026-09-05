@@ -14,16 +14,13 @@ export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
+if [ -n "$2" ]; then
 	# turns chocolate-doom-3.1.1 into 3.1.1
-	export APP_VERSION="${3/chocolate-doom-/}"
-	export GIT_TAG="$3"
+	export APP_VERSION="${2/chocolate-doom-/}"
+	export GIT_TAG="$2"
 	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
 else
 	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
-
-    echo git reset --hard
-	git reset --hard
 fi
 
 ./autogen.sh
@@ -43,9 +40,6 @@ cmake \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 ..
 cmake --build . --parallel $NCPU
-
-# cp source/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
-# "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 
 cd ../pkg/osx
 make clean

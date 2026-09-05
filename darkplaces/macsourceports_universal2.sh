@@ -16,11 +16,6 @@ source ../common/signing_values.local
 export MINIMUM_SYSTEM_VERSION="10.7"
 export STRIP=/usr/bin/strip
 
-export ARN64_BASE="/opt/Homebrew"
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    export ARN64_BASE="/usr/local"
-fi
-
 cd ../../${PROJECT_NAME}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -39,21 +34,17 @@ mkdir -p ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 mv ${EXECUTABLE_NAME} ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 
 make clean
-(SDL_CONFIG="${ARN64_BASE}/bin/sdl2-config" CC="clang -arch arm64 -mmacosx-version-min=10.7" make sdl-release -j$NCPU)
+(SDL_CONFIG="usr/local/bin/sdl2-config" CC="clang -arch arm64 -mmacosx-version-min=10.7" make sdl-release -j$NCPU)
 mkdir -p ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 mv ${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 
 # create the app bundle
-if [ "$1" == "buildserver" ] || [ "$2" == "buildserver" ]; then
-    "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 
-    cd ${BUILT_PRODUCTS_DIR}
-    install_name_tool -add_rpath @executable_path/../Frameworks/. "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
-    "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${FRAMEWORKS_FOLDER_PATH}"
-    cd ..
-else
-    "../MSPBuildSystem/common/build_app_bundle.sh"
-fi
+cd ${BUILT_PRODUCTS_DIR}
+install_name_tool -add_rpath @executable_path/../Frameworks/. "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+"../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${FRAMEWORKS_FOLDER_PATH}"
+cd ..
 
 # sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements

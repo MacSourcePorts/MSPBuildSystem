@@ -30,7 +30,7 @@ arcanumce_factory.addStep(steps.Git(
 ))
 
 arcanumce_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/arcanum-ce/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/arcanum-ce/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/arcanum-ce"),
     name="Run Build Script",
     haltOnFailure=True

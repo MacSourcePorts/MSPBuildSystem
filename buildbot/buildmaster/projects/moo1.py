@@ -43,7 +43,7 @@ moo1_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 moo1_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/1oom/macsourceports_universal2.sh"), "notarize", "buildserver", "1.11.7"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/1oom/macsourceports_universal2.sh"), "notarize", "1.11.7"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/1oom"),
     name="Run Build Script",
     haltOnFailure=True

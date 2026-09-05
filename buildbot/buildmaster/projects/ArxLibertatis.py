@@ -43,7 +43,7 @@ ArxLibertatis_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 ArxLibertatis_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ArxLibertatis/macsourceports_universal2.sh"), "notarize", "buildserver", util.Property('ArxLibertatis_latest_tag')],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ArxLibertatis/macsourceports_universal2.sh"), "notarize", util.Property('ArxLibertatis_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ArxLibertatis"),
     name="Run Build Script",
     haltOnFailure=True

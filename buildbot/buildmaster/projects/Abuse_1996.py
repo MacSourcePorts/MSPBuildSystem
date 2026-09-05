@@ -29,7 +29,7 @@ Abuse_1996_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 Abuse_1996_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Abuse_1996/macsourceports_universal2.sh"), "notarize", "buildserver"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Abuse_1996/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Abuse_1996"),
     name="Run Build Script",
     haltOnFailure=True

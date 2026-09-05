@@ -9,6 +9,8 @@ export PKGINFO="APPLGOFK"
 export GIT_DEFAULT_BRANCH="master"
 export GIT_TAG="1.2.1"
 
+# TODO: be able to pass in tag
+
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
