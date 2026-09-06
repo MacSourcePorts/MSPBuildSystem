@@ -9,6 +9,7 @@ export ICONSDIR="../MSPBuildSystem/${PROJECT_NAME}"
 export ICONS="${ICONSFILENAME}.icns"
 export BUNDLE_ID="com.macsourceports.${PRODUCT_NAME}"
 export HIGH_RESOLUTION_CAPABLE="true"
+export MINIMUM_SYSTEM_VERSION="10.7"
 
 # For parallel make on multicore boxes...
 export NCPU=`sysctl -n hw.ncpu`

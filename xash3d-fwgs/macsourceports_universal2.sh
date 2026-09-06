@@ -6,21 +6,12 @@ export PROJECT_NAME="xash3d-fwgs"
 export PORT_NAME="Xash3D-FWGS"
 export EXECUTABLE_NAME="xash3d"
 export PKGINFO="APPLMLST"
-export GIT_DEFAULT_BRANCH="main"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/xash3d-fwgs/xash3d-fwgs.entitlements"
 
 #constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
-
-# # reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
-
-# # fetch the latest 
-# echo git pull
-# git pull
 
 # Step 1: Xash3D-FWGS
 echo "Step 1: Xash3D-FWGS"
@@ -40,7 +31,11 @@ echo TEMP_PATH = $TEMP_PATH
 # Step 1.1: Xash3D-FWGS - Apple Silicon (arm64)
 echo "Step 1.1: Xash3D-FWGS - Apple Silicon (arm64)"
 
-(PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release --sdl-use-pkgconfig)
+export RANLIB=/usr/bin/ranlib
+export AR=/usr/bin/ar
+
+(CC="clang -arch arm64 -mmacosx-version-min=10.7" CXX="clang++ -arch arm64 -mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names" PATH="/opt/homebrew/Cellar/binutils/2.39_1/bin:$TEMP_PATH" ./waf configure --64bits -T release --sdl-use-pkgconfig)
+
 echo PATH = $PATH
 ./waf build
 ./waf install --destdir=${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
@@ -54,7 +49,7 @@ mkdir ${ARM64_BUILD_FOLDER}/install/dlls
 # Step 1.2: Xash3D-FWGS - Intel (amd64)
 echo "Step 1.2: Xash3D-FWGS - Intel (amd64)"
 
-(CC="clang -arch x86_64" CXX="clang++ -arch x86_64" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release --sdl-use-pkgconfig)
+(CC="clang -arch x86_64 -mmacosx-version-min=10.7" CXX="clang++ -arch x86_64 -mmacosx-version-min=10.7" LDFLAGS="-mmacosx-version-min=10.7 -headerpad_max_install_names" PATH="/usr/local/Cellar/binutils/2.39_1/bin:$TEMP_PATH" PKGCONFIG=/usr/local/bin/pkg-config ./waf configure --64bits -T release --sdl-use-pkgconfig)
 echo PATH = $PATH
 ./waf build
 ./waf install --destdir=${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
@@ -81,7 +76,7 @@ echo "Step 2.1.1 : HLSDK - Half-Life - Apple Silicon (arm64)"
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake ..
+cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -112,7 +107,7 @@ echo "Step 2.1.2 : HLSDK - Half-Life - Intel (amd64)"
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -140,7 +135,7 @@ cd ..
 # Step 2.2 : HLSDK - Half-Life: Opposing Force
 echo "Step 2.2 : HLSDK - Half-Life: Opposing Force"
 
-git checkout opforfixed
+git checkout opfor
 
 # Step 2.2.1 : HLSDK - Half-Life: Opposing Force - Apple Silicon (arm64)
 echo "Step 2.2.1 : HLSDK - Half-Life: Opposing Force - Apple Silicon (arm64)"
@@ -148,7 +143,7 @@ echo "Step 2.2.1 : HLSDK - Half-Life: Opposing Force - Apple Silicon (arm64)"
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake ..
+cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -177,7 +172,7 @@ echo "Step 2.2.2 : HLSDK - Half-Life: Opposing Force - Intel (amd64)"
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -211,7 +206,7 @@ echo "Step 2.3.1 : HLSDK - Half-Life: Blue Shift - Apple Silicon (arm64)"
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 cd ${ARM64_BUILD_FOLDER}
-cmake ..
+cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -240,7 +235,7 @@ echo "Step 2.3.2 : HLSDK - Half-Life: Blue Shift - Intel (amd64)"
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
-cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 ..
+cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 ..
 make -j$NCPU
 
 mv cl_dll cl_dlls
@@ -264,15 +259,11 @@ cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/install/dlls
 # Step 3: Build the Universal 2 bundle
 cd ../../${PROJECT_NAME}
 
-# dylibbundler libxash
-dylibbundler -od -b -x ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -d ./${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${X86_64_LIBS_FOLDER}/ -p @executable_path/${X86_64_LIBS_FOLDER}/
-dylibbundler -od -b -x ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -d ./${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/ -p @executable_path/${ARM64_LIBS_FOLDER}/
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 
-# create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
-
-echo install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
-install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+echo install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
+echo "@rpath added"
 
 #create any app-specific directories
 if [ ! -d "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" ]; then
@@ -287,6 +278,9 @@ lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libmenu.dylib ${ARM64_BUIL
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libref_soft.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib" -create
+
+"../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+"../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
 #copy over game libraries
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/cl_dlls" ]; then
@@ -303,12 +297,8 @@ fi
 cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls
 cp -a ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls
 
-# cd ${BUILT_PRODUCTS_DIR}
-# dylibbundler -od -b -x "./${EXECUTABLE_FOLDER_PATH}/libxash.dylib" -d "./${EXECUTABLE_FOLDER_PATH}/${ARM64_LIBS_FOLDER}/" -p @executable_path/${ARM64_LIBS_FOLDER}/
-# cd ..
-
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
 #create dmg
-# "../MSPBuildSystem/common/package_dmg.sh"
+"../MSPBuildSystem/common/package_dmg.sh"

@@ -1,0 +1,2 @@
+buildbot restart buildmaster
+buildbot-worker restart worker1

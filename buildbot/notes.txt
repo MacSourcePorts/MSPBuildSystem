@@ -1,0 +1,61 @@
+To install/upgrade pip3:
+
+python3 -m ensurepip --upgrade
+
+To install buildbot
+
+pip3 install 'buildbot[bundle]'
+pip3 install 'buildbot[tls]'
+
+Get smtpUser / smtpPassword files from another box (or just use the username and app-specific password from gmail or whatnot and put them in text files)
+
+Put them in ~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster/secrets/
+
+(may need to make that directory)
+
+Then run chmod on them to make them "secret" as per buildbot's demands:
+
+chmod 400 ~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster/secrets/smtpUser
+chmod 400 ~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster/secrets/smtpPassword
+
+To create master/worker (but these we've created and committed):
+
+buildbot create-master buildmaster
+
+buildbot start buildmaster
+
+buildbot-worker create-worker worker1 localhost worker1 password
+
+buildbot-worker start worker1
+
+
+
+Then go to 
+http://localhost:8010
+
+
+Copy
+
+com.buildbot.buildmaster.plist
+com.buildbot.worker1.plist
+
+to 
+
+~/Library/LaunchAgents/
+
+(may need to create LaunchAgents folder)
+
+And launch it
+
+launchctl load ~/Library/LaunchAgents/com.buildbot.buildmaster.plist
+launchctl load ~/Library/LaunchAgents/com.buildbot.worker1.plist
+
+(this makes it run at system startup)
+
+
+TODO:
+- Figure out how to pass in latest release tag into build script (where applicable) DONE
+- Figure out how to limit changes/builds to latest release tag (where applicable) DONE? (remains to be tested)
+- Figure out if we want buildbot to do the git work on checking out the latest release tag or if we want the build script to keep doing it DONE, buildbot
+- 
+

@@ -1,0 +1,8 @@
+source "./source_urls.sh"
+
+export SOURCE_URL=${ZSTD_URL}
+export CMAKE_ARGS="-DZSTD_PROGRAMS_LINK_SHARED=ON -DZSTD_BUILD_CONTRIB=ON -DZSTD_LEGACY_SUPPORT=ON -DZSTD_ZLIB_SUPPORT=ON -DZSTD_LZMA_SUPPORT=ON -DZSTD_LZ4_SUPPORT=ON -DCMAKE_CXX_STANDARD=11"
+
+source "../common/get_source.sh"
+export SOURCE_FOLDER="${SOURCE_FOLDER}/build/cmake"
+source "../common/cmake_build.sh"

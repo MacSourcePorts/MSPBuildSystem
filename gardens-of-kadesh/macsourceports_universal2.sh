@@ -1,31 +1,26 @@
 # game/app specific values
-export APP_VERSION="1.2.0"
+export APP_VERSION="1.2.1"
 export PRODUCT_NAME="Gardens of Kadesh"
 export PROJECT_NAME="gardens-of-kadesh"
 export PORT_NAME="gardens-of-kadesh"
 export ICONSFILENAME="gardens-of-kadesh"
 export EXECUTABLE_NAME="Homeworld"
 export PKGINFO="APPLGOFK"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="1.2.0"
+
+# TODO: be able to pass in tag
 
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="11.5"
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+cd tools/kas2c
+"./kas2c-macOS-compile.sh"
+cd ../..
 
-# fetch the latest 
-echo git pull
-git pull
-
-# check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+unzip -o "../MSPBuildSystem/${PROJECT_NAME}/SDL2framework.zip" -d Mac
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -54,7 +49,7 @@ echo mv ${BUILT_PRODUCTS_DIR}/Default/Homeworld.app "${BUILT_PRODUCTS_DIR}/${WRA
 mv ${BUILT_PRODUCTS_DIR}/Default/Homeworld.app "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 # #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

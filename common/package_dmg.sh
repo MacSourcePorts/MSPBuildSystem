@@ -29,11 +29,11 @@ if [ "$1" != "skipdelete" ]; then
   mkdir -p "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}";
 fi
 
-cp -a ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME} "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
-cp -a ${BUILT_PRODUCTS_DIR}/"${PRODUCT_NAME}-${APP_VERSION}${ARCH_SUFFIX}.dmg" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
-if [ -f ${BUILT_PRODUCTS_DIR}/"${PRODUCT_NAME}_prenotarized.zip" ] ; then
-  cp -a ${BUILT_PRODUCTS_DIR}/"${PRODUCT_NAME}_prenotarized.zip" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
-  cp -a ${BUILT_PRODUCTS_DIR}/"${PRODUCT_NAME}_notarized_$(date +"%Y-%m-%d").zip" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
+cp -a "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
+cp -a "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}-${APP_VERSION}${ARCH_SUFFIX}.dmg" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
+if [ -f "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}_prenotarized.zip" ] ; then
+  cp -a "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}_prenotarized.zip" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
+  cp -a "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}_notarized_$(date +"%Y-%m-%d").zip" "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
 fi
 
 if [ "$1" != "skipcleanup" ] && [ "$2" != "skipcleanup" ]; then

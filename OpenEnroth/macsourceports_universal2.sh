@@ -6,62 +6,70 @@ export PORT_NAME="OpenEnroth"
 export ICONSFILENAME="OpenEnroth"
 export EXECUTABLE_NAME="OpenEnroth"
 export PKGINFO="APPLMM7"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="v0.9.1"
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+export AR=/usr/bin/ar
+export RANLIB=/usr/bin/ranlib
 
-# fetch the latest 
-echo git pull
-git pull
+gsed -i 's/IMSTB_TEXTEDIT_CHARTYPE empty_string;/IMSTB_TEXTEDIT_CHARTYPE empty_string = 0;/' thirdparty/imgui/imgui/imgui_widgets.cpp
 
-# check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}rm -rf ${BUILT_PRODUCTS_DIR}
-
-export OpenAL_DIR=/opt/homebrew/opt/openal-soft
-
-# create makefiles with cmake, perform builds with make
-rm -rf ${ARM64_BUILD_FOLDER}
-mkdir ${ARM64_BUILD_FOLDER}
-cd ${ARM64_BUILD_FOLDER}
-cmake  \
--DCMAKE_OSX_ARCHITECTURES=arm64 \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=/opt/Homebrew \
--DCMAKE_INSTALL_PREFIX=/opt/Homebrew \
-..
-make -j$NCPU
-mv src/Bin/OpenEnroth/${WRAPPER_NAME} .
+rm -rf ${BUILT_PRODUCTS_DIR}
 
 export OpenAL_DIR=/usr/local/opt/openal-soft
-export ZLIB_LIBRARY_RELEASE=/usr/local/lib/libzlibstatic.a
 
-cd ..
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
 cmake \
 -DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
--DCMAKE_OSX_ARCHITECTURES=x86_64 \
+-DCMAKE_OSX_ARCHITECTURES="x86_64" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 -DCMAKE_PREFIX_PATH=/usr/local \
 -DCMAKE_INSTALL_PREFIX=/usr/local \
+-DOE_BUILD_TESTS=OFF \
+-DCMAKE_LIBRARY_PATH=/usr/local/lib \
+-DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
+-DOpenAL_DIR=/usr/local/opt/openal-soft \
+-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+-DCMAKE_SYSTEM_NAME=Darwin \
+-DCMAKE_CROSSCOMPILING=ON \
+-DCMAKE_C_COMPILER="/usr/bin/clang" \
 ..
-make -j$NCPU
+cmake --build . --parallel $NCPU
+mv src/Bin/OpenEnroth/${WRAPPER_NAME} .
+
+cd ..
+rm -rf ${ARM64_BUILD_FOLDER}
+mkdir ${ARM64_BUILD_FOLDER}
+cd ${ARM64_BUILD_FOLDER}
+cmake \
+-DPKG_CONFIG_EXECUTABLE=/usr/local/bin/pkg-config \
+-DCMAKE_OSX_ARCHITECTURES="arm64" \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+-DCMAKE_PREFIX_PATH=/usr/local \
+-DCMAKE_INSTALL_PREFIX=/usr/local \
+-DOE_BUILD_TESTS=OFF \
+-DCMAKE_LIBRARY_PATH=/usr/local/lib \
+-DCMAKE_EXE_LINKER_FLAGS="-L/usr/local/lib" \
+-DOpenAL_DIR=/usr/local/opt/openal-soft \
+-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+..
+cmake --build . --parallel $NCPU
 mv src/Bin/OpenEnroth/${WRAPPER_NAME} .
 
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+
+cd ${BUILT_PRODUCTS_DIR}
+"../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cd ..
 
 cp -a resources/shaders ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shaders
 

@@ -1,0 +1,46 @@
+# game/app specific values
+export APP_VERSION="1.0"
+export PRODUCT_NAME="arcanum-ce"
+export PROJECT_NAME="arcanum-ce"
+export PORT_NAME="Arcanum Community Edition"
+export ICONSFILENAME="arcanum-ce"
+export EXECUTABLE_NAME="arcanum-ce"
+export PKGINFO="APPLBGDM"
+
+#constants
+source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.14"
+
+cd ../../${PROJECT_NAME}
+
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	echo "Setting version to: $APP_VERSION"
+else
+	echo "Leaving version at : $APP_VERSION"
+fi
+
+rm -rf ${BUILT_PRODUCTS_DIR}
+
+mkdir ${BUILT_PRODUCTS_DIR}
+cd ${BUILT_PRODUCTS_DIR}
+cmake \
+-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.14 \
+..
+cmake --build . --parallel $NCPU
+
+echo mv "Arcanum Community Edition.app" ${WRAPPER_NAME}
+mv "Arcanum Community Edition.app" ${WRAPPER_NAME}
+mv "${EXECUTABLE_FOLDER_PATH}/Arcanum Community Edition" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}
+
+cd ..
+
+# create the app bundle
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+
+# #sign and notarize
+"../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
+
+# #create dmg
+"../MSPBuildSystem/common/package_dmg.sh"

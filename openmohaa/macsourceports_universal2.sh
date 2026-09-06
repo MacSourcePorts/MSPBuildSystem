@@ -5,26 +5,22 @@ export PROJECT_NAME="openmohaa"
 export PORT_NAME="openmohaa"
 export ICONSFILENAME="openmohaa"
 export EXECUTABLE_NAME="openmohaa"
-export PKGINFO="APPLVKQ1"
-export GIT_TAG="0.7"
-export GIT_DEFAULT_BRANCH="main"
+export PKGINFO="APPLMOHA"
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 #constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	echo "Setting version to: $APP_VERSION"
+else
+	echo "Leaving version at : $APP_VERSION"
+fi
 
-# fetch the latest 
-echo git pull
-git pull
-
-# check out the latest release tag
-# echo git checkout tags/${GIT_TAG}
-# git checkout tags/${GIT_TAG}
+export PATH=$PATH:~/Library/Python/3.9/bin/
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -38,7 +34,7 @@ export MACOSX_DEPLOYMENT_TARGET=10.9
 cd ${X86_64_BUILD_FOLDER}
 
 cmake -G Ninja \
--DOPENAL_INCLUDE_DIR=/usr/local/opt/openal-soft/include/AL \
+-DOPENAL_INCLUDE_DIR=$X86_64_AL_PATH/include/AL \
 -DCMAKE_OSX_ARCHITECTURES=x86_64 \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 -DCMAKE_PREFIX_PATH=/usr/local \
@@ -46,40 +42,37 @@ cmake -G Ninja \
 ../
 ninja
 mkdir -p "${EXECUTABLE_FOLDER_PATH}"
-cp openmohaa.x86_64 "${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}"
-cp omohaaded.x86_64 "${EXECUTABLE_FOLDER_PATH}"/omohaaded
-cp code/client/cgame/cgame.x86_64.dylib "${EXECUTABLE_FOLDER_PATH}"
-cp code/server/fgame/game.x86_64.dylib "${EXECUTABLE_FOLDER_PATH}"
+cp openmohaa "${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}"
+cp omohaaded "${EXECUTABLE_FOLDER_PATH}"/omohaaded
+cp code/client/cgame/cgame.dylib "${EXECUTABLE_FOLDER_PATH}"
+cp code/server/fgame/game.dylib "${EXECUTABLE_FOLDER_PATH}"
 
 cd ../${ARM64_BUILD_FOLDER}
 
 cmake -G Ninja \
--DOPENAL_INCLUDE_DIR=/opt/Homebrew/opt/openal-soft/include/AL \
+-DOPENAL_INCLUDE_DIR=$ARM64_AL_PATH/include/AL \
 -DCMAKE_OSX_ARCHITECTURES=arm64 \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=/opt/Homebrew \
--DCMAKE_INSTALL_PREFIX=/opt/Homebrew \
+-DCMAKE_PREFIX_PATH=/usr/local \
+-DCMAKE_INSTALL_PREFIX=/usr/local \
 ../
 ninja
 mkdir -p "${EXECUTABLE_FOLDER_PATH}"
-cp openmohaa.arm64 "${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}"
-cp omohaaded.arm64 "${EXECUTABLE_FOLDER_PATH}"/omohaaded
-cp code/client/cgame/cgame.arm64.dylib "${EXECUTABLE_FOLDER_PATH}"
-cp code/server/fgame/game.arm64.dylib "${EXECUTABLE_FOLDER_PATH}"
+cp openmohaa "${EXECUTABLE_FOLDER_PATH}"/"${EXECUTABLE_NAME}"
+cp omohaaded "${EXECUTABLE_FOLDER_PATH}"/omohaaded
+cp code/client/cgame/cgame.dylib "${EXECUTABLE_FOLDER_PATH}"
+cp code/server/fgame/game.dylib "${EXECUTABLE_FOLDER_PATH}"
 cd ..
 
-# /opt/Homebrew/bin/meson ${ARM64_BUILD_FOLDER}
-# ninja -C ${ARM64_BUILD_FOLDER}
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 
-# create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
-
-echo lipo /usr/local/opt/openal-soft/lib/libopenal.1.dylib /opt/Homebrew/opt/openal-soft/lib/libopenal.1.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libopenal.1.dylib" -create
-lipo /usr/local/opt/openal-soft/lib/libopenal.1.dylib /opt/Homebrew/opt/openal-soft/lib/libopenal.1.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libopenal.1.dylib" -create
+cd ${BUILT_PRODUCTS_DIR}
+"../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cp /usr/local/lib/libopenal.1.dylib ${FRAMEWORKS_FOLDER_PATH}/
+cd ..
 
 cp ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/*.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/*.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
-
 
 #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

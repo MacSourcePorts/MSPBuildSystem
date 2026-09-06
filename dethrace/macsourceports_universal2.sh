@@ -5,57 +5,38 @@ export PROJECT_NAME="dethrace"
 export PORT_NAME="dethrace"
 export ICONSFILENAME="dethrace"
 export EXECUTABLE_NAME="dethrace"
-export PKGINFO="APPLDETH"
-export GIT_DEFAULT_BRANCH="main"
-export GIT_TAG="v0.8.0"
+export PKGINFO="APPLROTT"
 
 #constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
-# reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
-
-# # fetch the latest 
-# echo git pull
-# git pull
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	echo "Setting version to: " "$APP_VERSION"
+else
+	echo "Leaving version at : " "$APP_VERSION"
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-# create makefiles with cmake, perform builds with make
-rm -rf ${X86_64_BUILD_FOLDER}
-mkdir ${X86_64_BUILD_FOLDER}
-mkdir -p ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
-cd ${X86_64_BUILD_FOLDER}
+mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
+cd ${BUILT_PRODUCTS_DIR}
 cmake \
--DCMAKE_OSX_ARCHITECTURES=x86_64 \
+-DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+-DCMAKE_C_FLAGS="-Wno-error=int-conversion" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=/usr/local \
--DCMAKE_INSTALL_PREFIX=/usr/local \
 ..
-make -j$NCPU
+cmake --build . --parallel $NCPU
 cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
-
-cd ..
-rm -rf ${ARM64_BUILD_FOLDER}
-mkdir ${ARM64_BUILD_FOLDER}
-mkdir -p ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
-cd ${ARM64_BUILD_FOLDER}
-cmake  \
--DCMAKE_OSX_ARCHITECTURES=arm64 \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DCMAKE_PREFIX_PATH=/opt/Homebrew \
--DCMAKE_INSTALL_PREFIX=/opt/Homebrew \
-..
-make -j$NCPU
-cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
+"../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
 # #sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

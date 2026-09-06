@@ -1,0 +1,9 @@
+source "./source_urls.sh"
+
+export SOURCE_URL=${SDL2_IMAGE_URL}
+export CONFIGURE_ARGS="--disable-imageio --disable-avif-shared --disable-jpg-shared --disable-jxl-shared --disable-png-shared --disable-stb-image --disable-tif-shared --disable-webp-shared"
+
+source "../common/get_source.sh"
+source "../common/make_build.sh"
+
+sudo install_name_tool -id "@rpath/libSDL2_image-2.0.0.dylib" /usr/local/lib/libSDL2_image-2.0.0.dylib

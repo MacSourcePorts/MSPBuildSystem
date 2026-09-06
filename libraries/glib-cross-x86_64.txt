@@ -1,0 +1,23 @@
+[binaries]
+c = 'clang'
+cpp = 'clang++'
+objc = 'clang'
+ar = 'ar'
+strip = 'strip'
+pkgconfig = 'pkg-config'
+
+[properties]
+needs_exe_wrapper = true
+skip_sanity_check = true
+c_args = ['-arch', 'x86_64']
+cpp_args = ['-arch', 'x86_64']
+objc_args = ['-arch', 'x86_64']
+c_link_args = ['-arch', 'x86_64']
+cpp_link_args = ['-arch', 'x86_64']
+objc_link_args = ['-arch', 'x86_64']
+
+glib_cv_long_double_math = 'no'
+glib_cv_long_double_modf = 'no'
+glib_cv_long_double_round = 'no'
+glib_cv_long_double_lrint = 'no'
+glib_cv_long_double_llrint = 'no'

@@ -1,0 +1,29 @@
+source "./source_urls.sh"
+
+rm -rf source
+mkdir source
+cd source
+curl -JLO https://downloads.sourceforge.net/project/gs-fonts/gs-fonts/8.11%20%28base%2035%2C%20GPL%29/ghostscript-fonts-std-8.11.tar.gz
+tar -xzvf ghostscript-fonts-std-8.11.tar.gz
+sudo rm -rf /usr/local/share/ghostscript/fonts
+sudo mv fonts /usr/local/share/ghostscript
+cd ..
+
+export SOURCE_URL=${GHOSTSCRIPT_URL}
+export CONFIGURE_ARGS="--disable-compile-inits --disable-cups --disable-gtk --with-system-libtiff --without-x --enable-shared"
+
+source "../common/get_source.sh"
+
+patch -d source/${SOURCE_FOLDER} < ghostscript.diff
+
+sudo install_name_tool -id "/usr/local/lib/libfontconfig.1.dylib" /usr/local/lib/libfontconfig.1.dylib
+sudo install_name_tool -change @rpath/libpng16.16.dylib /usr/local/lib/libpng16.16.dylib /usr/local/lib/libfreetype.6.dylib
+
+source "../common/make_build_lipo.sh"
+sudo make install-so
+
+# NOTE: The libraries are installed with names like "libgs.dylib.10.03" instead of "libgs.10.03.dylib"
+# If this proves to be an issue we may need to figure out the proper way to rename them
+
+sudo install_name_tool -id "@rpath/libfontconfig.1.dylib" /usr/local/lib/libfontconfig.1.dylib
+sudo install_name_tool -change /usr/local/lib/libpng16.16.dylib @rpath/libpng16.16.dylib /usr/local/lib/libfreetype.6.dylib

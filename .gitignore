@@ -3,7 +3,12 @@ signing_values.local
 release*/
 *.p8
 Good-Robot/core/
-/gardens-of-kadesh/Gardens of Kadesh.app
-gardens-of-kadesh/*.zip
-gardens-of-kadesh/*.dmg
+buildbot/buildmaster/http.log*
+buildbot/buildmaster/state.sqlite
+twistd.*
+/buildbot/workdirs
+/buildbot/buildmaster/projects/__pycache__
+/buildbot/buildmaster/secrets
+/RBDOOM-3-BFG/data
 /uqm/dist-packages
+/Abuse_1996/data
