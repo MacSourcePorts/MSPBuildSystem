@@ -5,8 +5,6 @@ export PROJECT_NAME="QuakeSpasm"
 export PORT_NAME="QuakeSpasm"
 export ICONSFILENAME="QuakeSpasm"
 export EXECUTABLE_NAME="QuakeSpasm"
-export GIT_TAG="0.96.3"
-export GIT_DEFAULT_BRANCH="main"
 
 # constants
 source ../common/constants.sh
@@ -16,10 +14,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at: $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

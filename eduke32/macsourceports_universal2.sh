@@ -6,7 +6,6 @@ export PORT_NAME="EDuke32"
 export ICONSFILENAME="eduke32"
 export EXECUTABLE_NAME="eduke32"
 export PKGINFO="APPLED32"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

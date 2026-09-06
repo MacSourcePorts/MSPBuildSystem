@@ -6,8 +6,6 @@ export PORT_NAME="GZSelaco"
 export ICONSFILENAME="GZSelaco"
 export EXECUTABLE_NAME="Selaco"
 export PKGINFO="APPLGZSL"
-export GIT_TAG="v0.92a"
-export GIT_DEFAULT_BRANCH="macos/0.92a"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/GZSelaco/GZSelaco.entitlements"
 
 #constants
@@ -18,10 +16,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

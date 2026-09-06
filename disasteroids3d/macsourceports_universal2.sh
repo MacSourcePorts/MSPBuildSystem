@@ -6,8 +6,6 @@ export PORT_NAME="Disasteroids 3d"
 export ICONSFILENAME="disasteroids3d"
 export EXECUTABLE_NAME="disasteroids3d"
 export PKGINFO="APPLD3D"
-export GIT_TAG="1.4.0"
-export GIT_DEFAULT_BRANCH="master"
 
 # constants
 source ../common/constants.sh

@@ -6,8 +6,6 @@ export PORT_NAME="gardens-of-kadesh"
 export ICONSFILENAME="gardens-of-kadesh"
 export EXECUTABLE_NAME="Homeworld"
 export PKGINFO="APPLGOFK"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="1.2.1"
 
 # TODO: be able to pass in tag
 
@@ -17,18 +15,6 @@ source ../common/signing_values.local
 export MINIMUM_SYSTEM_VERSION="11.5"
 
 cd ../../${PROJECT_NAME}
-
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
-
-# fetch the latest 
-echo git pull
-git pull
-
-# check out the latest release tag
-echo git checkout tags/${GIT_TAG}
-git checkout tags/${GIT_TAG}
 
 cd tools/kas2c
 "./kas2c-macOS-compile.sh"

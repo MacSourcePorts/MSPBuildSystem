@@ -7,8 +7,6 @@ export ICONSFILENAME="Perimeter"
 export EXECUTABLE_NAME="Perimeter"
 export EXECUTABLE_SUFFIX=".sh"
 export PKGINFO="APPLPERI"
-# export GIT_TAG="0.7"
-export GIT_DEFAULT_BRANCH="cmake"
 
 export RANLIB=/usr/bin/ranlib
 export AR=/usr/bin/ar
@@ -20,10 +18,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

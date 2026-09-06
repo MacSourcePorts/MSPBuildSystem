@@ -6,8 +6,6 @@ export PORT_NAME="CorsixTH"
 export ICONSFILENAME="CorsixTH"
 export EXECUTABLE_NAME="CorsixTH"
 export PKGINFO="APPLCTH"
-export GIT_TAG="v0.68.0"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
@@ -22,10 +20,9 @@ SCRIPT_DIR=$PWD
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 # Turning off the bundling for now

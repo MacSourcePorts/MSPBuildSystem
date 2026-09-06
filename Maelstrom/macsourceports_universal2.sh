@@ -6,8 +6,6 @@ export PORT_NAME="Maelstrom 3.0"
 export ICONSFILENAME="Maelstrom"
 export EXECUTABLE_NAME="Maelstrom"
 export PKGINFO="APPLMLST"
-export GIT_TAG="1.4.0"
-export GIT_DEFAULT_BRANCH="main"
 
 # constants
 source ../common/constants.sh

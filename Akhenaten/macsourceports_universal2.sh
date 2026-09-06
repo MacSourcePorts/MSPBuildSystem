@@ -5,8 +5,6 @@ export PROJECT_NAME="Akhenaten"
 export PORT_NAME="Akhenaten"
 export ICONSFILENAME="akhenaten"
 export EXECUTABLE_NAME="akhenaten"
-export GIT_TAG="v1.0"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
@@ -15,10 +13,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

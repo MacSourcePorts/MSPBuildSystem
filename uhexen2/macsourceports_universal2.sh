@@ -6,7 +6,6 @@ export PORT_NAME="uHexen2"
 export ICONSFILENAME="uhexen2"
 export EXECUTABLE_NAME="glhexen2"
 export PKGINFO="APPLHXN2"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

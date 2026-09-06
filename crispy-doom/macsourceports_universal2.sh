@@ -6,7 +6,6 @@ export PORT_NAME="crispy-doom"
 export ICONSFILENAME="crispy-doom"
 export EXECUTABLE_NAME="launcher"
 export PKGINFO="APPLBGDM"
-export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh
@@ -17,10 +16,9 @@ cd ../../${PROJECT_NAME}
 if [ -n "$2" ]; then
 	# turns crispy-doom-7.1.0 into 7.1.0
 	export APP_VERSION="${2/crispy-doom-/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 ./autogen.sh

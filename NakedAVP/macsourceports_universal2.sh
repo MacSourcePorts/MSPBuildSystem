@@ -6,8 +6,6 @@ export PORT_NAME="NakedAVP"
 export ICONSFILENAME="NakedAVP"
 export EXECUTABLE_NAME="avp"
 export PKGINFO="APPLAVP"
-export GIT_TAG="1.2.2"
-export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh
@@ -16,10 +14,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

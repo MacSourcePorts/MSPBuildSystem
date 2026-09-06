@@ -6,21 +6,12 @@ export PORT_NAME="rottexpr"
 export ICONSFILENAME="rottexpr"
 export EXECUTABLE_NAME="rott"
 export PKGINFO="APPLROTT"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.9"
 
 cd ../../${PROJECT_NAME}
-
-# reset to the main branch
-echo git checkout ${GIT_DEFAULT_BRANCH}
-git checkout ${GIT_DEFAULT_BRANCH}
-
-# fetch the latest 
-echo git pull
-git pull
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}

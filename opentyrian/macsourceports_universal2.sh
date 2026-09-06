@@ -6,8 +6,6 @@ export PORT_NAME="OpenTyrian"
 export ICONSFILENAME="opentyrian"
 export EXECUTABLE_NAME="opentyrian"
 export PKGINFO="APPLTYR"
-export GIT_TAG="v2.1.20221123"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

@@ -6,8 +6,6 @@ export PORT_NAME="RigelEngine"
 export ICONSFILENAME="RigelEngine"
 export EXECUTABLE_NAME="RigelEngine"
 export PKGINFO="APPLROTT"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="v0.9.1"
 
 #constants
 source ../common/constants.sh

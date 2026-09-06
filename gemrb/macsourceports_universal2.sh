@@ -6,8 +6,6 @@ export PORT_NAME="GemRB"
 export ICONSFILENAME="gemrb"
 export EXECUTABLE_NAME="gemrb"
 export PKGINFO="APPLGRB"
-export GIT_TAG="v0.9.3"
-export GIT_DEFAULT_BRANCH="master"
 export PYTHON_VERSION=3.14
 
 #constants
@@ -22,10 +20,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 # Change CMakeLists.txt to fix issue with install_name_tool

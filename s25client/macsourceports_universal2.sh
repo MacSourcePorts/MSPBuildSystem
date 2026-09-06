@@ -6,7 +6,6 @@ export PORT_NAME="s25client"
 export ICONSFILENAME="s25client"
 export EXECUTABLE_NAME="s25client"
 export PKGINFO="APPLRTTR"
-export GIT_DEFAULT_BRANCH="master"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/Serious-Engine/Serious-Engine.entitlements"
 
 #constants

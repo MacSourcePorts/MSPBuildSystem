@@ -5,8 +5,6 @@ export PROJECT_NAME="Doom64EX-Plus"
 export PORT_NAME="DOOM64EXPlus"
 export ICONSFILENAME="DOOM64EXPlus"
 export EXECUTABLE_NAME="DOOM64EXPlus"
-export GIT_TAG="4.1.0.0"
-export GIT_DEFAULT_BRANCH="stable"
 
 # constants
 source ../common/constants.sh
@@ -18,10 +16,9 @@ cp ../MSPBuildSystem/${PROJECT_NAME}/Libs/* Xcode
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at: $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

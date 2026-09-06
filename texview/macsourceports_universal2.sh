@@ -6,7 +6,6 @@ export PORT_NAME="texview"
 export ICONSFILENAME="texview"
 export EXECUTABLE_NAME="texview"
 export PKGINFO="APPLTXVW"
-export GIT_DEFAULT_BRANCH="dev"
 
 #constants
 source ../common/constants.sh

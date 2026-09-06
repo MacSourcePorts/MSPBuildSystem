@@ -6,7 +6,6 @@ export PORT_NAME="ReflectionHLE"
 export ICONSFILENAME="reflectionhle"
 export EXECUTABLE_NAME="reflectionhle"
 export PKGINFO="APPLRHLE"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
@@ -17,10 +16,9 @@ cd ../../${PROJECT_NAME}
 if [ -n "$2" ]; then
 	# turns release-20240926 into 20240926
 	export APP_VERSION="${2/release-/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to : $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

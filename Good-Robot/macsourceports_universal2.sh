@@ -6,8 +6,6 @@ export PORT_NAME="Good Robot"
 export ICONSFILENAME="Good-Robot"
 export EXECUTABLE_NAME="good_robot"
 export PKGINFO="APPLGR"
-export GIT_TAG="1.1"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

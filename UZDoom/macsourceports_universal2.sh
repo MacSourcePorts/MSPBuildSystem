@@ -6,8 +6,6 @@ export PORT_NAME="UZDoom"
 export ICONSFILENAME="UZDoom"
 export EXECUTABLE_NAME="uzdoom"
 export PKGINFO="APPLUZDM"
-export GIT_TAG="4.14.3"
-export GIT_DEFAULT_BRANCH="trunk"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/UZDoom/UZDoom.entitlements"
 
 #constants
@@ -18,10 +16,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 gsed -i '/if( ${TARGET_ARCHITECTURE} MATCHES "x86_64" )/,/endif()/d' CMakeLists.txt

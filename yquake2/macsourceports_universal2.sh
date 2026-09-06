@@ -6,11 +6,6 @@ export PORT_NAME="Yamagi Quake II"
 export ICONSFILENAME="quake2"
 export EXECUTABLE_NAME="quake2"
 export PKGINFO="APPLGYQ2"
-export GIT_TAG="QUAKE2_8_41"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG_XATRIX="XATRIX_2_13"
-export GIT_TAG_ROGUE="ROGUE_2_12"
-export GIT_TAG_CTF="CTF_1_10"
 
 # constants
 source ../common/constants.sh
@@ -74,10 +69,9 @@ if [ -n "$2" ]; then
 	# turns QUAKE2_8_41 into 8.41
 	export APP_VERSION="${2/QUAKE2_/}"
 	export APP_VERSION="${APP_VERSION/_/.}"
-	export GIT_TAG="$2"
-	echo "Setting yquake2 version / tag to : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to : $APP_VERSION"
 else
-	echo "Leaving yquake2 version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

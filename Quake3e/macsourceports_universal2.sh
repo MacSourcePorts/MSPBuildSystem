@@ -6,7 +6,6 @@ export PORT_NAME="Quake3e"
 export ICONSFILENAME="Quake3e"
 export EXECUTABLE_NAME="Quake3e"
 export PKGINFO="APPLQ3E"
-export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh

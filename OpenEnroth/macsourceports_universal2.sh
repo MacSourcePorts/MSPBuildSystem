@@ -6,8 +6,6 @@ export PORT_NAME="OpenEnroth"
 export ICONSFILENAME="OpenEnroth"
 export EXECUTABLE_NAME="OpenEnroth"
 export PKGINFO="APPLMM7"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="v0.1"
 
 #constants
 source ../common/constants.sh

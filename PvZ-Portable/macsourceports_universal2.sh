@@ -6,7 +6,6 @@ export PORT_NAME="PvZ-Portable"
 export ICONSFILENAME="PvZ-Portable"
 export EXECUTABLE_NAME="pvz-portable"
 export PKGINFO="APPLPVZP"
-export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh
@@ -14,20 +13,11 @@ export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
-if [ -n "$3" ]; then
-	export APP_VERSION="${3/v/}"
-	export GIT_TAG="$3"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
-
-    # reset to the main branch
-    echo git checkout ${GIT_DEFAULT_BRANCH}
-    git checkout ${GIT_DEFAULT_BRANCH}
-
-    # fetch the latest 
-    echo git pull
-    git pull
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 gsed -i 's|SDL_GetBasePath()|SDL_GetPrefPath("io.github.wszqkzqk", "PvZPortable")|' src/SexyAppFramework/SexyAppBase.cpp

@@ -6,7 +6,6 @@ export PORT_NAME="chocolate-quake"
 export ICONSFILENAME="chocolate-quake"
 export EXECUTABLE_NAME="chocolate-quake"
 export PKGINFO="APPLBGDM"
-export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh
@@ -17,10 +16,9 @@ cd ../../${PROJECT_NAME}
 if [ -n "$2" ]; then
 	# turns chocolate-quake-2.0.0 into 2.0.0
 	export APP_VERSION="${2/chocolate-quake-/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

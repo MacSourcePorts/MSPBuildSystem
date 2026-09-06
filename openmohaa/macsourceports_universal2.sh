@@ -6,8 +6,6 @@ export PORT_NAME="openmohaa"
 export ICONSFILENAME="openmohaa"
 export EXECUTABLE_NAME="openmohaa"
 export PKGINFO="APPLMOHA"
-export GIT_TAG="0.7"
-export GIT_DEFAULT_BRANCH="main"
 export MINIMUM_SYSTEM_VERSION="10.15"
 
 #constants
@@ -17,10 +15,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 export PATH=$PATH:~/Library/Python/3.9/bin/

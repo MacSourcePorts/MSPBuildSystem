@@ -6,7 +6,6 @@ export PORT_NAME="jk2mv"
 export ICONSFILENAME="jk2mv"
 export EXECUTABLE_NAME="jk2mvmp"
 export PKGINFO="APPLEJ2MV"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

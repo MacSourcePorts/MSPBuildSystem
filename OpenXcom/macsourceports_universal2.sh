@@ -6,8 +6,6 @@ export PORT_NAME="OpenXcom"
 export ICONSFILENAME="OpenXcom"
 export EXECUTABLE_NAME="openxcom"
 export PKGINFO="APPLXCOM"
-export GIT_TAG="1.0"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

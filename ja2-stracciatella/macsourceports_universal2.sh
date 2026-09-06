@@ -6,9 +6,7 @@ export PORT_NAME="JA2 Stracciatella"
 export ICONSFILENAME="ja2-stracciatella"
 export EXECUTABLE_NAME="ja2-launcher"
 export PKGINFO="APPLJA2"
-export GIT_DEFAULT_BRANCH="master"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/ja2-stracciatella/ja2-stracciatella.entitlements"
-export GIT_TAG="v0.22.1"
 
 #constants
 source ../common/constants.sh
@@ -22,10 +20,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to:  $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at :  $APP_VERSION"
 fi
 
 # Fix issue with static Homebrew linking

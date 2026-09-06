@@ -6,7 +6,6 @@ export PORT_NAME="OpenJK"
 export ICONSFILENAME="OpenJK"
 export EXECUTABLE_NAME="OpenJK"
 export PKGINFO="APPLEOJK"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

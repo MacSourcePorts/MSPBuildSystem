@@ -6,8 +6,6 @@ export PORT_NAME="wrathplaces"
 export ICONSFILENAME="wrathplaces"
 export EXECUTABLE_NAME="wrath"
 export PKGINFO="APPLWRTH"
-export GIT_TAG="1.12"
-export GIT_DEFAULT_BRANCH="master"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/wrathplaces/wrathplaces.entitlements"
 
 # constants

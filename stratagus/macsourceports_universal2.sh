@@ -7,8 +7,6 @@ export PORT_NAME="Wargus"
 export ICONSFILENAME="wargus"
 export EXECUTABLE_NAME="wargus"
 export PKGINFO="APPLWG2"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="v3.3.2"
 
 #constants
 source ../common/constants.sh
@@ -22,14 +20,6 @@ rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
-
-# reset to the main branch
-# echo git checkout ${GIT_DEFAULT_BRANCH}
-# git checkout ${GIT_DEFAULT_BRANCH}
-
-# # fetch the latest 
-echo git pull
-git pull
 
 # first, build stratagus
 cd stratagus 

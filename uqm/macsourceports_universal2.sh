@@ -6,7 +6,6 @@ export PRODUCT_NAME="The Ur-Quan Masters"
 export PORT_NAME="uqm"
 export EXECUTABLE_NAME="The Ur-Quan Masters"
 export PKGINFO="APPLMLST"
-export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh

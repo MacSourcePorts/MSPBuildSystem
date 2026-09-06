@@ -6,8 +6,6 @@ export PORT_NAME="darkplaces"
 export ICONSFILENAME="darkplaces"
 export EXECUTABLE_NAME="darkplaces-sdl"
 export PKGINFO="APPLDARK"
-export GIT_TAG="1.0"
-export GIT_DEFAULT_BRANCH="master"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/darkplaces/darkplaces.entitlements"
 
 # constants

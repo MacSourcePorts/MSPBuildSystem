@@ -6,8 +6,6 @@ export PORT_NAME="OpenLoco"
 export ICONSFILENAME="OpenLoco"
 export EXECUTABLE_NAME="OpenLoco"
 export PKGINFO="APPLBGDM"
-export GIT_DEFAULT_BRANCH="master"
-export GIT_TAG="v25.12"
 
 #constants
 source ../common/constants.sh
@@ -17,10 +15,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

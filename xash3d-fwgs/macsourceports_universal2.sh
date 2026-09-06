@@ -6,7 +6,6 @@ export PROJECT_NAME="xash3d-fwgs"
 export PORT_NAME="Xash3D-FWGS"
 export EXECUTABLE_NAME="xash3d"
 export PKGINFO="APPLMLST"
-export GIT_DEFAULT_BRANCH="main"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/xash3d-fwgs/xash3d-fwgs.entitlements"
 
 #constants

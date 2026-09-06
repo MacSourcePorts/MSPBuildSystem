@@ -6,8 +6,6 @@ export PORT_NAME="postal"
 export ICONSFILENAME="postal"
 export EXECUTABLE_NAME="postal1"
 export PKGINFO="APPLPSTL"
-export GIT_TAG="1.0"
-export GIT_DEFAULT_BRANCH="master"
 
 # constants
 source ../common/constants.sh

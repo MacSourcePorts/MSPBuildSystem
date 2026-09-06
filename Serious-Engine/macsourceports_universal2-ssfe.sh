@@ -6,8 +6,6 @@ export PORT_NAME="Serious Engine"
 export ICONSFILENAME="ssfe"
 export EXECUTABLE_NAME="ssam-tfe"
 export PKGINFO="APPLSSFE"
-export GIT_TAG="1.5.2"
-export GIT_DEFAULT_BRANCH="master"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/Serious-Engine/Serious-Engine.entitlements"
 
 #constants

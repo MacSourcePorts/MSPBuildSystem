@@ -6,7 +6,6 @@ export PORT_NAME="ioquake3"
 export ICONSFILENAME="ioquake3"
 export EXECUTABLE_NAME="ioquake3"
 export PKGINFO="APPLIOQ3"
-export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh

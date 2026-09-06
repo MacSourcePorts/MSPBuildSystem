@@ -6,8 +6,6 @@ export PORT_NAME="RBDOOM-3-BFG"
 export EXECUTABLE_NAME="RBDoom3BFG"
 export ICONSFILENAME="RBDoom3BFG"
 export PKGINFO="APPLRBD3"
-export GIT_TAG="v1.6.0"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

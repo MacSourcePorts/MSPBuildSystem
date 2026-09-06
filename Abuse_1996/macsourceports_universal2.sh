@@ -6,7 +6,6 @@ export PORT_NAME="Abuse_1996"
 export ICONSFILENAME="abuse"
 export EXECUTABLE_NAME="abuse"
 export PKGINFO="APPLABUS"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

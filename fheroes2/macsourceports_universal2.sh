@@ -6,8 +6,6 @@ export PORT_NAME="fheroes2"
 export ICONSFILENAME="fheroes2"
 export EXECUTABLE_NAME="fheroes2"
 export PKGINFO="APPLFH2"
-export GIT_TAG="1.1.6"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
@@ -18,10 +16,9 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
-	echo "Setting version / tag to: " "$APP_VERSION" / "$GIT_TAG"
+	echo "Setting version to: $APP_VERSION"
 else
-	echo "Leaving version / tag at : " "$APP_VERSION" / "$GIT_TAG"
+	echo "Leaving version at : $APP_VERSION"
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}

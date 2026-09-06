@@ -6,7 +6,6 @@ export PROJECT_NAME="systemshock"
 export PORT_NAME="Shockolate"
 export EXECUTABLE_NAME="systemshock"
 export PKGINFO="APPLESS1"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh

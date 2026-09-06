@@ -6,7 +6,6 @@ export PORT_NAME="R.E.L.I.V.E. AO"
 export ICONSFILENAME="oddworld-ao"
 export EXECUTABLE_NAME="relive"
 export PKGINFO="APPLOWAO"
-export GIT_DEFAULT_BRANCH="master"
 
 #constants
 source ../common/constants.sh
