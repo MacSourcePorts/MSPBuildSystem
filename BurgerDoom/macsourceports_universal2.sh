@@ -6,7 +6,6 @@ export PORT_NAME="BurgerDoom"
 export ICONSFILENAME="BurgerDoom"
 export EXECUTABLE_NAME="BurgerDoom"
 export PKGINFO="APPLBGDM"
-export GIT_DEFAULT_BRANCH="main"
 
 #constants
 source ../common/constants.sh
@@ -16,7 +15,6 @@ cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
 	export APP_VERSION="${2/v/}"
-	export GIT_TAG="$2"
 	echo "Setting version to: $APP_VERSION"
 else
 	echo "Leaving version at : $APP_VERSION"
