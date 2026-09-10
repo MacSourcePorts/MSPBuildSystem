@@ -5,3 +5,5 @@ export CONFIGURE_ARGS="--disable-dependency-tracking --disable-static --enable-s
 
 source "../common/get_source.sh"
 source "../common/make_build_lipo.sh"
+
+sudo install_name_tool -id @rpath/libmpg123.0.dylib /usr/local/lib/libmpg123.0.dylib
