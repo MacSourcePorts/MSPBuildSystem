@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "gemdropx-*.dmg",
+        "sourcePortStub": "gemdropx",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,17 @@
+[
+    {
+        "filenameGlob": "BDD3-*.dmg",
+        "sourcePortStub": "bdd3",
+        "buildType": 1
+    },
+    {
+        "filenameGlob": "BDD4-*.dmg",
+        "sourcePortStub": "bdd4",
+        "buildType": 1
+    },
+    {
+        "filenameGlob": "FLESHCANCER-*.dmg",
+        "sourcePortStub": "fleshcancer",
+        "buildType": 1
+    }
+]

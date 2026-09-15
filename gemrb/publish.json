@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "gemrb-*.dmg",
+        "sourcePortStub": "gemrb",
+        "buildType": 1
+    }
+]

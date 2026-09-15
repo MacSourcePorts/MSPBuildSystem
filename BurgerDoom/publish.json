@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "BurgerDoom-*.dmg",
+        "sourcePortStub": "burgerdoom",
+        "buildType": 1
+    }
+]

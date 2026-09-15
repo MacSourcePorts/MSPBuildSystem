@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenLoco-*.dmg",
+        "sourcePortStub": "openloco",
+        "buildType": 1
+    }
+]

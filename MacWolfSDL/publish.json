@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "MacWolfSDL-*.dmg",
+        "sourcePortStub": "macwolfsdl",
+        "buildType": 1
+    }
+]

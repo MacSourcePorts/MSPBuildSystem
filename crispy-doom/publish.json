@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "crispy-doom-*.dmg",
+        "sourcePortStub": "crispydoom",
+        "buildType": 1
+    }
+]

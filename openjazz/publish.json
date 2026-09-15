@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "openjazz-*.dmg",
+        "sourcePortStub": "openjazz",
+        "buildType": 1
+    }
+]

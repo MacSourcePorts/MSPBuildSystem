@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "devilutionX-*.dmg",
+        "sourcePortStub": "devilutionX",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Quake3e-*.dmg",
+        "sourcePortStub": "quake3e",
+        "buildType": 1
+    }
+]

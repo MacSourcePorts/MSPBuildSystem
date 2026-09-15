@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "rottexpr-*.dmg",
+        "sourcePortStub": "rottexpr",
+        "buildType": 1
+    }
+]

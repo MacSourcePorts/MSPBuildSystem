@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Zuma-Portable-*.dmg",
+        "sourcePortStub": "zumaportable",
+        "buildType": 1
+    }
+]

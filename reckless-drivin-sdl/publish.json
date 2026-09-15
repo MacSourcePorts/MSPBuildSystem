@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "RecklessDrivin-*.dmg",
+        "sourcePortStub": "recklessdrivin",
+        "buildType": 1
+    }
+]

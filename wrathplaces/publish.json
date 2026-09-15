@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "wrathplaces-*.dmg",
+        "sourcePortStub": "wrathplaces",
+        "buildType": 1
+    }
+]

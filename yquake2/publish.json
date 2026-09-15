@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "yquake2-*.dmg",
+        "sourcePortStub": "yquake2",
+        "buildType": 1
+    }
+]

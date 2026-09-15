@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Gardens of Kadesh-*.dmg",
+        "sourcePortStub": "gardens-of-kadesh",
+        "buildType": 1
+    }
+]

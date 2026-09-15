@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "eduke32-*.dmg",
+        "sourcePortStub": "eduke32",
+        "buildType": 1
+    }
+]

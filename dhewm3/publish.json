@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "dhewm3-*.dmg",
+        "sourcePortStub": "dhewm3",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,12 @@
+[
+    {
+        "filenameGlob": "OpenJK-SP-*.dmg",
+        "sourcePortStub": "openjksp",
+        "buildType": 1
+    },
+    {
+        "filenameGlob": "OpenJK-MP-*.dmg",
+        "sourcePortStub": "openjkmp",
+        "buildType": 1
+    }
+]

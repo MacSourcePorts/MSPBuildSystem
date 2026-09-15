@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "daikatana-*.dmg",
+        "sourcePortStub": "daikatana",
+        "buildType": 1
+    }
+]

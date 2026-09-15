@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "RigelEngine-*.dmg",
+        "sourcePortStub": "rigelengine",
+        "buildType": 1
+    }
+]

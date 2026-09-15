@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Akhenaten-*.dmg",
+        "sourcePortStub": "akhenaten",
+        "buildType": 1
+    }
+]

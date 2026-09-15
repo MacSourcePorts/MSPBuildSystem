@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "arcanum-ce-*.dmg",
+        "sourcePortStub": "arcanum-ce",
+        "buildType": 1
+    }
+]

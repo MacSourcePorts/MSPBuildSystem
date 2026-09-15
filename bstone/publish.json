@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "bstone-*.dmg",
+        "sourcePortStub": "bstone",
+        "buildType": 1
+    }
+]

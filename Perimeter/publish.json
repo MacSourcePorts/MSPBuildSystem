@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Perimeter-*.dmg",
+        "sourcePortStub": "perimeter",
+        "buildType": 1
+    }
+]

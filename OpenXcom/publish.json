@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenXcom-*.dmg",
+        "sourcePortStub": "openxcom",
+        "buildType": 1
+    }
+]

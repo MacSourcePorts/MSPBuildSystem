@@ -1,0 +1,12 @@
+[
+    {
+        "filenameGlob": "D1X-Rebirth-*.dmg",
+        "sourcePortStub": "d1xrebirth",
+        "buildType": 1
+    },
+    {
+        "filenameGlob": "D2X-Rebirth-*.dmg",
+        "sourcePortStub": "d2xrebirth",
+        "buildType": 1
+    }
+]

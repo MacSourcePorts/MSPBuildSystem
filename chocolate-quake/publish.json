@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "chocolate-quake-*.dmg",
+        "sourcePortStub": "chocolatequake",
+        "buildType": 1
+    }
+]

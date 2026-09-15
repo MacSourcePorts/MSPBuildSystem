@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "ioquake3-*.dmg",
+        "sourcePortStub": "ioquake3",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Heretic2R-UNIX-*.dmg",
+        "sourcePortStub": "heretic2r",
+        "buildType": 1
+    }
+]

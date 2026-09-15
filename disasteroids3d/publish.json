@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "disasteroids3d-*.dmg",
+        "sourcePortStub": "disasteroids3d",
+        "buildType": 1
+    }
+]

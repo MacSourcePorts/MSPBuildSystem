@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "1oom-*.dmg",
+        "sourcePortStub": "1oom",
+        "buildType": 1
+    }
+]

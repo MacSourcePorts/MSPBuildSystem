@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "uhexen2-*.dmg",
+        "sourcePortStub": "uhexen2",
+        "buildType": 1
+    }
+]

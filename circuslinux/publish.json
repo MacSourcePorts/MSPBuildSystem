@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "circuslinux-*.dmg",
+        "sourcePortStub": "circuslinux",
+        "buildType": 1
+    }
+]

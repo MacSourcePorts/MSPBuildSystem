@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "rawgl-*.dmg",
+        "sourcePortStub": "rawgl",
+        "buildType": 1
+    }
+]

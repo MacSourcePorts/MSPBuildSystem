@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "GZSelaco-*.dmg",
+        "sourcePortStub": "gzSelaco",
+        "buildType": 1
+    }
+]

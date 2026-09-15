@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenEnroth-*.dmg",
+        "sourcePortStub": "openenroth",
+        "buildType": 1
+    }
+]

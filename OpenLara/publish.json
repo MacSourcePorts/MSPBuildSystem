@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenLara-*.dmg",
+        "sourcePortStub": "openlara",
+        "buildType": 1
+    }
+]

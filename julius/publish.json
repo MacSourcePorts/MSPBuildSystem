@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "julius-*.dmg",
+        "sourcePortStub": "julius",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "darkplaces-*.dmg",
+        "sourcePortStub": "darkplaces",
+        "buildType": 1
+    }
+]

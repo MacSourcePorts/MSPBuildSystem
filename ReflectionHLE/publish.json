@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "reflectionhle-*.dmg",
+        "sourcePortStub": "reflectionhle",
+        "buildType": 1
+    }
+]

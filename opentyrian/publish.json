@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "opentyrian-*.dmg",
+        "sourcePortStub": "opentyrian",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "openmohaa-*.dmg",
+        "sourcePortStub": "openmohaa",
+        "buildType": 1
+    }
+]

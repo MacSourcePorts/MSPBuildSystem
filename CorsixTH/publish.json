@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "CorsixTH-*.dmg",
+        "sourcePortStub": "corsixth",
+        "buildType": 1
+    }
+]

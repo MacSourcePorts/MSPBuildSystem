@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "The Ur-Quan Masters-*.dmg",
+        "sourcePortStub": "uqm",
+        "buildType": 1
+    }
+]

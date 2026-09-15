@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenGothic-*.dmg",
+        "sourcePortStub": "opengothic",
+        "buildType": 1
+    }
+]

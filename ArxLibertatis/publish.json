@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "ArxLibertatis-*.dmg",
+        "sourcePortStub": "arxlibertatis",
+        "buildType": 1
+    }
+]

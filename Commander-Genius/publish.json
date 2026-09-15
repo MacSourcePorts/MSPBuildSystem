@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "CGenius-*.dmg",
+        "sourcePortStub": "commander-genius",
+        "buildType": 1
+    }
+]

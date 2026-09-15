@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "entombed-*.dmg",
+        "sourcePortStub": "entombed",
+        "buildType": 1
+    }
+]

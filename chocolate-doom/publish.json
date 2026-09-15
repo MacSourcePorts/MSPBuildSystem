@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "chocolate-doom-*.dmg",
+        "sourcePortStub": "chocolatedoom",
+        "buildType": 1
+    }
+]

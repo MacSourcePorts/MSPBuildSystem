@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "madbomber-*.dmg",
+        "sourcePortStub": "madbomber",
+        "buildType": 1
+    }
+]

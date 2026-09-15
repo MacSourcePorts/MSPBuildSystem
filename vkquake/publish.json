@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "vkQuake-*.dmg",
+        "sourcePortStub": "vkquake",
+        "buildType": 1
+    }
+]

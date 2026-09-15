@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Maelstrom-*.dmg",
+        "sourcePortStub": "maelstrom",
+        "buildType": 1
+    }
+]

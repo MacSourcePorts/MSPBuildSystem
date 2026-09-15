@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Good-Robot-*.dmg",
+        "sourcePortStub": "goodrobot",
+        "buildType": 1
+    }
+]

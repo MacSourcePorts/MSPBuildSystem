@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "QuakeSpasm-*.dmg",
+        "sourcePortStub": "quakespasm",
+        "buildType": 1
+    }
+]

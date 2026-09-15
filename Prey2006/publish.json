@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Prey2006-*.dmg",
+        "sourcePortStub": "prey2006",
+        "buildType": 1
+    }
+]

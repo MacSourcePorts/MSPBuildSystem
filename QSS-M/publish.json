@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "QSS-M-*.dmg",
+        "sourcePortStub": "qssm",
+        "buildType": 1
+    }
+]

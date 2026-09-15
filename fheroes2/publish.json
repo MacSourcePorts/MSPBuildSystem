@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "fheroes2-*.dmg",
+        "sourcePortStub": "fheroes2",
+        "buildType": 1
+    }
+]

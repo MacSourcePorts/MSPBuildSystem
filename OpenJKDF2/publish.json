@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenJKDF2-*.dmg",
+        "sourcePortStub": "openjkdf2",
+        "buildType": 1
+    }
+]

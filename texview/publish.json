@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "texview-*.dmg",
+        "sourcePortStub": "texview",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "ja2-stracciatella-*.dmg",
+        "sourcePortStub": "ja2-stracciatella",
+        "buildType": 1
+    }
+]

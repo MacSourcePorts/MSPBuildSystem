@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "RBDoom3BFG-*.dmg",
+        "sourcePortStub": "rbdoombfg",
+        "buildType": 1
+    }
+]

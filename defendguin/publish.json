@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "defendguin-*.dmg",
+        "sourcePortStub": "defendguin",
+        "buildType": 1
+    }
+]

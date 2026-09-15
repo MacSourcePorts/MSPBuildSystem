@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "vectoroids-*.dmg",
+        "sourcePortStub": "vectoroids",
+        "buildType": 1
+    }
+]

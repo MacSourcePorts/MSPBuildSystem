@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "PvZ-Portable-*.dmg",
+        "sourcePortStub": "pvzportable",
+        "buildType": 1
+    }
+]

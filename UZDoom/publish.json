@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "UZDoom-*.dmg",
+        "sourcePortStub": "uzdoom",
+        "buildType": 1
+    }
+]

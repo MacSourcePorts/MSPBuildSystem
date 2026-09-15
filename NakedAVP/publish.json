@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "NakedAVP-*.dmg",
+        "sourcePortStub": "nakedavp",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,12 @@
+[
+    {
+        "filenameGlob": "ssam-tfe-*.dmg",
+        "sourcePortStub": "serious-engine-tfe",
+        "buildType": 1
+    },
+    {
+        "filenameGlob": "ssam-tse-*.dmg",
+        "sourcePortStub": "serious-engine-tse",
+        "buildType": 1
+    }
+]

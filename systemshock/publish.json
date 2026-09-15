@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Shockolate-*.dmg",
+        "sourcePortStub": "shockolate",
+        "buildType": 1
+    }
+]

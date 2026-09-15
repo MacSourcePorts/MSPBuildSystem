@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "dethrace-*.dmg",
+        "sourcePortStub": "dethrace",
+        "buildType": 1
+    }
+]

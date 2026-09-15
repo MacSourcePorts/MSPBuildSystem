@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "bugsquish-*.dmg",
+        "sourcePortStub": "bugsquish",
+        "buildType": 1
+    }
+]

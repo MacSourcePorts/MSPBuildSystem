@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "TheForceEngine-*.dmg",
+        "sourcePortStub": "theforceengine",
+        "buildType": 1
+    }
+]
