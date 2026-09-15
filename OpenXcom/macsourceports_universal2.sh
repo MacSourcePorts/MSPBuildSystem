@@ -7,7 +7,7 @@ export ICONSFILENAME="OpenXcom"
 export EXECUTABLE_NAME="openxcom"
 export PKGINFO="APPLXCOM"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.12"
 
@@ -35,8 +35,8 @@ cmake --build ${BUILT_PRODUCTS_DIR} -j$NCPU
 # copy over sdl2 manually as shim for sdl12-compat
 cp /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

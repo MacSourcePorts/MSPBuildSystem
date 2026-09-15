@@ -7,7 +7,7 @@ export ICONSFILENAME="doom3"
 export EXECUTABLE_NAME="dhewm3"
 export PKGINFO="APPLDHM3"
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
@@ -32,17 +32,17 @@ cd ..
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#create any app-specific directories
+# create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" || exit 1;
 fi
 
-#lipo any app-specific things
+# lipo any app-specific things
 cp ${BUILT_PRODUCTS_DIR}/base.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base/"
 cp ${BUILT_PRODUCTS_DIR}/d3xp.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base/"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

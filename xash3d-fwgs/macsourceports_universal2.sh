@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="xash3d"
 export PKGINFO="APPLMLST"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/xash3d-fwgs/xash3d-fwgs.entitlements"
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
@@ -265,14 +265,14 @@ echo install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EX
 install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 echo "@rpath added"
 
-#create any app-specific directories
+# create any app-specific directories
 if [ ! -d "${ARM64_BUILD_FOLDER}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" || exit 1;
 fi
 
 cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/valve ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/valve
 
-#lipo any app-specific things
+# lipo any app-specific things
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/filesystem_stdio.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libmenu.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libmenu.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libmenu.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libref_gl.dylib" -create
@@ -282,7 +282,7 @@ lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib ${ARM64_BUIL
 "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libxash.dylib" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
-#copy over game libraries
+# copy over game libraries
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/cl_dlls" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/cl_dlls" || exit 1;
 fi
@@ -297,8 +297,8 @@ fi
 cp -a ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls
 cp -a ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/dlls/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/dlls
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

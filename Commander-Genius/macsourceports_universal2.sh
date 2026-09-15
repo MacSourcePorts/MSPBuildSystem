@@ -7,7 +7,7 @@ export ICONSFILENAME="cglogo"
 export EXECUTABLE_NAME="CGeniusExe"
 export PKGINFO="APPLCKEN"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.12"
 

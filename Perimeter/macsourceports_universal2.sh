@@ -11,7 +11,7 @@ export PKGINFO="APPLPERI"
 export RANLIB=/usr/bin/ranlib
 export AR=/usr/bin/ar
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
@@ -88,8 +88,8 @@ cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/Perimeter ${FRAMEWORKS_FOLDER_PATH}
 cd ..
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"

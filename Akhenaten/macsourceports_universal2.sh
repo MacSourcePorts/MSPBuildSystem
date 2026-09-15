@@ -6,7 +6,7 @@ export PORT_NAME="Akhenaten"
 export ICONSFILENAME="akhenaten"
 export EXECUTABLE_NAME="akhenaten"
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
@@ -53,8 +53,8 @@ cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 cd ..
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

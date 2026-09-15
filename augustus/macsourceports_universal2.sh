@@ -6,7 +6,7 @@ export PORT_NAME="Augustus"
 export ICONSFILENAME="augustus"
 export EXECUTABLE_NAME="augustus"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.11"
 
@@ -30,8 +30,8 @@ cd ..
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

@@ -7,7 +7,7 @@ export EXECUTABLE_NAME="RBDoom3BFG"
 export ICONSFILENAME="RBDoom3BFG"
 export PKGINFO="APPLRBD3"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.15"
 
@@ -73,7 +73,7 @@ cd ..
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 
-#create any app-specific directories
+# create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/base" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/base" || exit 1;
 	cp -a base/* "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/base"
@@ -82,8 +82,8 @@ if [ ! -d "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/base" ]; t
 	fi
 fi
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

@@ -7,7 +7,7 @@ export ICONSFILENAME="prey2006"
 export EXECUTABLE_NAME="prey06"
 export PKGINFO="APPLPREY"
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
@@ -42,13 +42,13 @@ cp output/macosx/base/pak007.pk4 "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#create any app-specific directories
+# create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" || exit 1;
 fi
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

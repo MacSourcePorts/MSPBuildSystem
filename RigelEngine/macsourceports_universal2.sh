@@ -7,7 +7,7 @@ export ICONSFILENAME="RigelEngine"
 export EXECUTABLE_NAME="RigelEngine"
 export PKGINFO="APPLROTT"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.15"
 
@@ -38,8 +38,8 @@ cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 cd ..
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

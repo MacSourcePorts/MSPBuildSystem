@@ -51,8 +51,8 @@ mv ${BUILT_PRODUCTS_DIR}/Default/Homeworld.app "${BUILT_PRODUCTS_DIR}/${WRAPPER_
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

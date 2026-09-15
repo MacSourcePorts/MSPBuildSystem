@@ -7,7 +7,7 @@ export ICONSFILENAME="Quake3e"
 export EXECUTABLE_NAME="Quake3e"
 export PKGINFO="APPLQ3E"
 
-#constants
+# constants
 source ../common/constants.sh
 export MACOSX_DEPLOYMENT_TARGET="10.9"
 export CFLAGS=-mmacosx-version-min=10.9
@@ -36,8 +36,8 @@ gsed -i 's|quake3_flat|Quake3e|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/
 
 export ENTITLEMENTS_FILE="../MSPBuildSystem/Quake3e/Quake3e.entitlements"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" "entitlements"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

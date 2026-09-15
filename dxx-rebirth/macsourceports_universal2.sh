@@ -17,15 +17,15 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 
 mkdir ${BUILT_PRODUCTS_DIR}
 
-#because this port does so much of the work itself all we need to do is 
-#run the build command twice for the two platforms
+# because this port does so much of the work itself all we need to do is 
+# run the build command twice for the two platforms
 rm -rf ${X86_64_BUILD_FOLDER}
 scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${X86_64_BUILD_FOLDER} --config=force CPPFLAGS="-mmacosx-version-min=10.13 -arch x86_64" CXXFLAGS="-mmacosx-version-min=10.13 -arch x86_64" LINKFLAGS="-mmacosx-version-min=10.13 -arch x86_64" -j$NCPU
 
 rm -rf ${ARM64_BUILD_FOLDER}
 scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${ARM64_BUILD_FOLDER} --config=force CPPFLAGS="-mmacosx-version-min=10.13 -arch arm64" CXXFLAGS="-mmacosx-version-min=10.13 -arch arm64" LINKFLAGS="-mmacosx-version-min=10.13 -arch arm64" -j$NCPU
 
-#descent1 values
+# descent1 values
 export PRODUCT_NAME="D1X-Rebirth"
 export ICONSFILENAME="d1x-rebirth"
 export EXECUTABLE_NAME="d1x-rebirth"
@@ -47,13 +47,13 @@ cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 cd ..
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg (and don't clean up the build artifacts)
+# create dmg (and don't clean up the build artifacts)
 "../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
 
-#descent2 values
+# descent2 values
 export PRODUCT_NAME="D2X-Rebirth"
 export ICONSFILENAME="d2x-rebirth"
 export EXECUTABLE_NAME="d2x-rebirth"
@@ -75,8 +75,8 @@ cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
 cd ..
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg (and don't delete the previous one)
+# create dmg (and don't delete the previous one)
 "../MSPBuildSystem/common/package_dmg.sh" "skipdelete"

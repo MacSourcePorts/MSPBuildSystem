@@ -7,7 +7,7 @@ export ICONSFILENAME="PvZ-Portable"
 export EXECUTABLE_NAME="pvz-portable"
 export PKGINFO="APPLPVZP"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="13.3"
 
@@ -41,8 +41,8 @@ cd ..
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

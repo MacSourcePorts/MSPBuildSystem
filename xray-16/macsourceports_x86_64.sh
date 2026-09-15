@@ -9,7 +9,7 @@ export PKGINFO="APPLOPXR"
 export GIT_TAG="1.6"
 export GIT_DEFAULT_BRANCH="dev"
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
@@ -142,10 +142,10 @@ ditto -ck --rsrc --sequesterRsrc extras openxray-extras.zip
 
 cd ..
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
 cp -a ${BUILT_PRODUCTS_DIR}/openxray-extras.zip "../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}"
 

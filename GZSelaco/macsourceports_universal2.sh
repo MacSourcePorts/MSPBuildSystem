@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="Selaco"
 export PKGINFO="APPLGZSL"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/GZSelaco/GZSelaco.entitlements"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.15"
 
@@ -23,7 +23,7 @@ fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-#because this port does so much of the packaging itself all we need to do is run the script
+# because this port does so much of the packaging itself all we need to do is run the script
 gsed -i 's|opt|usr|' "build_osx.sh"
 gsed -i 's|opt|usr|' "build_osx.sh"
 gsed -i 's|opt|usr|' "build_osx.sh"
@@ -55,8 +55,8 @@ rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Selaco.icns";
 echo cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="uzdoom"
 export PKGINFO="APPLUZDM"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/UZDoom/UZDoom.entitlements"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.13"
 
@@ -97,8 +97,8 @@ gsed -i "s|zdoom.icns|UZDoom.icns|" "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PAT
 rm "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/zdoom.icns";
 cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${ICONS}" || exit 1;
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

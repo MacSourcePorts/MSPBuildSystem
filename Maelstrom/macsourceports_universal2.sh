@@ -49,9 +49,9 @@ cp "Maelstrom_Sprites" ${BUILT_PRODUCTS_DIR}/"${UNLOCALIZED_RESOURCES_FOLDER_PAT
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#sign and notarize (with entitlements)
+# sign and notarize (with entitlements)
 export ENTITLEMENTS_FILE="Maelstrom.entitlements"
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

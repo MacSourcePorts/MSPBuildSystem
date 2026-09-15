@@ -61,8 +61,8 @@ codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BU
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libpng16.16.dylib
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libjpeg.dylib
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

@@ -7,7 +7,7 @@ export PORT_NAME="Shockolate"
 export EXECUTABLE_NAME="systemshock"
 export PKGINFO="APPLESS1"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.9"
 
@@ -34,7 +34,7 @@ cmake \
 
 cmake --build . --parallel $NCPU
 
-#tweak install name
+# tweak install name
 cd ..
 # install_name_tool -change /usr/local/lib64/libfluidsynth.1.dylib @rpath/libfluidsynth.1.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_NAME}
 
@@ -53,8 +53,8 @@ cp -a shaders/. ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shade
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

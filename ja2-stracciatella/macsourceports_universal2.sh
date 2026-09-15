@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="ja2-launcher"
 export PKGINFO="APPLJA2"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/ja2-stracciatella/ja2-stracciatella.entitlements"
 
-#constants
+# constants
 source ../common/constants.sh
 source ../common/signing_values.local
 
@@ -98,8 +98,8 @@ cp -a ${ARM64_BUILD_FOLDER}/mods/* "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PA
 mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/unittests"
 cp -a ${ARM64_BUILD_FOLDER}/unittests/* "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/unittests"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

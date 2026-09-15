@@ -7,7 +7,7 @@ export ICONSFILENAME="ioquake3"
 export EXECUTABLE_NAME="ioquake3"
 export PKGINFO="APPLIOQ3"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.9"
 
@@ -39,8 +39,8 @@ gsed -i 's|quake3_flat|ioquake3|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}
 
 export ENTITLEMENTS_FILE="misc/xcode/ioquake3/ioquake3.entitlements"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

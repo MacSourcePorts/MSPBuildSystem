@@ -7,7 +7,7 @@ export ICONSFILENAME="eduke32"
 export EXECUTABLE_NAME="eduke32"
 export PKGINFO="APPLED32"
 
-#constants
+# constants
 source ../common/constants.sh
 export STRIP=/usr/bin/strip
 
@@ -20,7 +20,7 @@ cp "../MSPBuildSystem/EDuke32/osxbuild.sh" ./platform
 
 # skipping the checkout bit until the EDuke32 project builds latest on Mac
 
-#fix resolution on cocoa window
+# fix resolution on cocoa window
 export HIGH_RESOLUTION_CAPABLE="true"
 
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -35,8 +35,8 @@ mv package/${PRODUCT_NAME}.app ${BUILT_PRODUCTS_DIR}
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

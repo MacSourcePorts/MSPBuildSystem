@@ -1,6 +1,6 @@
 # game/app specific values
 export APP_VERSION="0.69"
-#starting with Wargus (Warcraft 2)
+# starting with Wargus (Warcraft 2)
 export PRODUCT_NAME="Wargus"
 export PROJECT_NAME="stratagus"
 export PORT_NAME="Wargus"
@@ -8,7 +8,7 @@ export ICONSFILENAME="wargus"
 export EXECUTABLE_NAME="wargus"
 export PKGINFO="APPLWG2"
 
-#constants
+# constants
 source ../common/constants.sh
 source ../common/signing_values.local
 
@@ -125,5 +125,5 @@ cp wargus/mac/Info.plist ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}
 # sign and notarize
 # "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# # create dmg
+# create dmg
 # "../MSPBuildSystem/common/package_dmg.sh"

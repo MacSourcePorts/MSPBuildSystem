@@ -7,7 +7,7 @@ export ICONSFILENAME="dethrace"
 export EXECUTABLE_NAME="dethrace"
 export PKGINFO="APPLROTT"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.15"
 
@@ -38,8 +38,8 @@ cd ..
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

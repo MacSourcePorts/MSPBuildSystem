@@ -7,7 +7,7 @@ export ICONSFILENAME="abuse"
 export EXECUTABLE_NAME="abuse"
 export PKGINFO="APPLABUS"
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}

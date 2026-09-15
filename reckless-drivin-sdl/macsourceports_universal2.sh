@@ -7,7 +7,7 @@ export ICONSFILENAME="reckless-drivin-sdl"
 export EXECUTABLE_NAME="RecklessDrivin"
 export PKGINFO="APPLRD"
 
-#constants
+# constants
 source ../common/constants.sh
 
 # this port is not HiDPI aware
@@ -37,8 +37,8 @@ cd ..
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

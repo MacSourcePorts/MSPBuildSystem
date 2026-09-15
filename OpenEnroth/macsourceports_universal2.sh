@@ -7,7 +7,7 @@ export ICONSFILENAME="OpenEnroth"
 export EXECUTABLE_NAME="OpenEnroth"
 export PKGINFO="APPLMM7"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.15"
 
@@ -73,8 +73,8 @@ cd ..
 
 cp -a resources/shaders ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shaders
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

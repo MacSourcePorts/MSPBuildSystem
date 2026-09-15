@@ -7,7 +7,7 @@ export PORT_NAME="uqm"
 export EXECUTABLE_NAME="The Ur-Quan Masters"
 export PKGINFO="APPLMLST"
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
@@ -19,7 +19,7 @@ mkdir ${X86_64_BUILD_FOLDER}
 rm -rf ${ARM64_BUILD_FOLDER}
 mkdir ${ARM64_BUILD_FOLDER}
 
-#create any app-specific directories
+# create any app-specific directories
 if [ ! -d "dist-packages" ]; then
 	mkdir -p "dist-packages" || exit 1;
     cp -a ../MSPBuildSystem/uqm/dist-packages/* dist-packages
@@ -52,8 +52,8 @@ mkdir -p "${FRAMEWORKS_FOLDER_PATH}"
 "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${FRAMEWORKS_FOLDER_PATH}"
 cd ..
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

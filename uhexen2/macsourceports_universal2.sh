@@ -7,7 +7,7 @@ export ICONSFILENAME="uhexen2"
 export EXECUTABLE_NAME="glhexen2"
 export PKGINFO="APPLHXN2"
 
-#constants
+# constants
 source ../common/constants.sh
 
 # this port is not HiDPI aware
@@ -49,8 +49,8 @@ install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTA
 # copy over sdl2 manually as shim for sdl12-compat
 cp /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}"
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

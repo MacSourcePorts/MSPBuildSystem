@@ -36,12 +36,12 @@ rm -rd build/release
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 
-#create any app-specific directories
+# create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" || exit 1;
 fi
 
-#lipo any app-specific things
+# lipo any app-specific things
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/gamex86.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/gamex86.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base/gamex86.dylib" -create
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/Player.dylib ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/Player.dylib -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base/Player.dylib" -create
 lipo "${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/Client Effects.dylib" "${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/Client Effects.dylib" -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base/Client Effects.dylib" -create
@@ -50,8 +50,8 @@ cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" ${FRAMEWORKS_FOLDER_PATH}
 cd ..
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

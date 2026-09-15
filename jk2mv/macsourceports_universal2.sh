@@ -7,7 +7,7 @@ export ICONSFILENAME="jk2mv"
 export EXECUTABLE_NAME="jk2mvmp"
 export PKGINFO="APPLEJ2MV"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.12"
 
@@ -19,7 +19,7 @@ export RANLIB=/usr/bin/ranlib
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-#create makefiles with cmake, perform builds with make
+# create makefiles with cmake, perform builds with make
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
@@ -72,8 +72,8 @@ cp ${ARM64_BUILD_FOLDER}/out/Release/jk2mvmenu_arm64.dylib ${BUILT_PRODUCTS_DIR}
 
 export ENTITLEMENTS_FILE="build/jk2mv.entitlements"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

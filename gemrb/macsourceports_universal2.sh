@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="gemrb"
 export PKGINFO="APPLGRB"
 export PYTHON_VERSION=3.14
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.12"
 
@@ -98,8 +98,8 @@ cp /usr/local/lib/libfreetype.6.dylib release/gemrb.app/Contents/Frameworks
 
 cp ../MSPBuildSystem/${PROJECT_NAME}/${ICONSFILENAME}.icns ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

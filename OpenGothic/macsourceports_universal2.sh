@@ -7,7 +7,7 @@ export ICONSFILENAME="opengothic"
 export EXECUTABLE_NAME="Gothic2Notr"
 export PKGINFO="APPLOGw"
 
-#constants
+# constants
 source ../common/constants.sh
 source ../common/signing_values.local
 

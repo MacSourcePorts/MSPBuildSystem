@@ -46,14 +46,14 @@ cp "${EXECUTABLE_NAME}" "${EXECUTABLE_FOLDER_PATH}"
 mkdir -p "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls" || exit 1;
 cp dlls/* "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls" || exit 1;
 
-# # dylibbundler needs a little nudge on these
+# dylibbundler needs a little nudge on these
 install_name_tool -change ../../bin/release-arm64/dlls/minizip.dylib @executable_path/../Resources/dlls/minizip.dylib ${EXECUTABLE_FOLDER_PATH}/daikatana
 cd ../..
 
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
 
-#create any app-specific directories
+# create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" ]; then
 	mkdir -p "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" || exit 1;
 fi
@@ -68,7 +68,7 @@ fi
 
 cp -a ../MSPBuildSystem/${PROJECT_NAME}/patchdata/data/* ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
 
-#lipo the executable
+# lipo the executable
 lipo bin/release-x86_64/"${EXECUTABLE_FOLDER_PATH}"/daikatana bin/release-arm64/"${EXECUTABLE_FOLDER_PATH}"/daikatana -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/daikatana" -create
 lipo bin/release-x86_64/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"/dlls/ioncommon.dylib bin/release-arm64/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"/dlls/ioncommon.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls/ioncommon.dylib" -create
 lipo bin/release-x86_64/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"/dlls/language_english.dylib bin/release-arm64/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"/dlls/language_english.dylib -output "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls/language_english.dylib" -create
@@ -82,7 +82,7 @@ install_name_tool -add_rpath @executable_path/. "${EXECUTABLE_FOLDER_PATH}/${EXE
 "../../MSPBuildSystem/common/copy_dependencies.sh" "${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls/minizip.dylib"
 cd ..
 
-#sign and notarize
+# sign and notarize
 echo codesign --force --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls/ioncommon.dylib
 codesign --force --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/dlls/ioncommon.dylib
 
@@ -95,5 +95,5 @@ codesign --force --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${UNLOCALIZE
 export ENTITLEMENTS_FILE="base/Daikatana/Daikatana.entitlements"
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

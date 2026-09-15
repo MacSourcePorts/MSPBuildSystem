@@ -9,7 +9,7 @@ export EXECUTABLE_NAME="iowolfsp"
 export PKGINFO="APPLIORTCW"
 export COPYRIGHT_TEXT="Return to Castle Wolfenstein Copyright © 1999-2000 id Software, Inc. All rights reserved."
 
-#constants
+# constants
 source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
@@ -63,10 +63,10 @@ gsed -i 's|<string>iortcw</string>|<string>iortcwsp</string>|' "${BUILT_PRODUCTS
 
 export ENTITLEMENTS_FILE="SP/misc/xcode/iortcw/iortcw.entitlements"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
 
 # Multiplayer
@@ -100,8 +100,8 @@ gsed -i 's|<string>iortcw</string>|<string>iortcwmp</string>|' "${BUILT_PRODUCTS
 
 export ENTITLEMENTS_FILE="MP/misc/xcode/iortcw/iortcw.entitlements"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh" "skipdelete"

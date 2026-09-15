@@ -7,7 +7,7 @@ export ICONSFILENAME="OpenJKDF2"
 export EXECUTABLE_NAME="openjkdf2-64"
 export PKGINFO="APPLJKDF2"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.15"
 
@@ -22,7 +22,7 @@ fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-#because this port does so much of the packaging itself all we need to do is run the script
+# because this port does so much of the packaging itself all we need to do is run the script
 gsed -i 's|opt/homebrew/opt/llvm@19/bin|usr/bin|' "distpkg_macos.sh"
 export VERBOSE=1
 ./distpkg_macos.sh
@@ -78,8 +78,8 @@ install_name_tool -add_rpath @executable_path/. ${BUILT_PRODUCTS_DIR}/${EXECUTAB
 # For some reason libcrypto is misnamed
 mv ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libcrypto.dylib ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/libcrypto.3.dylib
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

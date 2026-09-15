@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="s25client"
 export PKGINFO="APPLRTTR"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/Serious-Engine/Serious-Engine.entitlements"
 
-#constants
+# constants
 source ../common/constants.sh
 source ../common/signing_values.local
 export MINIMUM_SYSTEM_VERSION="10.9"
@@ -47,8 +47,8 @@ cp extras/macosLauncher/rttr.terminal ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_
 # for some reason this one directory breaks app signing. I don't know what removing it causes but it's got to go. If it causes problems later we can reinvestigate
 rm -rf ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/share/s25rttr/RTTR/assets/nations/Babylonians/jobs.bob
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

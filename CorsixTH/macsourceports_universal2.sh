@@ -7,7 +7,7 @@ export ICONSFILENAME="CorsixTH"
 export EXECUTABLE_NAME="CorsixTH"
 export PKGINFO="APPLCTH"
 
-#constants
+# constants
 source ../common/constants.sh
 source ../common/signing_values.local
 export MINIMUM_SYSTEM_VERSION="10.15"
@@ -126,10 +126,10 @@ codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BU
 
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" ${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}/Contents/Resources/lfs.so
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh" #"skipcleanup"
 rm -rf lib   
 rm -rf libsrc

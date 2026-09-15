@@ -82,8 +82,8 @@ install_name_tool -change @executable_path/libxmp.dylib @rpath/libxmp.dylib ${BU
 
 cp -a MacOSX/SDL2.framework ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 
-# #sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# #create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

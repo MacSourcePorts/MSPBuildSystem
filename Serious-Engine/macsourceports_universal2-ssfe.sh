@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="ssam-tfe"
 export PKGINFO="APPLSSFE"
 export ENTITLEMENTS_FILE="../MSPBuildSystem/Serious-Engine/Serious-Engine.entitlements"
 
-#constants
+# constants
 source ../common/constants.sh
 source ../common/signing_values.local
 export MINIMUM_SYSTEM_VERSION="10.15"
@@ -59,8 +59,8 @@ codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${B
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libGame.dylib"
 codesign --force --timestamp --options runtime --sign "${SIGNING_IDENTITY}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/libShaders.dylib"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh"

@@ -7,7 +7,7 @@ export ICONSFILENAME="OpenJK"
 export EXECUTABLE_NAME="OpenJK"
 export PKGINFO="APPLEOJK"
 
-#constants
+# constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.9"
 
@@ -23,7 +23,7 @@ gsed -i "s|<fp.h>|<math.h>|" lib/libpng/pngpriv.h
 # this one doesn't do releases, we just build latest
 rm -rf ${BUILT_PRODUCTS_DIR}
 
-#create makefiles with cmake, perform builds with make
+# create makefiles with cmake, perform builds with make
 rm -rf ${X86_64_BUILD_FOLDER}
 mkdir ${X86_64_BUILD_FOLDER}
 cd ${X86_64_BUILD_FOLDER}
@@ -95,7 +95,7 @@ fi
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#lipo the executable and libs
+# lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
 mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" || exit 1;
 
@@ -115,10 +115,10 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jagamearm64.dylib ${BU
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdsp-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
 
 
@@ -174,7 +174,7 @@ fi
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#lipo the executable and libs
+# lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
 mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" || exit 1;
 
@@ -202,10 +202,10 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/base/uiarm64.dylib ${BUILT_PR
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rd-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh" "skipdelete" "skipcleanup"
 
 
@@ -251,7 +251,7 @@ fi
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
 
-#lipo the executable and libs
+# lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
 mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" || exit 1;
 
@@ -268,8 +268,8 @@ cp ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/OpenJK/jospgamearm64.dylib ${
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/rdjosp-vanilla_x86_64.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 cp -a /usr/local/lib/libSDL2-2.0.0.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
-#sign and notarize
+# sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-#create dmg
+# create dmg
 "../MSPBuildSystem/common/package_dmg.sh" "skipdelete"
