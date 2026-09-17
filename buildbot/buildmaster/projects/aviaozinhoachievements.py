@@ -37,11 +37,11 @@ aviaozinhoachievements_factory.addStep(steps.ShellCommand(
     haltOnFailure=True
 ))
 
-# Brazlian Drug Dealer 4
+# Brazlian Drug Dealer Before 4
 aviaozinhoachievements_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_bdd4.sh"), "notarize"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_bddb4.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements"),
-    name="Run BDD4 Build Script",
+    name="Run BDDB4 Build Script",
     haltOnFailure=True
 ))
 
@@ -61,7 +61,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="aviaozinhoachievements-releases",
         change_filter=util.ChangeFilter(project='aviaozinhoachievements'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["aviaozinhoachievements-builder"]),
     schedulers.ForceScheduler(
         name="aviaozinhoachievements-force",

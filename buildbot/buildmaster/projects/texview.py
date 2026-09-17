@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="texview-changes",
         change_filter=util.ChangeFilter(project='texview', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["texview-builder"]),
     schedulers.ForceScheduler(
         name="texview-force",

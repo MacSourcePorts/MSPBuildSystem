@@ -78,7 +78,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="Zuma-Portable-releases",
         change_filter=util.ChangeFilter(project='Zuma-Portable', branch='zuma'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["Zuma-Portable-builder"]),
     schedulers.ForceScheduler(
         name="Zuma-Portable-force",

@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="wrathplaces-changes",
         change_filter=util.ChangeFilter(project='wrathplaces', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["wrathplaces-builder"]),
     schedulers.ForceScheduler(
         name="wrathplaces-force",

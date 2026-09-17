@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="Doom64EX-Plus-changes",
         change_filter=util.ChangeFilter(project='Doom64EX-Plus', branch='stable'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["Doom64EX-Plus-builder"]),
     schedulers.ForceScheduler(
         name="Doom64EX-Plus-force",

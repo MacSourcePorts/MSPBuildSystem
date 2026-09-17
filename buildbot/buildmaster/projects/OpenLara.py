@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="OpenLara-changes",
         change_filter=util.ChangeFilter(project='OpenLara', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["OpenLara-builder"]),
     schedulers.ForceScheduler(
         name="OpenLara-force",

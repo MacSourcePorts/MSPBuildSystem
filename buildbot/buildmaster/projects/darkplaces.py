@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="darkplaces-changes",
         change_filter=util.ChangeFilter(project='darkplaces', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["darkplaces-builder"]),
     schedulers.ForceScheduler(
         name="darkplaces-force",

@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="Perimeter-changes",
         change_filter=util.ChangeFilter(project='Perimeter', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["Perimeter-builder"]),
     schedulers.ForceScheduler(
         name="Perimeter-force",

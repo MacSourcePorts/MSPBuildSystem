@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="circuslinux-changes",
     #     change_filter=util.ChangeFilter(project='circuslinux', branch='main'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["circuslinux-builder"]),
     schedulers.ForceScheduler(
         name="circuslinux-force",

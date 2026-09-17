@@ -49,7 +49,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="Serious-Engine-changes",
         change_filter=util.ChangeFilter(project='Serious-Engine', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["Serious-Engine-builder"]),
     schedulers.ForceScheduler(
         name="Serious-Engine-force",

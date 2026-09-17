@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="uqm-changes",
     #     change_filter=util.ChangeFilter(project='uqm', branch='main'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["uqm-builder"]),
     schedulers.ForceScheduler(
         name="uqm-force",

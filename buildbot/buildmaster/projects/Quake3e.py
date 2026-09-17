@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="Quake3e-changes",
         change_filter=util.ChangeFilter(project='Quake3e', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["Quake3e-builder"]),
     schedulers.ForceScheduler(
         name="Quake3e-force",

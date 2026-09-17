@@ -1,0 +1,6 @@
+{
+    "mspBuildSystemRoot": "/path/to/MSPBuildSystem",
+    "siteRepoPath": "/path/to/website",
+    "siteRepoBranch": "main",
+    "sourceportsJsonPath": "path/to/sourceports.json"
+}

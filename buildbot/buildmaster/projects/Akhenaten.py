@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="Akhenaten-changes",
         change_filter=util.ChangeFilter(project='Akhenaten'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["Akhenaten-builder"]),
     schedulers.ForceScheduler(
         name="Akhenaten-force",

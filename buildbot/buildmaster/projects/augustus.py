@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="augustus-releases",
         change_filter=util.ChangeFilter(project='augustus'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["augustus-builder"]),
     schedulers.ForceScheduler(
         name="augustus-force",

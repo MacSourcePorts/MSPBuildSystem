@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="systemshock-changes",
         change_filter=util.ChangeFilter(project='systemshock', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["systemshock-builder"]),
     schedulers.ForceScheduler(
         name="systemshock-force",

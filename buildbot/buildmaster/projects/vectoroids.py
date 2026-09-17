@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="vectoroids-changes",
     #     change_filter=util.ChangeFilter(project='vectoroids', branch='main'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["vectoroids-builder"]),
     schedulers.ForceScheduler(
         name="vectoroids-force",

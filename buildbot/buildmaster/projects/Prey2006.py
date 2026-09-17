@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="Prey2006-releases",
         change_filter=util.ChangeFilter(project='Prey2006'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["Prey2006-builder"]),
     schedulers.ForceScheduler(
         name="Prey2006-force",

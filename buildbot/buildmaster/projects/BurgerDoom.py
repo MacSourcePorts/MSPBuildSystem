@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="BurgerDoom-releases",
         change_filter=util.ChangeFilter(project='BurgerDoom'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["BurgerDoom-builder"]),
     schedulers.ForceScheduler(
         name="BurgerDoom-force",

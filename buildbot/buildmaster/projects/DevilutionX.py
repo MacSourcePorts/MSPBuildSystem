@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="DevilutionX-releases",
         change_filter=util.ChangeFilter(project='DevilutionX'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["DevilutionX-builder"]),
     schedulers.ForceScheduler(
         name="DevilutionX-force",

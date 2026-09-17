@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="RBDOOM-3-BFG-changes",
         change_filter=util.ChangeFilter(project='RBDOOM-3-BFG', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["RBDOOM-3-BFG-builder"]),
     schedulers.ForceScheduler(
         name="RBDOOM-3-BFG-force",

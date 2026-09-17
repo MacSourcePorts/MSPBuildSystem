@@ -57,7 +57,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="OpenGothic-changes",
         change_filter=util.ChangeFilter(project='OpenGothic'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["OpenGothic-builder"]),
     schedulers.ForceScheduler(
         name="OpenGothic-force",

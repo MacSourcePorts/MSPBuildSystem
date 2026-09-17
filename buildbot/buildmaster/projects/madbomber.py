@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="madbomber-changes",
     #     change_filter=util.ChangeFilter(project='madbomber', branch='main'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["madbomber-builder"]),
     schedulers.ForceScheduler(
         name="madbomber-force",

@@ -58,7 +58,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="UZDoom-changes",
         change_filter=util.ChangeFilter(project='UZDoom', branch='trunk'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["UZDoom-builder"]),
     schedulers.ForceScheduler(
         name="UZDoom-force",

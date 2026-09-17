@@ -58,7 +58,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="dethrace-releases",
         change_filter=util.ChangeFilter(project='dethrace'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["dethrace-builder"]),
     schedulers.ForceScheduler(
         name="dethrace-force",

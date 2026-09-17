@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="rottexpr-changes",
     #     change_filter=util.ChangeFilter(project='rottexpr', branch='master'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["rottexpr-builder"]),
     schedulers.ForceScheduler(
         name="rottexpr-force",

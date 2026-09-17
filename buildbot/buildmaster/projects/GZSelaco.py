@@ -58,7 +58,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="GZSelaco-changes",
         change_filter=util.ChangeFilter(project='GZSelaco', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["GZSelaco-builder"]),
     schedulers.ForceScheduler(
         name="GZSelaco-force",

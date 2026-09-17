@@ -42,7 +42,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="OpenTyrian-changes",
     #     change_filter=util.ChangeFilter(project='OpenTyrian', branch='master'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["OpenTyrian-builder"]),
     schedulers.ForceScheduler(
         name="OpenTyrian-force",

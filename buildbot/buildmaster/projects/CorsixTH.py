@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="CorsixTH-releases",
         change_filter=util.ChangeFilter(project='CorsixTH'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["CorsixTH-builder"]),
     schedulers.ForceScheduler(
         name="CorsixTH-force",

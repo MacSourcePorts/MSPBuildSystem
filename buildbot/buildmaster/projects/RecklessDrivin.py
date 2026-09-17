@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="RecklessDrivin-releases",
         change_filter=util.ChangeFilter(project='RecklessDrivin'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["RecklessDrivin-builder"]),
     schedulers.ForceScheduler(
         name="RecklessDrivin-force",

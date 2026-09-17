@@ -60,7 +60,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="heretic2r-releases",
         change_filter=util.ChangeFilter(project='heretic2r'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["heretic2r-builder"]),
     schedulers.ForceScheduler(
         name="heretic2r-force",

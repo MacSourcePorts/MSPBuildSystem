@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="disasteroids3d-changes",
     #     change_filter=util.ChangeFilter(project='disasteroids3d', branch='master'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["disasteroids3d-builder"]),
     schedulers.ForceScheduler(
         name="disasteroids3d-force",

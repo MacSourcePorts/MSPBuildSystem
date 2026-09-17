@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="uhexen2-changes",
         change_filter=util.ChangeFilter(project='uhexen2', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["uhexen2-builder"]),
     schedulers.ForceScheduler(
         name="uhexen2-force",

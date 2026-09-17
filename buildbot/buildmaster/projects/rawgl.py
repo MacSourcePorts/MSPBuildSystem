@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="rawgl-releases",
         change_filter=util.ChangeFilter(project='rawgl'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["rawgl-builder"]),
     schedulers.ForceScheduler(
         name="rawgl-force",

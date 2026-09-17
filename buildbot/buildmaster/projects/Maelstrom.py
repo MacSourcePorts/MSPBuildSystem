@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="Maelstrom-changes",
     #     change_filter=util.ChangeFilter(project='Maelstrom', branch='main'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["Maelstrom-builder"]),
     schedulers.ForceScheduler(
         name="Maelstrom-force",

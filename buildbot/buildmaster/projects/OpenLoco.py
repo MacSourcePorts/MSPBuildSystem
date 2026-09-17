@@ -58,7 +58,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="OpenLoco-releases",
         change_filter=util.ChangeFilter(project='OpenLoco'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["OpenLoco-builder"]),
     schedulers.ForceScheduler(
         name="OpenLoco-force",

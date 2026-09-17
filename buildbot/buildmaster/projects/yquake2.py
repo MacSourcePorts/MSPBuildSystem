@@ -144,7 +144,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="yquake2-releases",
         change_filter=util.ChangeFilter(project='yquake2'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["yquake2-builder"]),
     schedulers.ForceScheduler(
         name="yquake2-force",

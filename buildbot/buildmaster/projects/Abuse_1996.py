@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="Abuse_1996-changes",
     #     change_filter=util.ChangeFilter(project='Abuse_1996', branch='master'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["Abuse_1996-builder"]),
     schedulers.ForceScheduler(
         name="Abuse_1996-force",

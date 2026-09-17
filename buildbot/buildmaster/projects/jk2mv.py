@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="jk2mv-changes",
         change_filter=util.ChangeFilter(project='jk2mv', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["jk2mv-builder"]),
     schedulers.ForceScheduler(
         name="jk2mv-force",

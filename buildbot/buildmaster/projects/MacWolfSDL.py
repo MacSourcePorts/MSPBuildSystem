@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="MacWolfSDL-releases",
         change_filter=util.ChangeFilter(project='MacWolfSDL'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["MacWolfSDL-builder"]),
     schedulers.ForceScheduler(
         name="MacWolfSDL-force",

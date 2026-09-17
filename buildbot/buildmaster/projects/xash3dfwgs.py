@@ -61,7 +61,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="xash3d-fwgs-releases",
         change_filter=util.ChangeFilter(project='xash3d-fwgs', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["xash3d-fwgs-builder"]),
     schedulers.ForceScheduler(
         name="xash3d-fwgs-force",

@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="julius-releases",
         change_filter=util.ChangeFilter(project='julius'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["julius-builder"]),
     schedulers.ForceScheduler(
         name="julius-force",

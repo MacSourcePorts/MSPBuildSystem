@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="OpenEnroth-changes",
         change_filter=util.ChangeFilter(project='OpenEnroth', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["OpenEnroth-builder"]),
     schedulers.ForceScheduler(
         name="OpenEnroth-force",

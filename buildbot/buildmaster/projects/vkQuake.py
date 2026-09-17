@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="vkQuake-releases",
         change_filter=util.ChangeFilter(project='vkQuake'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["vkQuake-builder"]),
     schedulers.ForceScheduler(
         name="vkQuake-force",

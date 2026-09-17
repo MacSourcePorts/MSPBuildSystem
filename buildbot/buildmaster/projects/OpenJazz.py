@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="OpenJazz-changes",
         change_filter=util.ChangeFilter(project='OpenJazz'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["OpenJazz-builder"]),
     schedulers.ForceScheduler(
         name="OpenJazz-force",

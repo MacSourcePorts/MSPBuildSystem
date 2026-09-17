@@ -57,7 +57,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="moo1-releases",
         change_filter=util.ChangeFilter(project='moo1', branch='master-vanilla-beta'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["moo1-builder"]),
     schedulers.ForceScheduler(
         name="moo1-force",

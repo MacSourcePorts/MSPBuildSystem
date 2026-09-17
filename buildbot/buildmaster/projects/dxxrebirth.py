@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="dxx-rebirth-changes",
     #     change_filter=util.ChangeFilter(project='dxx-rebirth', branch='master'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["dxx-rebirth-builder"]),
     schedulers.ForceScheduler(
         name="dxx-rebirth-force",

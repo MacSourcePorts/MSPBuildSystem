@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="TheForceEngine-releases",
         change_filter=util.ChangeFilter(project='TheForceEngine'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["TheForceEngine-builder"]),
     schedulers.ForceScheduler(
         name="TheForceEngine-force",

@@ -57,7 +57,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="OpenJKDF2-changes",
         change_filter=util.ChangeFilter(project='OpenJKDF2', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["OpenJKDF2-builder"]),
     schedulers.ForceScheduler(
         name="OpenJKDF2-force",

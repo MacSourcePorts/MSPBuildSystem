@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="daikatana-changes",
         change_filter=util.ChangeFilter(project='daikatana', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["daikatana-builder"]),
     schedulers.ForceScheduler(
         name="daikatana-force",

@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="PvZ-Portable-releases",
         change_filter=util.ChangeFilter(project='PvZ-Portable'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["PvZ-Portable-builder"]),
     schedulers.ForceScheduler(
         name="PvZ-Portable-force",

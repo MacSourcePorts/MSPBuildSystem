@@ -57,7 +57,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="chocolate-doom-releases",
         change_filter=util.ChangeFilter(project='chocolate-doom'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["chocolate-doom-builder"]),
     schedulers.ForceScheduler(
         name="chocolate-doom-force",

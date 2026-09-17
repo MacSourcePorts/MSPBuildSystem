@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="s25client-changes",
         change_filter=util.ChangeFilter(project='s25client', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["s25client-builder"]),
     schedulers.ForceScheduler(
         name="s25client-force",

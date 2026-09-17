@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="RigelEngine-changes",
         change_filter=util.ChangeFilter(project='RigelEngine', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["RigelEngine-builder"]),
     schedulers.ForceScheduler(
         name="RigelEngine-force",

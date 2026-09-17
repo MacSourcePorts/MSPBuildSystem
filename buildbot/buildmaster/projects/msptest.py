@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="msptest-releases",
         change_filter=util.ChangeFilter(project='msptest'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["msptest-builder"]),
     schedulers.ForceScheduler(
         name="msptest-force",

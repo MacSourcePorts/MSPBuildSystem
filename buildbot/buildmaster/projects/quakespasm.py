@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="quakespasm-changes",
         change_filter=util.ChangeFilter(project='quakespasm', branch='stable'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["quakespasm-builder"]),
     schedulers.ForceScheduler(
         name="quakespasm-force",

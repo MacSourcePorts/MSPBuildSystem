@@ -50,7 +50,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="relive-changes",
         change_filter=util.ChangeFilter(project='relive', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["relive-builder"]),
     schedulers.ForceScheduler(
         name="relive-force",

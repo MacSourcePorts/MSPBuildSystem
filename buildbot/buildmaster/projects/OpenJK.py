@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="OpenJK-changes",
         change_filter=util.ChangeFilter(project='OpenJK', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["OpenJK-builder"]),
     schedulers.ForceScheduler(
         name="OpenJK-force",

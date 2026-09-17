@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="GemRB-releases",
         change_filter=util.ChangeFilter(project='GemRB'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["GemRB-builder"]),
     schedulers.ForceScheduler(
         name="GemRB-force",

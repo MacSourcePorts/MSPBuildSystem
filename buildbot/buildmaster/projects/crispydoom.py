@@ -57,7 +57,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="crispy-doom-releases",
         change_filter=util.ChangeFilter(project='crispy-doom'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["crispy-doom-builder"]),
     schedulers.ForceScheduler(
         name="crispy-doom-force",

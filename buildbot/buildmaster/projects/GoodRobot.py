@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="GoodRobot-changes",
     #     change_filter=util.ChangeFilter(project='GoodRobot', branch='master'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["GoodRobot-builder"]),
     schedulers.ForceScheduler(
         name="GoodRobot-force",

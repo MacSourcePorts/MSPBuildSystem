@@ -57,7 +57,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="chocolate-quake-releases",
         change_filter=util.ChangeFilter(project='chocolate-quake'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["chocolate-quake-builder"]),
     schedulers.ForceScheduler(
         name="chocolate-quake-force",

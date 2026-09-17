@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="OpenXcom-changes",
         change_filter=util.ChangeFilter(project='OpenXcom', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["OpenXcom-builder"]),
     schedulers.ForceScheduler(
         name="OpenXcom-force",

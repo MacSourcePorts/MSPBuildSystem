@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="qssm-changes",
         change_filter=util.ChangeFilter(project='qssm', branch='stable'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["qssm-builder"]),
     schedulers.ForceScheduler(
         name="qssm-force",

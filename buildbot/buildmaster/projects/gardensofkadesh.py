@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="gardens-of-kadesh-changes",
         change_filter=util.ChangeFilter(project='gardens-of-kadesh', branch='main'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["gardens-of-kadesh-builder"]),
     schedulers.ForceScheduler(
         name="gardens-of-kadesh-force",

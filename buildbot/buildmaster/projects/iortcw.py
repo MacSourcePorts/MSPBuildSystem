@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="iortcw-changes",
         change_filter=util.ChangeFilter(project='iortcw', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["iortcw-builder"]),
     schedulers.ForceScheduler(
         name="iortcw-force",

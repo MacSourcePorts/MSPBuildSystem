@@ -43,7 +43,7 @@ scheduler_list = [
     # schedulers.SingleBranchScheduler(
     #     name="entombed-changes",
     #     change_filter=util.ChangeFilter(project='entombed', branch='main'),
-    #     treeStableTimer=None,
+    #     treeStableTimer=60,
     #     builderNames=["entombed-builder"]),
     schedulers.ForceScheduler(
         name="entombed-force",

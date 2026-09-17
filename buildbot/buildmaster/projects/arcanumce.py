@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="arcanumce-releases",
         change_filter=util.ChangeFilter(project='arcanumce'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["arcanumce-builder"]),
     schedulers.ForceScheduler(
         name="arcanumce-force",

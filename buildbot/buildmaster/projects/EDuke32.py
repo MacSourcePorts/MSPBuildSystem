@@ -43,7 +43,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="EDuke32-changes",
         change_filter=util.ChangeFilter(project='EDuke32', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["EDuke32-builder"]),
     schedulers.ForceScheduler(
         name="EDuke32-force",

@@ -56,7 +56,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="NakedAVP-releases",
         change_filter=util.ChangeFilter(project='NakedAVP'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["NakedAVP-builder"]),
     schedulers.ForceScheduler(
         name="NakedAVP-force",

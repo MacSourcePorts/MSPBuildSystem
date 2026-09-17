@@ -44,7 +44,7 @@ scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="postal-changes",
         change_filter=util.ChangeFilter(project='postal', branch='master'),
-        treeStableTimer=None,
+        treeStableTimer=60,
         builderNames=["postal-builder"]),
     schedulers.ForceScheduler(
         name="postal-force",
