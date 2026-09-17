@@ -5,8 +5,8 @@
         "buildType": 1
     },
     {
-        "filenameGlob": "BDD4-*.dmg",
-        "sourcePortStub": "bdd4",
+        "filenameGlob": "BDDB4-*.dmg",
+        "sourcePortStub": "bddb4",
         "buildType": 1
     },
     {

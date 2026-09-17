@@ -1,11 +1,11 @@
 # game/app specific values
 export APP_VERSION="1.6.2"
-export PRODUCT_NAME="BDD4"
+export PRODUCT_NAME="BDDB4"
 export PROJECT_NAME="aviaozinhoachievements"
-export PORT_NAME="BDD4"
-export ICONSFILENAME="bdd4"
+export PORT_NAME="BDDB4"
+export ICONSFILENAME="bddb4"
 export EXECUTABLE_NAME="AVIAO3GAME"
-export PKGINFO="APPLBDD4"
+export PKGINFO="APPLBDDB4"
 
 # constants
 source ../common/constants.sh
