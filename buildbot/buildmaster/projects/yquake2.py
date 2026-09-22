@@ -3,7 +3,22 @@
 # Project where we build based off of release tags from the project
 
 import os
+import re
 from buildbot.plugins import steps, util, changes, schedulers
+from projects.version_guard import VersionGuard, RecordBuiltTag
+
+# Only treat clean "QUAKE2_<major>_<minor>" tags as real releases -- this
+# excludes QUAKE2_8_00_RC1, QUAKE2_WIN32_TEST1/TEST3, and anything else
+# that isn't a genuine numbered release.
+_yquake2_release_re = re.compile(r'^QUAKE2_\d+_\d+$')
+
+yquake2_guard = VersionGuard(
+    project_name="yquake2",
+    tag_property="yquake2_latest_tag",
+    tag_filter=lambda tag: bool(_yquake2_release_re.match(tag)),
+    force_scheduler_names={"yquake2-force"},
+)
+
 
 project_list = [ 
     util.Project(name="yquake2",description="yquake2 source port project")
@@ -109,32 +124,40 @@ yquake2_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('yquake2_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/yquake2"),
     name="Checkout Latest yquake2 Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=yquake2_guard.should_build,
 ))
 yquake2_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('xatrix_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/xatrix"),
     name="Checkout Latest xatrix (mp1) Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=yquake2_guard.should_build,
 ))
 yquake2_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('rogue_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/rogue"),
     name="Checkout Latest rogue (mp2) Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=yquake2_guard.should_build,
 ))
 yquake2_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('ctf_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/ctf"),
     name="Checkout Latest ctf Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=yquake2_guard.should_build,
 ))
 yquake2_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/yquake2/macsourceports_universal2.sh"), "notarize", util.Property('yquake2_latest_tag'), util.Property('xatrix_latest_tag'), util.Property('rogue_latest_tag'), util.Property('ctf_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/yquake2"),
     name="Run Build Script",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=yquake2_guard.should_build,
 ))
+
+# NEW: only reached if the build actually ran and succeeded
+yquake2_factory.addStep(RecordBuiltTag(yquake2_guard, doStepIf=yquake2_guard.should_build))
 
 builder_configs = [
     util.BuilderConfig(name="yquake2-builder", workernames=["worker1"], factory=yquake2_factory, project="yquake2")
@@ -148,5 +171,8 @@ scheduler_list = [
         builderNames=["yquake2-builder"]),
     schedulers.ForceScheduler(
         name="yquake2-force",
+        builderNames=["yquake2-builder"]),
+    schedulers.ForceScheduler(
+        name="yquake2-force-test-guard",
         builderNames=["yquake2-builder"])
 ]

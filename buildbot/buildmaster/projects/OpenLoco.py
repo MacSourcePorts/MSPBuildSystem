@@ -3,7 +3,15 @@
 # Project where we build based off of release tags from the project
 
 import os
+import re
 from buildbot.plugins import steps, util, changes, schedulers
+from projects.version_guard import VersionGuard, RecordBuiltTag
+
+OpenLoco_guard = VersionGuard(
+    project_name="OpenLoco",
+    tag_property="OpenLoco_latest_tag",
+    force_scheduler_names={"OpenLoco-force"},
+)
 
 project_list = [ 
     util.Project(name="OpenLoco",description="OpenLoco source port project")
@@ -26,6 +34,7 @@ OpenLoco_factory.addStep(steps.Git(
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenLoco"),
     name="Git Pull Latest OpenLoco Code",
+    alwaysUseLatest=True,
     haltOnFailure=True
 ))
 
@@ -40,15 +49,19 @@ OpenLoco_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('OpenLoco_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenLoco"),
     name="Checkout Latest Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=OpenLoco_guard.should_build,
 ))
 
 OpenLoco_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenLoco/macsourceports_universal2.sh"), "notarize", util.Property('OpenLoco_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenLoco"),
     name="Run Build Script",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=OpenLoco_guard.should_build,
 ))
+
+OpenLoco_factory.addStep(RecordBuiltTag(OpenLoco_guard, doStepIf=OpenLoco_guard.should_build))
 
 builder_configs = [
     util.BuilderConfig(name="OpenLoco-builder", workernames=["worker1"], factory=OpenLoco_factory, project="OpenLoco")
