@@ -3,7 +3,15 @@
 # Project where we build based off of release tags from the project
 
 import os
+import re
 from buildbot.plugins import steps, util, changes, schedulers
+from projects.version_guard import VersionGuard, RecordBuiltTag
+
+NakedAVP_guard = VersionGuard(
+    project_name="NakedAVP",
+    tag_property="NakedAVP_latest_tag",
+    force_scheduler_names={"NakedAVP-force"},
+)
 
 project_list = [ 
     util.Project(name="NakedAVP",description="NakedAVP source port project")
@@ -35,18 +43,22 @@ NakedAVP_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest NakedAVP Tag",
     haltOnFailure=True
 ))
-# NakedAVP_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('NakedAVP_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/NakedAVP"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True
-# ))
+NakedAVP_factory.addStep(steps.ShellCommand(
+    command=["git", "checkout", util.Property('NakedAVP_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/NakedAVP"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True,
+    doStepIf=NakedAVP_guard.should_build
+))
 NakedAVP_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP/macsourceports_universal2.sh"), "notarize", util.Property('NakedAVP_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP"),
     name="Run Build Script",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=NakedAVP_guard.should_build
 ))
+
+NakedAVP_factory.addStep(RecordBuiltTag(NakedAVP_guard, doStepIf=NakedAVP_guard.should_build))
 
 builder_configs = [
     util.BuilderConfig(name="NakedAVP-builder", workernames=["worker1"], factory=NakedAVP_factory, project="NakedAVP")

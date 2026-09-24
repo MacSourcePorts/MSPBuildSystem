@@ -3,7 +3,15 @@
 # Project where we build based off of release tags from the project
 
 import os
+import re
 from buildbot.plugins import steps, util, changes, schedulers
+from projects.version_guard import VersionGuard, RecordBuiltTag
+
+PvZPortable_guard = VersionGuard(
+    project_name="PvZ-Portable",
+    tag_property="PvZPortable_latest_tag",
+    force_scheduler_names={"PvZ-Portable-force"},
+)
 
 project_list = [ 
     util.Project(name="PvZ-Portable",description="PvZ-Portable source port project")
@@ -39,14 +47,18 @@ PvZPortable_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('PvZPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/PvZ-Portable"),
     name="Checkout Latest Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=PvZPortable_guard.should_build
 ))
 PvZPortable_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable/macsourceports_universal2.sh"), "notarize", util.Property('PvZPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable"),
     name="Run Build Script",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=PvZPortable_guard.should_build
 ))
+
+PvZPortable_factory.addStep(RecordBuiltTag(PvZPortable_guard, doStepIf=PvZPortable_guard.should_build))
 
 builder_configs = [
     util.BuilderConfig(name="PvZ-Portable-builder", workernames=["worker1"], factory=PvZPortable_factory, project="PvZ-Portable")

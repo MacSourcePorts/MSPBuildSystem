@@ -7,9 +7,6 @@ import re
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import VersionGuard, RecordBuiltTag
 
-# Only treat clean "QUAKE2_<major>_<minor>" tags as real releases -- this
-# excludes QUAKE2_8_00_RC1, QUAKE2_WIN32_TEST1/TEST3, and anything else
-# that isn't a genuine numbered release.
 _yquake2_release_re = re.compile(r'^QUAKE2_\d+_\d+$')
 
 yquake2_guard = VersionGuard(
@@ -18,7 +15,6 @@ yquake2_guard = VersionGuard(
     tag_filter=lambda tag: bool(_yquake2_release_re.match(tag)),
     force_scheduler_names={"yquake2-force"},
 )
-
 
 project_list = [ 
     util.Project(name="yquake2",description="yquake2 source port project")
@@ -156,7 +152,6 @@ yquake2_factory.addStep(steps.ShellCommand(
     doStepIf=yquake2_guard.should_build,
 ))
 
-# NEW: only reached if the build actually ran and succeeded
 yquake2_factory.addStep(RecordBuiltTag(yquake2_guard, doStepIf=yquake2_guard.should_build))
 
 builder_configs = [

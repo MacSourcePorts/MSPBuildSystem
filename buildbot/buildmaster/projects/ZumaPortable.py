@@ -3,7 +3,15 @@
 # Project where we build based off of the latest code
 
 import os
+import re
 from buildbot.plugins import steps, util, changes, schedulers
+from projects.version_guard import VersionGuard, RecordBuiltTag
+
+ZumaPortable_guard = VersionGuard(
+    project_name="Zuma-Portable",
+    tag_property="ZumaPortable_latest_tag",
+    force_scheduler_names={"Zuma-Portable-force"},
+)
 
 project_list = [ 
     util.Project(name="Zuma-Portable",description="Zuma-Portable source port project")
@@ -61,14 +69,18 @@ ZumaPortable_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('ZumaPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable/src/CircleShoot"),
     name="Checkout Latest Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=ZumaPortable_guard.should_build
 ))
 ZumaPortable_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable/macsourceports_universal2.sh"), "notarize", util.Property('ZumaPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable"),
     name="Run Build Script",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=ZumaPortable_guard.should_build
 ))
+
+ZumaPortable_factory.addStep(RecordBuiltTag(ZumaPortable_guard, doStepIf=ZumaPortable_guard.should_build))
 
 builder_configs = [
     util.BuilderConfig(name="Zuma-Portable-builder", workernames=["worker1"], factory=ZumaPortable_factory, project="Zuma-Portable")
