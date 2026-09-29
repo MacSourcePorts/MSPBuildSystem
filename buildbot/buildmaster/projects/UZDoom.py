@@ -3,7 +3,15 @@
 # Project where we build based off of release tags from the project
 
 import os
+import re
 from buildbot.plugins import steps, util, changes, schedulers
+from projects.version_guard import VersionGuard, RecordBuiltTag
+
+UZDoom_guard = VersionGuard(
+    project_name="UZDoom",
+    tag_property="UZDoom_latest_tag",
+    force_scheduler_names={"UZDoom-force"},
+)
 
 project_list = [ 
     util.Project(name="UZDoom",description="UZDoom source port project")
@@ -40,15 +48,19 @@ UZDoom_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('UZDoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/UZDoom"),
     name="Checkout Latest Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=UZDoom_guard.should_build
 ))
 
 UZDoom_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/UZDoom/macsourceports_universal2.sh"), "notarize", util.Property('UZDoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/UZDoom"),
     name="Run Build Script",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=UZDoom_guard.should_build
 ))
+
+UZDoom_factory.addStep(RecordBuiltTag(UZDoom_guard, doStepIf=UZDoom_guard.should_build))
 
 builder_configs = [
     util.BuilderConfig(name="UZDoom-builder", workernames=["worker1"], factory=UZDoom_factory, project="UZDoom")
@@ -57,7 +69,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="UZDoom-changes",
-        change_filter=util.ChangeFilter(project='UZDoom', branch='trunk'),
+        change_filter=util.ChangeFilter(project='UZDoom'),
         treeStableTimer=60,
         builderNames=["UZDoom-builder"]),
     schedulers.ForceScheduler(

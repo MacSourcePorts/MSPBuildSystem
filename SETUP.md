@@ -132,3 +132,21 @@
 28. Open up `~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/` and ensure `buildbotURL` is set to http://localhost:8010 (or whatever URL you want to hit, machine name if outside local machine)
 
 29. Go to http://localhost:8010 in a browser (or whatever URL you want to hit, machine name if outside local machine)
+
+30. Download GitHub CLI. Download the zip file, unzip then copy bin contents into /usr/local/bin and share/man/man1 contents into /usr/local/share/man/man1
+
+```
+	https://github.com/cli/cli/releases/latest
+```
+
+31. Run 
+
+```
+	gh auth login
+```
+
+	And log in as you
+
+32. Either copy `publish_config.json` from another machine or copy `publish_config.json.example` to `publish_config.json` and fill in the values
+
+33. Clone website into location specified in "siteRepoPath" in `publish_config.json`

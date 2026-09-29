@@ -101,4 +101,4 @@ cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
 # create dmg
-"../MSPBuildSystem/common/package_dmg.sh"
+"../MSPBuildSystem/common/package_dmg.sh" "publish"
