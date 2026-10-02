@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Insaniquarium-Portable-*.dmg",
+        "sourcePortStub": "insaniquariumportable",
+        "buildType": 1
+    }
+]
