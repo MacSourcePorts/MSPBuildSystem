@@ -89,7 +89,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="Insaniquarium-Portable-releases",
-        change_filter=util.ChangeFilter(project='Insaniquarium-Portable', branch='Insaniquarium'),
+        change_filter=util.ChangeFilter(project='Insaniquarium-Portable'),
         treeStableTimer=60,
         builderNames=["Insaniquarium-Portable-builder"]),
     schedulers.ForceScheduler(
