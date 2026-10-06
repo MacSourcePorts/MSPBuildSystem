@@ -59,7 +59,7 @@ InsaniquariumPortable_factory.addStep(steps.Git(
     haltOnFailure=True
 ))
 InsaniquariumPortable_factory.addStep(steps.SetPropertyFromCommand(
-    command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
+    command=["bash", "-c", "git ls-remote --tags --sort='-version:refname' https://github.com/kyle-sylvestre/WinFish | awk -F'/' '{print $3}' | head -n 1"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Insaniquarium-Portable/src/WinFish"),
     property="InsaniquariumPortable_latest_tag",
     name="Fetch Latest Insaniquarium-Portable Tag",
