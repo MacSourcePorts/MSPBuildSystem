@@ -15,7 +15,8 @@ change_source_list = [
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/OpenEnroth"),
         project="OpenEnroth",
         branches=True,
-        pollInterval=3600  # Poll every hour
+        pollAtLaunch=True,
+        pollInterval=86400  # Poll every 24 hours
     )
 ]
 
