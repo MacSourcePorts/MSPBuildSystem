@@ -3,18 +3,30 @@
 # Project where we build based off of release tags from the project
 
 import os
-import re
 from buildbot.plugins import steps, util, changes, schedulers
-from projects.version_guard import VersionGuard, RecordBuiltTag
+from projects.version_guard import (
+    VersionGuard,
+    RecordBuiltTag,
+    scheduler_in,
+    and_steps,
+    make_dmg_extractor,
+    is_publish_machine,
+)
 
 UZDoom_guard = VersionGuard(
     project_name="UZDoom",
     tag_property="UZDoom_latest_tag",
     force_scheduler_names={"UZDoom-force"},
+    meta_url="https://www.macsourceports.com/meta.json",
+    meta_stub="uzdoom",
 )
 
-project_list = [ 
-    util.Project(name="UZDoom",description="UZDoom source port project")
+# Only these builders publish rhe release
+UZDoom_publish_schedulers = {"UZDoom-changes", "UZDoom-publish"}
+
+
+project_list = [
+    util.Project(name="UZDoom", description="UZDoom source port project")
 ]
 
 change_source_list = [
@@ -52,12 +64,32 @@ UZDoom_factory.addStep(steps.ShellCommand(
     doStepIf=UZDoom_guard.should_build
 ))
 
-UZDoom_factory.addStep(steps.ShellCommand(
+UZDoom_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/UZDoom/macsourceports_universal2.sh"), "notarize", util.Property('UZDoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/UZDoom"),
     name="Run Build Script",
     haltOnFailure=True,
-    doStepIf=UZDoom_guard.should_build
+    doStepIf=UZDoom_guard.should_build,
+    extract_fn=make_dmg_extractor("UZDoom_dmg_path"),
+))
+
+UZDoom_factory.addStep(steps.ShellCommand(
+    command=[
+        "python3",
+        os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
+        "--project", "UZDoom",
+        "--tag", util.Interpolate("UZDoom_%(prop:UZDoom_latest_tag)s"),
+        "--version", util.Property('UZDoom_latest_tag'),
+        "--dmg", util.Property('UZDoom_dmg_path')
+    ],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/UZDoom"),
+    name="Publish Release",
+    haltOnFailure=True,
+    doStepIf=and_steps(
+        lambda step: scheduler_in(step, UZDoom_publish_schedulers),
+        UZDoom_guard.should_build,
+        lambda step: is_publish_machine(),
+    )
 ))
 
 UZDoom_factory.addStep(RecordBuiltTag(UZDoom_guard, doStepIf=UZDoom_guard.should_build))
@@ -66,7 +98,7 @@ builder_configs = [
     util.BuilderConfig(name="UZDoom-builder", workernames=["worker1"], factory=UZDoom_factory, project="UZDoom")
 ]
 
-scheduler_list = [ 
+scheduler_list = [
     schedulers.SingleBranchScheduler(
         name="UZDoom-changes",
         change_filter=util.ChangeFilter(project='UZDoom'),
@@ -74,5 +106,8 @@ scheduler_list = [
         builderNames=["UZDoom-builder"]),
     schedulers.ForceScheduler(
         name="UZDoom-force",
+        builderNames=["UZDoom-builder"]),
+    schedulers.ForceScheduler(
+        name="UZDoom-publish",
         builderNames=["UZDoom-builder"])
 ]

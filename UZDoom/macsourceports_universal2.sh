@@ -21,11 +21,7 @@ else
 	echo "Leaving version at : $APP_VERSION"
 fi
 
-# gsed -i '/if( ${TARGET_ARCHITECTURE} MATCHES "x86_64" )/,/endif()/d' CMakeLists.txt
-# gsed -i '/if( ${TARGET_ARCHITECTURE} MATCHES "x86_64" )/,/endif()/d' src/CMakeLists.txt
-# gsed -i '/if ( ${TARGET_ARCHITECTURE} MATCHES "arm64" )/,/endif()/d' src/CMakeLists.txt
-# gsed -i '/if (NOT ${TARGET_ARCHITECTURE} MATCHES "arm" )/,/endif()/d' src/CMakeLists.txt
-# gsed -i '/if (MSVC AND ${TARGET_ARCHITECTURE} MATCHES "arm")/,/endif()/d' src/CMakeLists.txt
+gsed -i 's/set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0")/set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13")/' CMakeLists.txt
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
@@ -63,6 +59,8 @@ cd ${X86_64_BUILD_FOLDER}
 cmake \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+  -DCMAKE_C_FLAGS="-fno-stack-check" \
+  -DCMAKE_CXX_FLAGS="-fno-stack-check" \
   -DFORCE_CROSSCOMPILE=ON \
   -DIMPORT_EXECUTABLES=$(pwd)/../${ARM64_BUILD_FOLDER}/ImportExecutables.cmake \
   -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
@@ -101,4 +99,4 @@ cp "${ICONSDIR}/${ICONS}" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1" entitlements
 
 # create dmg
-"../MSPBuildSystem/common/package_dmg.sh" "publish"
+"../MSPBuildSystem/common/package_dmg.sh"

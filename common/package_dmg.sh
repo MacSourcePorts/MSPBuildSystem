@@ -41,8 +41,4 @@ else
     echo "Skipping cleanup"
 fi
 
-if [ "$1" == "publish" ] || [ "$2" == "publish" ] || [ "$3" == "publish" ]; then
-  echo "Publishing to site..."
-  echo python3 "../MSPBuildSystem/common/publish_release.py" --project ${PROJECT_NAME} --tag ${PROJECT_NAME}_${APP_VERSION} --version ${APP_VERSION} --dmg ../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}/${PRODUCT_NAME}-${APP_VERSION}.dmg
-  python3 "../MSPBuildSystem/common/publish_release.py" --project ${PROJECT_NAME} --tag ${PROJECT_NAME}_${APP_VERSION} --version ${APP_VERSION} --dmg ../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}/${PRODUCT_NAME}-${APP_VERSION}.dmg
-fi
+echo "MSP_RELEASE_DMG=../MSPBuildSystem/${PROJECT_NAME}/release-${APP_VERSION}${ARCH_FOLDER}_${DATE_TIMESTAMP}/${PRODUCT_NAME}-${APP_VERSION}.dmg"

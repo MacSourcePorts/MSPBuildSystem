@@ -150,3 +150,11 @@
 32. Either copy `publish_config.json` from another machine or copy `publish_config.json.example` to `publish_config.json` and fill in the values
 
 33. Clone website into location specified in "siteRepoPath" in `publish_config.json`
+
+34. **If this is a LIVE build server (i.e., not a testing VM)** run the following
+
+	in `~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/`
+
+```
+	touch ~/.msp_publish_machine
+```

@@ -108,6 +108,116 @@ def extract_version_tuple(tag):
     return tuple(int(n) for n in digits)
 
 
+def scheduler_in(step, names):
+    """doStepIf helper: True iff this build was started by one of the
+    given scheduler names. Not version-guard-specific, but lives here so
+    every project's factory can import one shared helper instead of
+    reimplementing the same step.getProperty('scheduler') lookup -- e.g.
+    to gate a release-publish step to the real change-triggered scheduler
+    plus a dedicated "-publish" ForceScheduler, while excluding ordinary
+    test-build ForceSchedulers:
+
+        doStepIf=lambda step: scheduler_in(step, {"X-changes", "X-publish"})
+    """
+    return step.getProperty('scheduler') in names
+
+
+def is_publish_machine(marker_path="~/.msp_publish_machine"):
+    """True only on the one machine that's actually allowed to push a
+    release live -- checked via a small local marker file.
+
+    This deliberately lives OUTSIDE the repo rather than as a Python
+    constant in master.cfg: master.cfg and every projects/*.py file are
+    the same files on every machine (synced via git), so "this is the
+    live server" can't safely be a line of committed code -- it would
+    just as quickly land on the test VM's checkout too. A marker file
+    is local, never committed, and never moves between machines unless
+    someone does that on purpose:
+
+        touch ~/.msp_publish_machine      # once, only on the real server
+
+    Fold it into a publish step's doStepIf alongside the usual checks:
+
+        doStepIf=and_steps(
+            lambda step: scheduler_in(step, {"X-changes", "X-publish"}),
+            guard.should_build,
+            lambda step: is_publish_machine(),
+        )
+
+    This is a second, independent layer -- not a replacement for also
+    disabling each project's "-changes" scheduler on the VM via
+    Buildbot's own built-in per-scheduler enable/disable toggle (the
+    Schedulers page in the web UI, or the REST API's `enable` control
+    action), which stops the VM from even attempting an automatic build
+    in the first place. Keeping both means a VM that's manually
+    force-built, or that has a scheduler re-enabled by mistake, still
+    can't actually publish.
+    """
+    return os.path.exists(os.path.expanduser(marker_path))
+
+
+def and_steps(*predicates):
+    """Combine several doStepIf-style predicates (each a callable that
+    takes a step and returns bool) with AND, short-circuiting left to
+    right -- so a cheap check (scheduler_in) can skip an expensive one
+    (should_build's meta.json fetch) rather than always paying for both.
+
+    Typical use: a release-publish step should only run when (a) this is
+    a scheduler that's allowed to publish, AND (b) the guard actually
+    decided to build (there's nothing to publish if the build itself was
+    skipped as already-published):
+
+        doStepIf=and_steps(
+            lambda step: scheduler_in(step, {"X-changes", "X-publish"}),
+            guard.should_build,
+        )
+    """
+    def _check(step):
+        return all(p(step) for p in predicates)
+    return _check
+
+
+def make_dmg_extractor(property_name, env_line="MSP_RELEASE_DMG"):
+    """Build an extract_fn for steps.SetPropertyFromCommand that scrapes
+    a single '<env_line>=<path>' line out of a build step's own stdout
+    and turns it into a Buildbot property.
+
+    Why scrape instead of recompute: a release dmg's final path
+    (project.sh -> package_dmg.sh) usually depends on pieces -- today's
+    date, an arch suffix -- that only the build script itself reliably
+    knows at the moment it runs. Recomputing that path independently
+    here risks drifting from what the build actually produced (e.g. a
+    build that straddles midnight). So each project's build script
+    should end (see package_dmg.sh) by echoing the one line this reads
+    back, and every project factory can then share this one extractor
+    instead of hand-rolling its own regex:
+
+        UZDoom_factory.addStep(steps.SetPropertyFromCommand(
+            command=[...],
+            workdir=...,
+            name="Run Build Script",
+            extract_fn=make_dmg_extractor("UZDoom_dmg_path"),
+        ))
+
+    Raises (via the returned function) if the expected line never shows
+    up in stdout -- same "fail loud, don't guess" stance as the rest of
+    this module -- rather than silently handing the next step an empty
+    or stale path.
+    """
+    pattern = re.compile(rf'^{re.escape(env_line)}=(.*)$', re.MULTILINE)
+
+    def _extract(rc, stdout, stderr):
+        match = pattern.search(stdout)
+        if not match:
+            raise RuntimeError(
+                f"expected build output to contain a '{env_line}=<path>' line "
+                f"(added at the end of package_dmg.sh), found none"
+            )
+        return {property_name: match.group(1).strip()}
+
+    return _extract
+
+
 # Shared across every VersionGuard instance that points at the same URL,
 # so N projects' should_build() calls within a short window reuse one
 # fetch of the (single, shared, possibly largeish) meta.json instead of
