@@ -3,15 +3,25 @@
 # Project where we build based off of release tags from the project
 
 import os
-import re
 from buildbot.plugins import steps, util, changes, schedulers
-from projects.version_guard import VersionGuard, RecordBuiltTag
+from projects.version_guard import (
+    VersionGuard,
+    RecordBuiltTag,
+    scheduler_in,
+    and_steps,
+    make_dmg_extractor,
+    is_publish_machine,
+)
 
 NakedAVP_guard = VersionGuard(
     project_name="NakedAVP",
     tag_property="NakedAVP_latest_tag",
     force_scheduler_names={"NakedAVP-force"},
+    meta_url="https://www.macsourceports.com/meta.json",
+    meta_stub="nakedavp",
 )
+
+NakedAVP_publish_schedulers = {"NakedAVP-changes", "NakedAVP-publish"}
 
 project_list = [ 
     util.Project(name="NakedAVP",description="NakedAVP source port project")
@@ -50,12 +60,32 @@ NakedAVP_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=NakedAVP_guard.should_build
 ))
-NakedAVP_factory.addStep(steps.ShellCommand(
+NakedAVP_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP/macsourceports_universal2.sh"), "notarize", util.Property('NakedAVP_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP"),
     name="Run Build Script",
     haltOnFailure=True,
-    doStepIf=NakedAVP_guard.should_build
+    doStepIf=NakedAVP_guard.should_build,
+    extract_fn=make_dmg_extractor("NakedAVP_dmg_path"),
+))
+
+NakedAVP_factory.addStep(steps.ShellCommand(
+    command=[
+        "python3",
+        os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
+        "--project", "NakedAVP",
+        "--tag", util.Interpolate("NakedAVP_%(prop:NakedAVP_latest_tag)s"),
+        "--version", util.Property('NakedAVP_latest_tag'),
+        "--dmg", util.Property('NakedAVP_dmg_path')
+    ],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/NakedAVP"),
+    name="Publish Release",
+    haltOnFailure=True,
+    doStepIf=and_steps(
+        lambda step: scheduler_in(step, NakedAVP_publish_schedulers),
+        NakedAVP_guard.should_build,
+        lambda step: is_publish_machine(),
+    )
 ))
 
 NakedAVP_factory.addStep(RecordBuiltTag(NakedAVP_guard, doStepIf=NakedAVP_guard.should_build))
@@ -72,5 +102,8 @@ scheduler_list = [
         builderNames=["NakedAVP-builder"]),
     schedulers.ForceScheduler(
         name="NakedAVP-force",
+        builderNames=["NakedAVP-builder"]),
+    schedulers.ForceScheduler(
+        name="NakedAVP-publish",
         builderNames=["NakedAVP-builder"])
 ]

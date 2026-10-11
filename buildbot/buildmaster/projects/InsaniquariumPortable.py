@@ -1,17 +1,27 @@
 # Insaniquarium-Portable
 
-# Project where we build based off of the latest code
+# Project where we build based off of release tags from the project
 
 import os
-import re
 from buildbot.plugins import steps, util, changes, schedulers
-from projects.version_guard import VersionGuard, RecordBuiltTag
+from projects.version_guard import (
+    VersionGuard,
+    RecordBuiltTag,
+    scheduler_in,
+    and_steps,
+    make_dmg_extractor,
+    is_publish_machine,
+)
 
 InsaniquariumPortable_guard = VersionGuard(
     project_name="Insaniquarium-Portable",
     tag_property="InsaniquariumPortable_latest_tag",
     force_scheduler_names={"Insaniquarium-Portable-force"},
+    meta_url="https://www.macsourceports.com/meta.json",
+    meta_stub="insaniquariumportable",
 )
+
+InsaniquariumPortable_publish_schedulers = {"Insaniquarium-Portable-changes", "Insaniquarium-Portable-publish"}
 
 project_list = [ 
     util.Project(name="Insaniquarium-Portable",description="Insaniquarium-Portable source port project")
@@ -72,12 +82,32 @@ InsaniquariumPortable_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=InsaniquariumPortable_guard.should_build
 ))
-InsaniquariumPortable_factory.addStep(steps.ShellCommand(
+InsaniquariumPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Insaniquarium-Portable/macsourceports_universal2.sh"), "notarize", util.Property('InsaniquariumPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Insaniquarium-Portable"),
     name="Run Build Script",
     haltOnFailure=True,
-    doStepIf=InsaniquariumPortable_guard.should_build
+    doStepIf=InsaniquariumPortable_guard.should_build,
+    extract_fn=make_dmg_extractor("InsaniquariumPortable_dmg_path"),
+))
+
+InsaniquariumPortable_factory.addStep(steps.ShellCommand(
+    command=[
+        "python3",
+        os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
+        "--project", "Insaniquarium-Portable",
+        "--tag", util.Interpolate("Insaniquarium-Portable_%(prop:InsaniquariumPortable_latest_tag)s"),
+        "--version", util.Property('InsaniquariumPortable_latest_tag'),
+        "--dmg", util.Property('InsaniquariumPortable_dmg_path')
+    ],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Insaniquarium-Portable"),
+    name="Publish Release",
+    haltOnFailure=True,
+    doStepIf=and_steps(
+        lambda step: scheduler_in(step, InsaniquariumPortable_publish_schedulers),
+        InsaniquariumPortable_guard.should_build,
+        lambda step: is_publish_machine(),
+    )
 ))
 
 InsaniquariumPortable_factory.addStep(RecordBuiltTag(InsaniquariumPortable_guard, doStepIf=InsaniquariumPortable_guard.should_build))
@@ -94,5 +124,8 @@ scheduler_list = [
         builderNames=["Insaniquarium-Portable-builder"]),
     schedulers.ForceScheduler(
         name="Insaniquarium-Portable-force",
+        builderNames=["Insaniquarium-Portable-builder"]),
+    schedulers.ForceScheduler(
+        name="Insaniquarium-Portable-publish",
         builderNames=["Insaniquarium-Portable-builder"])
 ]

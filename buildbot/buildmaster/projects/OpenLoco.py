@@ -3,17 +3,27 @@
 # Project where we build based off of release tags from the project
 
 import os
-import re
 from buildbot.plugins import steps, util, changes, schedulers
-from projects.version_guard import VersionGuard, RecordBuiltTag
+from projects.version_guard import (
+    VersionGuard,
+    RecordBuiltTag,
+    scheduler_in,
+    and_steps,
+    make_dmg_extractor,
+    is_publish_machine,
+)
 
 OpenLoco_guard = VersionGuard(
     project_name="OpenLoco",
     tag_property="OpenLoco_latest_tag",
     force_scheduler_names={"OpenLoco-force"},
+    meta_url="https://www.macsourceports.com/meta.json",
+    meta_stub="openloco",
 )
 
-project_list = [ 
+OpenLoco_publish_schedulers = {"OpenLoco-changes", "OpenLoco-publish"}
+
+project_list = [
     util.Project(name="OpenLoco",description="OpenLoco source port project")
 ]
 
@@ -37,7 +47,6 @@ OpenLoco_factory.addStep(steps.Git(
     alwaysUseLatest=True,
     haltOnFailure=True
 ))
-
 OpenLoco_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenLoco"),
@@ -53,12 +62,32 @@ OpenLoco_factory.addStep(steps.ShellCommand(
     doStepIf=OpenLoco_guard.should_build,
 ))
 
-OpenLoco_factory.addStep(steps.ShellCommand(
+OpenLoco_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenLoco/macsourceports_universal2.sh"), "notarize", util.Property('OpenLoco_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenLoco"),
     name="Run Build Script",
     haltOnFailure=True,
     doStepIf=OpenLoco_guard.should_build,
+    extract_fn=make_dmg_extractor("OpenLoco_dmg_path"),
+))
+
+OpenLoco_factory.addStep(steps.ShellCommand(
+    command=[
+        "python3",
+        os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
+        "--project", "OpenLoco",
+        "--tag", util.Interpolate("OpenLoco_%(prop:OpenLoco_latest_tag)s"),
+        "--version", util.Property('OpenLoco_latest_tag'),
+        "--dmg", util.Property('OpenLoco_dmg_path')
+    ],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenLoco"),
+    name="Publish Release",
+    haltOnFailure=True,
+    doStepIf=and_steps(
+        lambda step: scheduler_in(step, OpenLoco_publish_schedulers),
+        OpenLoco_guard.should_build,
+        lambda step: is_publish_machine(),
+    )
 ))
 
 OpenLoco_factory.addStep(RecordBuiltTag(OpenLoco_guard, doStepIf=OpenLoco_guard.should_build))
@@ -75,5 +104,8 @@ scheduler_list = [
         builderNames=["OpenLoco-builder"]),
     schedulers.ForceScheduler(
         name="OpenLoco-force",
+        builderNames=["OpenLoco-builder"]),
+    schedulers.ForceScheduler(
+        name="OpenLoco-publish",
         builderNames=["OpenLoco-builder"])
 ]

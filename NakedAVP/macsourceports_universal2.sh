@@ -50,4 +50,4 @@ cd ..
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
 # create dmg
-"../MSPBuildSystem/common/package_dmg.sh" "publish"
+"../MSPBuildSystem/common/package_dmg.sh"

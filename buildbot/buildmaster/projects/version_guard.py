@@ -317,13 +317,17 @@ class VersionGuard:
         return self._load_local()
 
     def should_build(self, step):
+        # Set this before any early return -- every path through this
+        # function (forced or not, skip or not) should leave the email
+        # able to say which tag the build was actually for, instead of
+        # only the paths that go all the way to a version comparison.
+        tag = step.getProperty(self.tag_property)
+        step.setProperty('resolved_tag', tag, 'VersionGuard')
+
         # Let a manually-forced build always through, regardless of version.
         if step.getProperty('scheduler') in self.force_scheduler_names:
             step.setProperty('build_skipped', False, 'VersionGuard')
             return True
-
-        tag = step.getProperty(self.tag_property)
-        step.setProperty('resolved_tag', tag, 'VersionGuard')
 
         if not tag:
             step.setProperty('build_skipped', True, 'VersionGuard')

@@ -21,9 +21,7 @@ UZDoom_guard = VersionGuard(
     meta_stub="uzdoom",
 )
 
-# Only these builders publish rhe release
 UZDoom_publish_schedulers = {"UZDoom-changes", "UZDoom-publish"}
-
 
 project_list = [
     util.Project(name="UZDoom", description="UZDoom source port project")

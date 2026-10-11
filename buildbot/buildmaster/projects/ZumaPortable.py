@@ -1,17 +1,27 @@
 # Zuma-Portable
 
-# Project where we build based off of the latest code
+# Project where we build based off of release tags from the project
 
 import os
-import re
 from buildbot.plugins import steps, util, changes, schedulers
-from projects.version_guard import VersionGuard, RecordBuiltTag
+from projects.version_guard import (
+    VersionGuard,
+    RecordBuiltTag,
+    scheduler_in,
+    and_steps,
+    make_dmg_extractor,
+    is_publish_machine,
+)
 
 ZumaPortable_guard = VersionGuard(
     project_name="Zuma-Portable",
     tag_property="ZumaPortable_latest_tag",
     force_scheduler_names={"Zuma-Portable-force"},
+    meta_url="https://www.macsourceports.com/meta.json",
+    meta_stub="Zumaportable",
 )
+
+ZumaPortable_publish_schedulers = {"Zuma-Portable-changes", "Zuma-Portable-publish"}
 
 project_list = [ 
     util.Project(name="Zuma-Portable",description="Zuma-Portable source port project")
@@ -72,12 +82,32 @@ ZumaPortable_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=ZumaPortable_guard.should_build
 ))
-ZumaPortable_factory.addStep(steps.ShellCommand(
+ZumaPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable/macsourceports_universal2.sh"), "notarize", util.Property('ZumaPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable"),
     name="Run Build Script",
     haltOnFailure=True,
-    doStepIf=ZumaPortable_guard.should_build
+    doStepIf=ZumaPortable_guard.should_build,
+    extract_fn=make_dmg_extractor("ZumaPortable_dmg_path"),
+))
+
+ZumaPortable_factory.addStep(steps.ShellCommand(
+    command=[
+        "python3",
+        os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
+        "--project", "Zuma-Portable",
+        "--tag", util.Interpolate("Zuma-Portable_%(prop:ZumaPortable_latest_tag)s"),
+        "--version", util.Property('ZumaPortable_latest_tag'),
+        "--dmg", util.Property('ZumaPortable_dmg_path')
+    ],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable"),
+    name="Publish Release",
+    haltOnFailure=True,
+    doStepIf=and_steps(
+        lambda step: scheduler_in(step, ZumaPortable_publish_schedulers),
+        ZumaPortable_guard.should_build,
+        lambda step: is_publish_machine(),
+    )
 ))
 
 ZumaPortable_factory.addStep(RecordBuiltTag(ZumaPortable_guard, doStepIf=ZumaPortable_guard.should_build))
@@ -94,5 +124,8 @@ scheduler_list = [
         builderNames=["Zuma-Portable-builder"]),
     schedulers.ForceScheduler(
         name="Zuma-Portable-force",
+        builderNames=["Zuma-Portable-builder"]),
+    schedulers.ForceScheduler(
+        name="Zuma-Portable-publish",
         builderNames=["Zuma-Portable-builder"])
 ]

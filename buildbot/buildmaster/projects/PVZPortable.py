@@ -3,15 +3,25 @@
 # Project where we build based off of release tags from the project
 
 import os
-import re
 from buildbot.plugins import steps, util, changes, schedulers
-from projects.version_guard import VersionGuard, RecordBuiltTag
+from projects.version_guard import (
+    VersionGuard,
+    RecordBuiltTag,
+    scheduler_in,
+    and_steps,
+    make_dmg_extractor,
+    is_publish_machine,
+)
 
 PvZPortable_guard = VersionGuard(
     project_name="PvZ-Portable",
     tag_property="PvZPortable_latest_tag",
     force_scheduler_names={"PvZ-Portable-force"},
+    meta_url="https://www.macsourceports.com/meta.json",
+    meta_stub="pvzportable",
 )
+
+PvZPortable_publish_schedulers = {"PvZ-Portable-changes", "PvZ-Portable-publish"}
 
 project_list = [ 
     util.Project(name="PvZ-Portable",description="PvZ-Portable source port project")
@@ -50,12 +60,32 @@ PvZPortable_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=PvZPortable_guard.should_build
 ))
-PvZPortable_factory.addStep(steps.ShellCommand(
+PvZPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable/macsourceports_universal2.sh"), "notarize", util.Property('PvZPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable"),
     name="Run Build Script",
     haltOnFailure=True,
-    doStepIf=PvZPortable_guard.should_build
+    doStepIf=PvZPortable_guard.should_build,
+    extract_fn=make_dmg_extractor("PvZPortable_dmg_path"),
+))
+
+PvZPortable_factory.addStep(steps.ShellCommand(
+    command=[
+        "python3",
+        os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
+        "--project", "PvZ-Portable",
+        "--tag", util.Interpolate("PvZPortable_%(prop:PvZPortable_latest_tag)s"),
+        "--version", util.Property('PvZPortable_latest_tag'),
+        "--dmg", util.Property('PvZPortable_dmg_path')
+    ],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/PvZ-Portable"),
+    name="Publish Release",
+    haltOnFailure=True,
+    doStepIf=and_steps(
+        lambda step: scheduler_in(step, PvZPortable_publish_schedulers),
+        PvZPortable_guard.should_build,
+        lambda step: is_publish_machine(),
+    )
 ))
 
 PvZPortable_factory.addStep(RecordBuiltTag(PvZPortable_guard, doStepIf=PvZPortable_guard.should_build))
@@ -72,5 +102,8 @@ scheduler_list = [
         builderNames=["PvZ-Portable-builder"]),
     schedulers.ForceScheduler(
         name="PvZ-Portable-force",
+        builderNames=["PvZ-Portable-builder"]),
+    schedulers.ForceScheduler(
+        name="PvZPortable-publish",
         builderNames=["PvZ-Portable-builder"])
 ]
