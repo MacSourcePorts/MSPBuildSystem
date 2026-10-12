@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 OpenTyrian_factory = util.BuildFactory()
+
 OpenTyrian_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/OpenTyrian',
     mode='incremental',
@@ -27,6 +28,7 @@ OpenTyrian_factory.addStep(steps.Git(
     name="Git Pull Latest OpenTyrian Code",
     haltOnFailure=True
 ))
+
 OpenTyrian_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenTyrian/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenTyrian"),

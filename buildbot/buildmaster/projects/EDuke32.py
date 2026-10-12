@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 EDuke32_factory = util.BuildFactory()
+
 EDuke32_factory.addStep(steps.Git(
     repourl='https://voidpoint.io/terminx/eduke32.git',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ EDuke32_factory.addStep(steps.Git(
     name="Git Pull Latest EDuke32 Code",
     haltOnFailure=True
 ))
+
 EDuke32_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/EDuke32/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/EDuke32"),

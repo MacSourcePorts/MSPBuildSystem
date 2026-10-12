@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 Quake3e_factory = util.BuildFactory()
+
 Quake3e_factory.addStep(steps.Git(
     repourl='https://github.com/ec-/quake3e',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ Quake3e_factory.addStep(steps.Git(
     name="Git Pull Latest Quake3e Code",
     haltOnFailure=True
 ))
+
 Quake3e_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Quake3e/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Quake3e"),

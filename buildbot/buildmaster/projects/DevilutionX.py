@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 DevilutionX_factory = util.BuildFactory()
+
 DevilutionX_factory.addStep(steps.Git(
     repourl='https://github.com/diasurgical/devilutionX',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ DevilutionX_factory.addStep(steps.Git(
     name="Git Pull Latest DevilutionX Code",
     haltOnFailure=True
 ))
+
 DevilutionX_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/DevilutionX"),
@@ -35,12 +37,14 @@ DevilutionX_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest DevilutionX Tag",
     haltOnFailure=True
 ))
+
 DevilutionX_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('DevilutionX_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/DevilutionX"),
     name="Checkout Latest Tag",
     haltOnFailure=True
 ))
+
 DevilutionX_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/DevilutionX/macsourceports_universal2.sh"), "notarize", util.Property('DevilutionX_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/DevilutionX"),
@@ -54,7 +58,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="DevilutionX-releases",
+        name="DevilutionX-changes",
         change_filter=util.ChangeFilter(project='DevilutionX'),
         treeStableTimer=60,
         builderNames=["DevilutionX-builder"]),

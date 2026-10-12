@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 iortcw_factory = util.BuildFactory()
+
 iortcw_factory.addStep(steps.Git(
     repourl='https://github.com/iortcw/iortcw',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ iortcw_factory.addStep(steps.Git(
     name="Git Pull Latest iortcw Code",
     haltOnFailure=True
 ))
+
 iortcw_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/iortcw/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/iortcw"),

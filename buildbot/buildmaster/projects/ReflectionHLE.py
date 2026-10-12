@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 ReflectionHLE_factory = util.BuildFactory()
+
 ReflectionHLE_factory.addStep(steps.Git(
     repourl='https://github.com/ReflectionHLE/ReflectionHLE',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ ReflectionHLE_factory.addStep(steps.Git(
     name="Git Pull Latest ReflectionHLE Code",
     haltOnFailure=True
 ))
+
 ReflectionHLE_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/ReflectionHLE"),
@@ -35,12 +37,14 @@ ReflectionHLE_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest ReflectionHLE Tag",
     haltOnFailure=True
 ))
+
 ReflectionHLE_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('ReflectionHLE_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/ReflectionHLE"),
     name="Checkout Latest Tag",
     haltOnFailure=True
 ))
+
 ReflectionHLE_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ReflectionHLE/macsourceports_universal2.sh"), "notarize", util.Property('ReflectionHLE_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ReflectionHLE"),
@@ -54,7 +58,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="ReflectionHLE-releases",
+        name="ReflectionHLE-changes",
         change_filter=util.ChangeFilter(project='ReflectionHLE'),
         treeStableTimer=60,
         builderNames=["ReflectionHLE-builder"]),

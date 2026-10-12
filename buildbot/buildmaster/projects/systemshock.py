@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 systemshock_factory = util.BuildFactory()
+
 systemshock_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/systemshock',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ systemshock_factory.addStep(steps.Git(
     name="Git Pull Latest systemshock Code",
     haltOnFailure=True
 ))
+
 systemshock_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/systemshock/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/systemshock"),

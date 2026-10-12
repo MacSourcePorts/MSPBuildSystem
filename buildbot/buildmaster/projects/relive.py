@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 relive_factory = util.BuildFactory()
+
 relive_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/alive_reversing',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,12 +30,14 @@ relive_factory.addStep(steps.Git(
     name="Git Pull Latest relive Code",
     haltOnFailure=True
 ))
+
 relive_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing/macsourceports_universal2-ae.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing"),
     name="Run Build Script (AE)",
     haltOnFailure=True
 ))
+
 relive_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing/macsourceports_universal2-ao.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/alive_reversing"),

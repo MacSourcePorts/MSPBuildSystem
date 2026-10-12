@@ -1,7 +1,7 @@
 [
     {
-        "filenameGlob": "dhewm3-*.dmg",
-        "sourcePortStub": "dhewm3",
+        "filenameGlob": "Doom64EXPlus_-*.dmg",
+        "sourcePortStub": "doom64ex",
         "buildType": 1
     }
 ]

@@ -198,24 +198,60 @@ def make_dmg_extractor(property_name, env_line="MSP_RELEASE_DMG"):
             name="Run Build Script",
             extract_fn=make_dmg_extractor("UZDoom_dmg_path"),
         ))
+        UZDoom_factory.addStep(RequireProperty(
+            "UZDoom_dmg_path",
+            name="Verify Build Produced a DMG",
+            doStepIf=UZDoom_guard.should_build,
+            haltOnFailure=True,
+        ))
 
-    Raises (via the returned function) if the expected line never shows
-    up in stdout -- same "fail loud, don't guess" stance as the rest of
-    this module -- rather than silently handing the next step an empty
-    or stale path.
+    Deliberately does NOT raise when the expected line is missing --
+    sets the property to None instead. SetPropertyFromCommand only
+    calls this extract_fn at all when Buildbot already saw the command
+    exit 0 (a FAILURE/CANCELLED exit code short-circuits before
+    extract_fn ever runs -- that path already surfaces as a normal
+    build failure on its own). So reaching here with no match means the
+    script claimed success but didn't leave behind what it was supposed
+    to -- a real problem, but not an exception in this step's own code,
+    which is what raising would report it as. Pair this with
+    RequireProperty right after it (see above) to turn that into an
+    ordinary failed step instead.
     """
     pattern = re.compile(rf'^{re.escape(env_line)}=(.*)$', re.MULTILINE)
 
     def _extract(rc, stdout, stderr):
         match = pattern.search(stdout)
-        if not match:
-            raise RuntimeError(
-                f"expected build output to contain a '{env_line}=<path>' line "
-                f"(added at the end of package_dmg.sh), found none"
-            )
-        return {property_name: match.group(1).strip()}
+        return {property_name: match.group(1).strip() if match else None}
 
     return _extract
+
+
+class RequireProperty(steps.BuildStep):
+    """Fails normally (FAILURE, never EXCEPTION) if the named property
+    wasn't set to a truthy value by an earlier step in this build.
+
+    Meant to follow a SetPropertyFromCommand step whose extract_fn
+    can't trust the command's own exit code to reflect a real failure
+    (see make_dmg_extractor) -- this is where that gets turned into an
+    ordinary failed build instead of silently succeeding (property
+    missing, nobody notices) or blowing up as an EXCEPTION (raising
+    from inside extract_fn instead).
+
+    Pass the same doStepIf as the build step it's checking (typically
+    guard.should_build) -- there's nothing to verify, and nothing wrong,
+    when the guard itself decided not to build.
+    """
+    name = "Require property"
+
+    def __init__(self, property_name, **kwargs):
+        self.property_name = property_name
+        super().__init__(**kwargs)
+
+    def run(self):
+        if not self.getProperty(self.property_name):
+            self.descriptionDone = f"missing property '{self.property_name}'"
+            return util.FAILURE
+        return util.SUCCESS
 
 
 # Shared across every VersionGuard instance that points at the same URL,

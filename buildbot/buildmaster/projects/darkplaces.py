@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 darkplaces_factory = util.BuildFactory()
+
 darkplaces_factory.addStep(steps.Git(
     repourl='https://github.com/DarkPlacesEngine/DarkPlaces',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +30,7 @@ darkplaces_factory.addStep(steps.Git(
     name="Git Pull Latest darkplaces Code",
     haltOnFailure=True
 ))
+
 darkplaces_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/darkplaces/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/darkplaces"),

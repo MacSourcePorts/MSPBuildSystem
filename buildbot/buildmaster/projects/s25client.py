@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 s25client_factory = util.BuildFactory()
+
 s25client_factory.addStep(steps.Git(
     repourl='https://github.com/Return-To-The-Roots/s25client',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +30,7 @@ s25client_factory.addStep(steps.Git(
     haltOnFailure=True,
     submodules=True
 ))
+
 s25client_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/s25client/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/s25client"),

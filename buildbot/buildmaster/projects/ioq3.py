@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 ioq3_factory = util.BuildFactory()
+
 ioq3_factory.addStep(steps.Git(
     repourl='https://github.com/ioquake/ioq3',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ ioq3_factory.addStep(steps.Git(
     name="Git Pull Latest ioq3 Code",
     haltOnFailure=True
 ))
+
 ioq3_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ioq3/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ioq3"),

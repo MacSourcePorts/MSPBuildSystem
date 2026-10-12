@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 Abuse_1996_factory = util.BuildFactory()
+
 Abuse_1996_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/Abuse_1996',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ Abuse_1996_factory.addStep(steps.Git(
     name="Git Pull Latest Abuse_1996 Code",
     haltOnFailure=True
 ))
+
 Abuse_1996_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Abuse_1996/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Abuse_1996"),

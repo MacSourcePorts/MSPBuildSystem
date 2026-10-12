@@ -27,6 +27,7 @@ change_source_list = [
 ]
 
 xash3dfwgs_factory = util.BuildFactory()
+
 xash3dfwgs_factory.addStep(steps.Git(
     repourl='https://github.com/FWGS/xash3d-fwgs',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -36,6 +37,7 @@ xash3dfwgs_factory.addStep(steps.Git(
     name="Git Pull Latest xash3d-fwgs Code",
     haltOnFailure=True
 ))
+
 xash3dfwgs_factory.addStep(steps.Git(
     repourl='https://github.com/FWGS/hlsdk-portable',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -59,7 +61,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="xash3d-fwgs-releases",
+        name="xash3d-fwgs-changes",
         change_filter=util.ChangeFilter(project='xash3d-fwgs', branch='master'),
         treeStableTimer=60,
         builderNames=["xash3d-fwgs-builder"]),

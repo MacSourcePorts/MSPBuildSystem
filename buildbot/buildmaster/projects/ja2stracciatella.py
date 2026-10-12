@@ -4,6 +4,25 @@
 
 import os
 from buildbot.plugins import steps, util, changes, schedulers
+from projects.version_guard import (
+    VersionGuard,
+    RecordBuiltTag,
+    scheduler_in,
+    and_steps,
+    make_dmg_extractor,
+    is_publish_machine,
+    RequireProperty,
+)
+
+ja2stracciatella_guard = VersionGuard(
+    project_name="ja2stracciatella",
+    tag_property="ja2stracciatella_latest_tag",
+    force_scheduler_names={"ja2stracciatella-force"},
+    meta_url="https://www.macsourceports.com/meta.json",
+    meta_stub="ja2-stracciatella",
+)
+
+ja2stracciatella_publish_schedulers = {"ja2stracciatella-changes", "ja2stracciatella-publish"}
 
 project_list = [ 
     util.Project(name="ja2stracciatella",description="ja2-stracciatella source port project")
@@ -15,12 +34,12 @@ change_source_list = [
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/ja2-stracciatella"),
         project="ja2stracciatella",
         only_tags=True,
-        branch=None,
         pollInterval=3600  # Poll every hour
     )
 ]
 
 ja2stracciatella_factory = util.BuildFactory()
+
 ja2stracciatella_factory.addStep(steps.Git(
     repourl='https://github.com/ja2-stracciatella/ja2-stracciatella',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +48,7 @@ ja2stracciatella_factory.addStep(steps.Git(
     name="Git Pull Latest ja2-stracciatella Code",   
     haltOnFailure=True
 ))
+
 ja2stracciatella_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/ja2-stracciatella"),
@@ -36,18 +56,51 @@ ja2stracciatella_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest ja2-stracciatella Tag",
     haltOnFailure=True
 ))
+
 ja2stracciatella_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('ja2stracciatella_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/ja2-stracciatella"),
     name="Checkout Latest Tag",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=ja2stracciatella_guard.should_build
 ))
-ja2stracciatella_factory.addStep(steps.ShellCommand(
+
+ja2stracciatella_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ja2-stracciatella/macsourceports_universal2.sh"), "notarize", util.Property('ja2stracciatella_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/ja2-stracciatella"),
     name="Run Build Script",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=ja2stracciatella_guard.should_build,
+    extract_fn=make_dmg_extractor("ja2stracciatella_dmg_path"),
 ))
+
+ja2stracciatella_factory.addStep(RequireProperty(
+    "ja2stracciatella_dmg_path",
+    name="Verify Build Produced a DMG",
+    doStepIf=ja2stracciatella_guard.should_build,
+    haltOnFailure=True,
+))
+
+ja2stracciatella_factory.addStep(steps.ShellCommand(
+    command=[
+        "python3",
+        os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
+        "--project", "ja2-stracciatella",
+        "--tag", util.Interpolate("ja2-stracciatella_%(prop:ja2stracciatella_latest_tag)s"),
+        "--version", util.Property('ja2stracciatella_latest_tag'),
+        "--dmg", util.Property('ja2stracciatella_dmg_path')
+    ],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/ja2-stracciatella"),
+    name="Publish Release",
+    haltOnFailure=True,
+    doStepIf=and_steps(
+        lambda step: scheduler_in(step, ja2stracciatella_publish_schedulers),
+        ja2stracciatella_guard.should_build,
+        lambda step: is_publish_machine(),
+    )
+))
+
+ja2stracciatella_factory.addStep(RecordBuiltTag(ja2stracciatella_guard, doStepIf=ja2stracciatella_guard.should_build))
 
 builder_configs = [
     util.BuilderConfig(name="ja2stracciatella-builder", workernames=["worker1"], factory=ja2stracciatella_factory, project="ja2stracciatella")
@@ -55,11 +108,14 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="ja2stracciatella-releases",
+        name="ja2stracciatella-changes",
         change_filter=util.ChangeFilter(project='ja2stracciatella'),
         treeStableTimer=60,
         builderNames=["ja2stracciatella-builder"]),
     schedulers.ForceScheduler(
         name="ja2stracciatella-force",
+        builderNames=["ja2stracciatella-builder"]),
+    schedulers.ForceScheduler(
+        name="ja2stracciatella-publish",
         builderNames=["ja2stracciatella-builder"])
 ]

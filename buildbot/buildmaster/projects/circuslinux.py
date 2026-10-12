@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 circuslinux_factory = util.BuildFactory()
+
 circuslinux_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/circuslinux',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ circuslinux_factory.addStep(steps.Git(
     name="Git Pull Latest circuslinux Code",
     haltOnFailure=True
 ))
+
 circuslinux_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/circuslinux/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/circuslinux"),

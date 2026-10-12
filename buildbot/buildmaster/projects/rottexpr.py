@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 rottexpr_factory = util.BuildFactory()
+
 rottexpr_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/rottexpr',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ rottexpr_factory.addStep(steps.Git(
     name="Git Pull Latest rottexpr Code",
     haltOnFailure=True
 ))
+
 rottexpr_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/rottexpr/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/rottexpr"),

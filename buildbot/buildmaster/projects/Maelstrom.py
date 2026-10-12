@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 Maelstrom_factory = util.BuildFactory()
+
 Maelstrom_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/Maelstrom',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ Maelstrom_factory.addStep(steps.Git(
     name="Git Pull Latest Maelstrom Code",
     haltOnFailure=True
 ))
+
 Maelstrom_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Maelstrom/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Maelstrom"),

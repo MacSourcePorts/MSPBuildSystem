@@ -11,6 +11,7 @@ from projects.version_guard import (
     and_steps,
     make_dmg_extractor,
     is_publish_machine,
+    RequireProperty,
 )
 
 UZDoom_guard = VersionGuard(
@@ -38,6 +39,7 @@ change_source_list = [
 ]
 
 UZDoom_factory = util.BuildFactory()
+
 UZDoom_factory.addStep(steps.Git(
     repourl='https://github.com/UZDoom/UZDoom',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -47,6 +49,7 @@ UZDoom_factory.addStep(steps.Git(
     haltOnFailure=True,
     submodules=True
 ))
+
 UZDoom_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git ls-remote --tags --sort='-version:refname' https://github.com/UZDoom/UZDoom.git | awk -F'/' '{print $3}' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/UZDoom"),
@@ -54,6 +57,7 @@ UZDoom_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest UZDoom Tag",
     haltOnFailure=True
 ))
+
 UZDoom_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('UZDoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/UZDoom"),
@@ -69,6 +73,13 @@ UZDoom_factory.addStep(steps.SetPropertyFromCommand(
     haltOnFailure=True,
     doStepIf=UZDoom_guard.should_build,
     extract_fn=make_dmg_extractor("UZDoom_dmg_path"),
+))
+
+UZDoom_factory.addStep(RequireProperty(
+    "UZDoom_dmg_path",
+    name="Verify Build Produced a DMG",
+    doStepIf=UZDoom_guard.should_build,
+    haltOnFailure=True,
 ))
 
 UZDoom_factory.addStep(steps.ShellCommand(

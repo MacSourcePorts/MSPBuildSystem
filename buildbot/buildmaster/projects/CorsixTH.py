@@ -28,6 +28,7 @@ CorsixTH_factory.addStep(steps.Git(
     name="Git Pull Latest CorsixTH Code",
     haltOnFailure=True
 ))
+
 CorsixTH_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/CorsixTH"),
@@ -35,12 +36,14 @@ CorsixTH_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest CorsixTH Tag",
     haltOnFailure=True
 ))
+
 CorsixTH_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('CorsixTH_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/CorsixTH"),
     name="Checkout Latest Tag",
     haltOnFailure=True
 ))
+
 CorsixTH_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/CorsixTH/macsourceports_universal2.sh"), "notarize", util.Property('CorsixTH_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/CorsixTH"),
@@ -54,7 +57,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="CorsixTH-releases",
+        name="CorsixTH-changes",
         change_filter=util.ChangeFilter(project='CorsixTH'),
         treeStableTimer=60,
         builderNames=["CorsixTH-builder"]),

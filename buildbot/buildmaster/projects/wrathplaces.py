@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 wrathplaces_factory = util.BuildFactory()
+
 wrathplaces_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/wrathplaces',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +30,7 @@ wrathplaces_factory.addStep(steps.Git(
     name="Git Pull Latest wrathplaces Code",
     haltOnFailure=True
 ))
+
 wrathplaces_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/wrathplaces/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/wrathplaces"),

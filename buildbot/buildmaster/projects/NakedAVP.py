@@ -11,6 +11,7 @@ from projects.version_guard import (
     and_steps,
     make_dmg_extractor,
     is_publish_machine,
+    RequireProperty,
 )
 
 NakedAVP_guard = VersionGuard(
@@ -38,6 +39,7 @@ change_source_list = [
 ]
 
 NakedAVP_factory = util.BuildFactory()
+
 NakedAVP_factory.addStep(steps.Git(
     repourl='https://github.com/atsb/NakedAVP',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -46,6 +48,7 @@ NakedAVP_factory.addStep(steps.Git(
     name="Git Pull Latest NakedAVP Code",
     haltOnFailure=True
 ))
+
 NakedAVP_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/NakedAVP"),
@@ -53,6 +56,7 @@ NakedAVP_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest NakedAVP Tag",
     haltOnFailure=True
 ))
+
 NakedAVP_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('NakedAVP_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/NakedAVP"),
@@ -60,6 +64,7 @@ NakedAVP_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=NakedAVP_guard.should_build
 ))
+
 NakedAVP_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP/macsourceports_universal2.sh"), "notarize", util.Property('NakedAVP_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/NakedAVP"),
@@ -67,6 +72,13 @@ NakedAVP_factory.addStep(steps.SetPropertyFromCommand(
     haltOnFailure=True,
     doStepIf=NakedAVP_guard.should_build,
     extract_fn=make_dmg_extractor("NakedAVP_dmg_path"),
+))
+
+NakedAVP_factory.addStep(RequireProperty(
+    "NakedAVP_dmg_path",
+    name="Verify Build Produced a DMG",
+    doStepIf=NakedAVP_guard.should_build,
+    haltOnFailure=True,
 ))
 
 NakedAVP_factory.addStep(steps.ShellCommand(
@@ -96,7 +108,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="NakedAVP-releases",
+        name="NakedAVP-changes",
         change_filter=util.ChangeFilter(project='NakedAVP'),
         treeStableTimer=60,
         builderNames=["NakedAVP-builder"]),

@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 moo1_factory = util.BuildFactory()
+
 moo1_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/1oom',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +30,7 @@ moo1_factory.addStep(steps.Git(
     branch="master-vanilla-beta",
     haltOnFailure=True
 ))
+
 moo1_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/1oom"),
@@ -36,12 +38,14 @@ moo1_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest 1oom Tag",
     haltOnFailure=True
 ))
+
 moo1_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", "master-vanilla-beta"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/1oom"),
     name="Checkout master-vanilla-beta",
     haltOnFailure=True
 ))
+
 moo1_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/1oom/macsourceports_universal2.sh"), "notarize", "1.11.7"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/1oom"),
@@ -55,7 +59,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="moo1-releases",
+        name="moo1-changes",
         change_filter=util.ChangeFilter(project='moo1', branch='master-vanilla-beta'),
         treeStableTimer=60,
         builderNames=["moo1-builder"]),

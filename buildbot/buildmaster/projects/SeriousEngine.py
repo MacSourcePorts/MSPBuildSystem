@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 SeriousEngine_factory = util.BuildFactory()
+
 SeriousEngine_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/Serious-Engine',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,12 +29,14 @@ SeriousEngine_factory.addStep(steps.Git(
     name="Git Pull Latest Serious-Engine Code",
     haltOnFailure=True
 ))
+
 SeriousEngine_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine/macsourceports_universal2-ssfe.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine"),
     name="Run Build Script for First Encounter",
     haltOnFailure=True
 ))
+
 SeriousEngine_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine/macsourceports_universal2-ssse.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Serious-Engine"),

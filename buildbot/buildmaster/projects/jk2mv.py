@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 jk2mv_factory = util.BuildFactory()
+
 jk2mv_factory.addStep(steps.Git(
     repourl='https://github.com/mvdevs/jk2mv',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +30,7 @@ jk2mv_factory.addStep(steps.Git(
     haltOnFailure=True,
     submodules=True
 ))
+
 jk2mv_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/jk2mv/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/jk2mv"),

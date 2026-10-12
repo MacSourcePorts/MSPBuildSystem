@@ -11,6 +11,7 @@ from projects.version_guard import (
     and_steps,
     make_dmg_extractor,
     is_publish_machine,
+    RequireProperty,
 )
 
 OpenLoco_guard = VersionGuard(
@@ -38,6 +39,7 @@ change_source_list = [
 ]
 
 OpenLoco_factory = util.BuildFactory()
+
 OpenLoco_factory.addStep(steps.Git(
     repourl='https://github.com/OpenLoco/OpenLoco',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -47,6 +49,7 @@ OpenLoco_factory.addStep(steps.Git(
     alwaysUseLatest=True,
     haltOnFailure=True
 ))
+
 OpenLoco_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenLoco"),
@@ -54,6 +57,7 @@ OpenLoco_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest OpenLoco Tag",
     haltOnFailure=True
 ))
+
 OpenLoco_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('OpenLoco_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenLoco"),
@@ -69,6 +73,13 @@ OpenLoco_factory.addStep(steps.SetPropertyFromCommand(
     haltOnFailure=True,
     doStepIf=OpenLoco_guard.should_build,
     extract_fn=make_dmg_extractor("OpenLoco_dmg_path"),
+))
+
+OpenLoco_factory.addStep(RequireProperty(
+    "OpenLoco_dmg_path",
+    name="Verify Build Produced a DMG",
+    doStepIf=OpenLoco_guard.should_build,
+    haltOnFailure=True,
 ))
 
 OpenLoco_factory.addStep(steps.ShellCommand(
@@ -98,7 +109,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="OpenLoco-releases",
+        name="OpenLoco-changes",
         change_filter=util.ChangeFilter(project='OpenLoco'),
         treeStableTimer=60,
         builderNames=["OpenLoco-builder"]),

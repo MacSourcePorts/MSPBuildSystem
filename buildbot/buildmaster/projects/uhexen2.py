@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 uhexen2_factory = util.BuildFactory()
+
 uhexen2_factory.addStep(steps.Git(
     repourl='https://github.com/sezero/uhexen2',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ uhexen2_factory.addStep(steps.Git(
     name="Git Pull Latest uhexen2 Code",
     haltOnFailure=True
 ))
+
 uhexen2_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/uhexen2/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/uhexen2"),

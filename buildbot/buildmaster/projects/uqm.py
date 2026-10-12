@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 uqm_factory = util.BuildFactory()
+
 uqm_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/uqm',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ uqm_factory.addStep(steps.Git(
     name="Git Pull Latest uqm Code",
     haltOnFailure=True
 ))
+
 uqm_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/uqm/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/uqm"),

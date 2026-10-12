@@ -9,8 +9,6 @@ project_list = [
     util.Project(name="daikatana",description="daikatana source port project")
 ]
 
-# TODO: migrate this to GitAuth before exposing any Buildbot stuff to the web.
-
 secretsPath = os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/buildmaster/secrets")
 
 def load_secret(name):
@@ -19,7 +17,6 @@ def load_secret(name):
 
 github_token = load_secret("githubToken")
 repo_url = load_secret("daikatanaUrl")
-
 repoUrl = f"https://{github_token}@{repo_url}"
 
 change_source_list = [
@@ -33,6 +30,7 @@ change_source_list = [
 ]
 
 daikatana_factory = util.BuildFactory()
+
 daikatana_factory.addStep(steps.Git(
     repourl=repoUrl,
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -41,6 +39,7 @@ daikatana_factory.addStep(steps.Git(
     name="Git Pull Latest daikatana Code",
     haltOnFailure=True
 ))
+
 daikatana_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/daikatana-1.3/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/daikatana-1.3"),

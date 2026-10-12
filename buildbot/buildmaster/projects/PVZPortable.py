@@ -11,6 +11,7 @@ from projects.version_guard import (
     and_steps,
     make_dmg_extractor,
     is_publish_machine,
+    RequireProperty,
 )
 
 PvZPortable_guard = VersionGuard(
@@ -38,6 +39,7 @@ change_source_list = [
 ]
 
 PvZPortable_factory = util.BuildFactory()
+
 PvZPortable_factory.addStep(steps.Git(
     repourl='https://github.com/wszqkzqk/PvZ-Portable',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -46,6 +48,7 @@ PvZPortable_factory.addStep(steps.Git(
     name="Git Pull Latest PvZ-Portable Code",
     haltOnFailure=True
 ))
+
 PvZPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/PvZ-Portable"),
@@ -53,6 +56,7 @@ PvZPortable_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest PvZ-Portable Tag",
     haltOnFailure=True
 ))
+
 PvZPortable_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('PvZPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/PvZ-Portable"),
@@ -60,6 +64,7 @@ PvZPortable_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=PvZPortable_guard.should_build
 ))
+
 PvZPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable/macsourceports_universal2.sh"), "notarize", util.Property('PvZPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/PvZ-Portable"),
@@ -67,6 +72,13 @@ PvZPortable_factory.addStep(steps.SetPropertyFromCommand(
     haltOnFailure=True,
     doStepIf=PvZPortable_guard.should_build,
     extract_fn=make_dmg_extractor("PvZPortable_dmg_path"),
+))
+
+PvZPortable_factory.addStep(RequireProperty(
+    "PvZPortable_dmg_path",
+    name="Verify Build Produced a DMG",
+    doStepIf=PvZPortable_guard.should_build,
+    haltOnFailure=True,
 ))
 
 PvZPortable_factory.addStep(steps.ShellCommand(
@@ -96,7 +108,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="PvZ-Portable-releases",
+        name="PvZ-Portable-changes",
         change_filter=util.ChangeFilter(project='PvZ-Portable'),
         treeStableTimer=60,
         builderNames=["PvZ-Portable-builder"]),

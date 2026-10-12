@@ -21,6 +21,7 @@ change_source_list = [
 ]
 
 OpenEnroth_factory = util.BuildFactory()
+
 OpenEnroth_factory.addStep(steps.Git(
     repourl='https://github.com/OpenEnroth/OpenEnroth',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -30,6 +31,7 @@ OpenEnroth_factory.addStep(steps.Git(
     name="Git Pull Latest OpenEnroth Code",
     haltOnFailure=True
 ))
+
 OpenEnroth_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenEnroth/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenEnroth"),

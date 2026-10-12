@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 defendguin_factory = util.BuildFactory()
+
 defendguin_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/defendguin',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ defendguin_factory.addStep(steps.Git(
     name="Git Pull Latest defendguin Code",
     haltOnFailure=True
 ))
+
 defendguin_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/defendguin/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/defendguin"),

@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 entombed_factory = util.BuildFactory()
+
 entombed_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/entombed',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ entombed_factory.addStep(steps.Git(
     name="Git Pull Latest entombed Code",
     haltOnFailure=True
 ))
+
 entombed_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/entombed/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/entombed"),

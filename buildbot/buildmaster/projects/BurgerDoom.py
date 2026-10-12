@@ -28,6 +28,7 @@ BurgerDoom_factory.addStep(steps.Git(
     name="Git Pull Latest BurgerDoom Code",
     haltOnFailure=True
 ))
+
 BurgerDoom_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/BurgerDoom"),
@@ -35,12 +36,14 @@ BurgerDoom_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest BurgerDoom Tag",
     haltOnFailure=True
 ))
+
 # BurgerDoom_factory.addStep(steps.ShellCommand(
 #     command=["git", "checkout", util.Property('BurgerDoom_latest_tag')],
 #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/BurgerDoom"),
 #     name="Checkout Latest Tag",
 #     haltOnFailure=True
 # ))
+
 BurgerDoom_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/BurgerDoom/macsourceports_universal2.sh"), "notarize", "1.1.0"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/BurgerDoom"),
@@ -54,7 +57,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="BurgerDoom-releases",
+        name="BurgerDoom-changes",
         change_filter=util.ChangeFilter(project='BurgerDoom'),
         treeStableTimer=60,
         builderNames=["BurgerDoom-builder"]),

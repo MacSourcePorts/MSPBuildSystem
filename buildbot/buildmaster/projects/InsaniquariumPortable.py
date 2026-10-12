@@ -11,6 +11,7 @@ from projects.version_guard import (
     and_steps,
     make_dmg_extractor,
     is_publish_machine,
+    RequireProperty,
 )
 
 InsaniquariumPortable_guard = VersionGuard(
@@ -45,6 +46,7 @@ change_source_list = [
 ]
 
 InsaniquariumPortable_factory = util.BuildFactory()
+
 InsaniquariumPortable_factory.addStep(steps.Git(
     repourl='https://github.com/kyle-sylvestre/PvZ-Portable',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -54,12 +56,14 @@ InsaniquariumPortable_factory.addStep(steps.Git(
     name="Git Pull Latest Insaniquarium-Portable Code",
     haltOnFailure=True
 ))
+
 InsaniquariumPortable_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Insaniquarium-Portable/scripts/create_flat_directory.sh")],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Insaniquarium-Portable"),
     name="Run Flat Directory Script",
     haltOnFailure=True
 ))
+
 InsaniquariumPortable_factory.addStep(steps.Git(
     repourl='https://github.com/kyle-sylvestre/WinFish',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -68,6 +72,7 @@ InsaniquariumPortable_factory.addStep(steps.Git(
     name="Git Pull Latest WinFish Code",
     haltOnFailure=True
 ))
+
 InsaniquariumPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git ls-remote --tags --sort='-version:refname' https://github.com/kyle-sylvestre/WinFish | awk -F'/' '{print $3}' | head -n 1"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Insaniquarium-Portable/src/WinFish"),
@@ -75,6 +80,7 @@ InsaniquariumPortable_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest Insaniquarium-Portable Tag",
     haltOnFailure=True
 ))
+
 InsaniquariumPortable_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('InsaniquariumPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Insaniquarium-Portable/src/WinFish"),
@@ -82,6 +88,7 @@ InsaniquariumPortable_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=InsaniquariumPortable_guard.should_build
 ))
+
 InsaniquariumPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Insaniquarium-Portable/macsourceports_universal2.sh"), "notarize", util.Property('InsaniquariumPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Insaniquarium-Portable"),
@@ -89,6 +96,13 @@ InsaniquariumPortable_factory.addStep(steps.SetPropertyFromCommand(
     haltOnFailure=True,
     doStepIf=InsaniquariumPortable_guard.should_build,
     extract_fn=make_dmg_extractor("InsaniquariumPortable_dmg_path"),
+))
+
+InsaniquariumPortable_factory.addStep(RequireProperty(
+    "InsaniquariumPortable_dmg_path",
+    name="Verify Build Produced a DMG",
+    doStepIf=InsaniquariumPortable_guard.should_build,
+    haltOnFailure=True,
 ))
 
 InsaniquariumPortable_factory.addStep(steps.ShellCommand(
@@ -118,7 +132,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="Insaniquarium-Portable-releases",
+        name="Insaniquarium-Portable-changes",
         change_filter=util.ChangeFilter(project='Insaniquarium-Portable'),
         treeStableTimer=60,
         builderNames=["Insaniquarium-Portable-builder"]),

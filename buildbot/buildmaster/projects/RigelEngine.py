@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 RigelEngine_factory = util.BuildFactory()
+
 RigelEngine_factory.addStep(steps.Git(
     repourl='https://github.com/lethal-guitar/RigelEngine',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +30,7 @@ RigelEngine_factory.addStep(steps.Git(
     name="Git Pull Latest RigelEngine Code",
     haltOnFailure=True
 ))
+
 RigelEngine_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/RigelEngine/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/RigelEngine"),

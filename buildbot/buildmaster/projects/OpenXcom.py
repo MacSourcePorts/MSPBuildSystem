@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 OpenXcom_factory = util.BuildFactory()
+
 OpenXcom_factory.addStep(steps.Git(
     repourl='https://github.com/OpenXcom/OpenXcom',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ OpenXcom_factory.addStep(steps.Git(
     name="Git Pull Latest OpenXcom Code",
     haltOnFailure=True
 ))
+
 OpenXcom_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenXcom/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenXcom"),

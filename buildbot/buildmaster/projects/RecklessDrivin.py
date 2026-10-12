@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 RecklessDrivin_factory = util.BuildFactory()
+
 RecklessDrivin_factory.addStep(steps.Git(
     repourl='https://github.com/DarrCoh/reckless-drivin-sdl',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ RecklessDrivin_factory.addStep(steps.Git(
     name="Git Pull Latest RecklessDrivin Code",
     haltOnFailure=True
 ))
+
 RecklessDrivin_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/reckless-drivin-sdl"),
@@ -35,12 +37,14 @@ RecklessDrivin_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest RecklessDrivin Tag",
     haltOnFailure=True
 ))
+
 RecklessDrivin_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('RecklessDrivin_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/reckless-drivin-sdl"),
     name="Checkout Latest Tag",
     haltOnFailure=True
 ))
+
 RecklessDrivin_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/reckless-drivin-sdl/macsourceports_universal2.sh"), "notarize", util.Property('RecklessDrivin_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/reckless-drivin-sdl"),
@@ -54,7 +58,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="RecklessDrivin-releases",
+        name="RecklessDrivin-changes",
         change_filter=util.ChangeFilter(project='RecklessDrivin'),
         treeStableTimer=60,
         builderNames=["RecklessDrivin-builder"]),

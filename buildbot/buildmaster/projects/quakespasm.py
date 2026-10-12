@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 quakespasm_factory = util.BuildFactory()
+
 quakespasm_factory.addStep(steps.Git(
     repourl='https://github.com/sezero/quakespasm',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ quakespasm_factory.addStep(steps.Git(
     name="Git Pull Latest quakespasm Code",
     haltOnFailure=True
 ))
+
 # quakespasm_factory.addStep(steps.SetPropertyFromCommand(
 #     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
 #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/quakespasm"),
@@ -35,12 +37,14 @@ quakespasm_factory.addStep(steps.Git(
 #     name="Fetch Latest quakespasm Tag",
 #     haltOnFailure=True
 # ))
+
 # quakespasm_factory.addStep(steps.ShellCommand(
 #     command=["git", "checkout", util.Property('quakespasm_latest_tag')],
 #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/quakespasm"),
 #     name="Checkout Latest Tag",
 #     haltOnFailure=True
 # ))
+
 quakespasm_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/quakespasm/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/quakespasm"),

@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 vkQuake_factory = util.BuildFactory()
+
 vkQuake_factory.addStep(steps.Git(
     repourl='https://github.com/Novum/vkQuake',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ vkQuake_factory.addStep(steps.Git(
     name="Git Pull Latest vkQuake Code",
     haltOnFailure=True
 ))
+
 vkQuake_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/vkQuake"),
@@ -35,12 +37,14 @@ vkQuake_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest vkQuake Tag",
     haltOnFailure=True
 ))
+
 vkQuake_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('vkQuake_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/vkQuake"),
     name="Checkout Latest Tag",
     haltOnFailure=True
 ))
+
 vkQuake_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/vkQuake/macsourceports_universal2.sh"), "notarize", util.Property('vkQuake_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/vkQuake"),
@@ -54,7 +58,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="vkQuake-releases",
+        name="vkQuake-changes",
         change_filter=util.ChangeFilter(project='vkQuake'),
         treeStableTimer=60,
         builderNames=["vkQuake-builder"]),

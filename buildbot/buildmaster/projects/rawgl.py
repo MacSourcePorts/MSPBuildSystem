@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 rawgl_factory = util.BuildFactory()
+
 rawgl_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/rawgl',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ rawgl_factory.addStep(steps.Git(
     name="Git Pull Latest rawgl Code",
     haltOnFailure=True
 ))
+
 rawgl_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/rawgl"),
@@ -35,12 +37,14 @@ rawgl_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest rawgl Tag",
     haltOnFailure=True
 ))
+
 # rawgl_factory.addStep(steps.ShellCommand(
 #     command=["git", "checkout", util.Property('rawgl_latest_tag')],
 #     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/rawgl"),
 #     name="Checkout Latest Tag",
 #     haltOnFailure=True
 # ))
+
 rawgl_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/rawgl/macsourceports_universal2.sh"), "notarize", "0.2.1"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/rawgl"),
@@ -54,7 +58,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="rawgl-releases",
+        name="rawgl-changes",
         change_filter=util.ChangeFilter(project='rawgl'),
         treeStableTimer=60,
         builderNames=["rawgl-builder"]),

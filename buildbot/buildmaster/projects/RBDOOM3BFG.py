@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 RBDOOM3BFG_factory = util.BuildFactory()
+
 RBDOOM3BFG_factory.addStep(steps.Git(
     repourl='https://github.com/RobertBeckebans/RBDOOM-3-BFG',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +30,7 @@ RBDOOM3BFG_factory.addStep(steps.Git(
     haltOnFailure=True,
     submodules=True
 ))
+
 RBDOOM3BFG_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/RBDOOM-3-BFG/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/RBDOOM-3-BFG"),

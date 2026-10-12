@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 arcanumce_factory = util.BuildFactory()
+
 arcanumce_factory.addStep(steps.Git(
     repourl='https://github.com/alexbatalov/arcanum-ce',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -42,7 +43,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="arcanumce-releases",
+        name="arcanumce-changes",
         change_filter=util.ChangeFilter(project='arcanumce'),
         treeStableTimer=60,
         builderNames=["arcanumce-builder"]),

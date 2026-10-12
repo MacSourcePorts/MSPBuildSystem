@@ -4,6 +4,25 @@
 
 import os
 from buildbot.plugins import steps, util, changes, schedulers
+from projects.version_guard import (
+    VersionGuard,
+    RecordBuiltTag,
+    scheduler_in,
+    and_steps,
+    make_dmg_extractor,
+    is_publish_machine,
+    RequireProperty,
+)
+
+Doom64EXPlus_guard = VersionGuard(
+    project_name="Doom64EX-Plus",
+    tag_property="Doom64EX-Plus_latest_tag",
+    force_scheduler_names={"Doom64EX-Plus-force"},
+    meta_url="https://www.macsourceports.com/meta.json",
+    meta_stub="doom64ex",
+)
+
+Doom64EXPlus_publish_schedulers = {"Doom64EX-Plus-changes", "Doom64EX-Plus-publish"}
 
 project_list = [ 
     util.Project(name="Doom64EX-Plus",description="Doom64EX-Plus source port project")
@@ -41,12 +60,42 @@ Doom64EXPlus_factory.addStep(steps.ShellCommand(
     name="Checkout Latest Tag",
     haltOnFailure=True
 ))
-Doom64EXPlus_factory.addStep(steps.ShellCommand(
+Doom64EXPlus_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Doom64EX-Plus/macsourceports_universal2.sh"), "notarize", util.Property('Doom64EX-Plus_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Doom64EX-Plus"),
     name="Run Build Script",
-    haltOnFailure=True
+    haltOnFailure=True,
+    doStepIf=Doom64EXPlus_guard.should_build,
+    extract_fn=make_dmg_extractor("Doom64EXPlus_dmg_path"),
 ))
+
+Doom64EXPlus_factory.addStep(RequireProperty(
+    "Doom64EXPlus_dmg_path",
+    name="Verify Build Produced a DMG",
+    doStepIf=Doom64EXPlus_guard.should_build,
+    haltOnFailure=True,
+))
+
+Doom64EXPlus_factory.addStep(steps.ShellCommand(
+    command=[
+        "python3",
+        os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
+        "--project", "Doom64EX-Plus",
+        "--tag", util.Interpolate("Doom64EXPlus_%(prop:Doom64EXPlus_latest_tag)s"),
+        "--version", util.Property('Doom64EXPlus_latest_tag'),
+        "--dmg", util.Property('Doom64EXPlus_dmg_path')
+    ],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Doom64EX-Plus"),
+    name="Publish Release",
+    haltOnFailure=True,
+    doStepIf=and_steps(
+        lambda step: scheduler_in(step, Doom64EXPlus_publish_schedulers),
+        Doom64EXPlus_guard.should_build,
+        lambda step: is_publish_machine(),
+    )
+))
+
+Doom64EXPlus_factory.addStep(RecordBuiltTag(Doom64EXPlus_guard, doStepIf=Doom64EXPlus_guard.should_build))
 
 builder_configs = [
     util.BuilderConfig(name="Doom64EX-Plus-builder", workernames=["worker1"], factory=Doom64EXPlus_factory, project="Doom64EX-Plus")
@@ -60,5 +109,8 @@ scheduler_list = [
         builderNames=["Doom64EX-Plus-builder"]),
     schedulers.ForceScheduler(
         name="Doom64EX-Plus-force",
+        builderNames=["Doom64EX-Plus-builder"]),
+    schedulers.ForceScheduler(
+        name="Doom64EX-Plus-publish",
         builderNames=["Doom64EX-Plus-builder"])
 ]

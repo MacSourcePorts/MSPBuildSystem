@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 madbomber_factory = util.BuildFactory()
+
 madbomber_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/madbomber',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ madbomber_factory.addStep(steps.Git(
     name="Git Pull Latest madbomber Code",
     haltOnFailure=True
 ))
+
 madbomber_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/madbomber/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/madbomber"),

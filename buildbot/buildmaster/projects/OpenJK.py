@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 OpenJK_factory = util.BuildFactory()
+
 OpenJK_factory.addStep(steps.Git(
     repourl='https://github.com/JACoders/OpenJK',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ OpenJK_factory.addStep(steps.Git(
     name="Git Pull Latest OpenJK Code",
     haltOnFailure=True
 ))
+
 OpenJK_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJK/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJK"),

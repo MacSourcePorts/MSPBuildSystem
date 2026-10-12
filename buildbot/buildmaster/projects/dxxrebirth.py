@@ -1,6 +1,6 @@
 # dxx-rebirth
 
-    # Project where we build based the latest code because the latest tag is too old
+# Project where we build based the latest code because the latest tag is too old
 
 import os
 from buildbot.plugins import steps, util, changes, schedulers
@@ -28,6 +28,7 @@ dxxrebirth_factory.addStep(steps.Git(
     name="Git Pull Latest dxx-rebirth Code",
     haltOnFailure=True
 ))
+
 dxxrebirth_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dxx-rebirth/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dxx-rebirth"),

@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 bugsquish_factory = util.BuildFactory()
+
 bugsquish_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/bugsquish',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ bugsquish_factory.addStep(steps.Git(
     name="Git Pull Latest bugsquish Code",
     haltOnFailure=True
 ))
+
 bugsquish_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bugsquish/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bugsquish"),

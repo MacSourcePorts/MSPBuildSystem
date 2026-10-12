@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 texview_factory = util.BuildFactory()
+
 texview_factory.addStep(steps.Git(
     repourl='https://github.com/DanielGibson/texview',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ texview_factory.addStep(steps.Git(
     name="Git Pull Latest texview Code",
     haltOnFailure=True
 ))
+
 texview_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/texview/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/texview"),

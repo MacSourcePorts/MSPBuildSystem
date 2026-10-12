@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 heretic2r_factory = util.BuildFactory()
+
 heretic2r_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/Heretic2R-UNIX',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -58,7 +59,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="heretic2r-releases",
+        name="heretic2r-changes",
         change_filter=util.ChangeFilter(project='heretic2r'),
         treeStableTimer=60,
         builderNames=["heretic2r-builder"]),

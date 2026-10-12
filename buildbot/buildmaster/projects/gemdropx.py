@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 gemdropx_factory = util.BuildFactory()
+
 gemdropx_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/gemdropx',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ gemdropx_factory.addStep(steps.Git(
     name="Git Pull Latest gemdropx Code",
     haltOnFailure=True
 ))
+
 gemdropx_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gemdropx/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gemdropx"),

@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 gardensofkadesh_factory = util.BuildFactory()
+
 gardensofkadesh_factory.addStep(steps.Git(
     repourl='https://gitlab.com/gardens-of-kadesh/gardens-of-kadesh',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ gardensofkadesh_factory.addStep(steps.Git(
     name="Git Pull Latest gardens-of-kadesh Code",
     haltOnFailure=True
 ))
+
 gardensofkadesh_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gardens-of-kadesh/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gardens-of-kadesh"),

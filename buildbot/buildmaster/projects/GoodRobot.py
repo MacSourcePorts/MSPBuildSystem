@@ -28,6 +28,7 @@ GoodRobot_factory.addStep(steps.Git(
     name="Git Pull Latest GoodRobot Code",
     haltOnFailure=True
 ))
+
 GoodRobot_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Good-Robot/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Good-Robot"),

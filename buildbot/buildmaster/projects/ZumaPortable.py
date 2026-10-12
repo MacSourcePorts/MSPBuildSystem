@@ -11,6 +11,7 @@ from projects.version_guard import (
     and_steps,
     make_dmg_extractor,
     is_publish_machine,
+    RequireProperty,
 )
 
 ZumaPortable_guard = VersionGuard(
@@ -18,7 +19,7 @@ ZumaPortable_guard = VersionGuard(
     tag_property="ZumaPortable_latest_tag",
     force_scheduler_names={"Zuma-Portable-force"},
     meta_url="https://www.macsourceports.com/meta.json",
-    meta_stub="Zumaportable",
+    meta_stub="zumaportable",
 )
 
 ZumaPortable_publish_schedulers = {"Zuma-Portable-changes", "Zuma-Portable-publish"}
@@ -45,6 +46,7 @@ change_source_list = [
 ]
 
 ZumaPortable_factory = util.BuildFactory()
+
 ZumaPortable_factory.addStep(steps.Git(
     repourl='https://github.com/kyle-sylvestre/PvZ-Portable',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -54,12 +56,14 @@ ZumaPortable_factory.addStep(steps.Git(
     name="Git Pull Latest Zuma-Portable Code",
     haltOnFailure=True
 ))
+
 ZumaPortable_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable/scripts/create_flat_directory.sh")],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable"),
     name="Run Flat Directory Script",
     haltOnFailure=True
 ))
+
 ZumaPortable_factory.addStep(steps.Git(
     repourl='https://github.com/kyle-sylvestre/CircleShootApp',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -68,6 +72,7 @@ ZumaPortable_factory.addStep(steps.Git(
     name="Git Pull Latest CircleShoot Code",
     haltOnFailure=True
 ))
+
 ZumaPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["bash", "-c", "git rev-list --tags --max-count=1 | xargs git describe --tags"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/Zuma-Portable/src/CircleShoot"),
@@ -75,6 +80,7 @@ ZumaPortable_factory.addStep(steps.SetPropertyFromCommand(
     name="Fetch Latest Zuma-Portable Tag",
     haltOnFailure=True
 ))
+
 ZumaPortable_factory.addStep(steps.ShellCommand(
     command=["git", "checkout", util.Property('ZumaPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable/src/CircleShoot"),
@@ -82,6 +88,7 @@ ZumaPortable_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=ZumaPortable_guard.should_build
 ))
+
 ZumaPortable_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable/macsourceports_universal2.sh"), "notarize", util.Property('ZumaPortable_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Zuma-Portable"),
@@ -89,6 +96,13 @@ ZumaPortable_factory.addStep(steps.SetPropertyFromCommand(
     haltOnFailure=True,
     doStepIf=ZumaPortable_guard.should_build,
     extract_fn=make_dmg_extractor("ZumaPortable_dmg_path"),
+))
+
+ZumaPortable_factory.addStep(RequireProperty(
+    "ZumaPortable_dmg_path",
+    name="Verify Build Produced a DMG",
+    doStepIf=ZumaPortable_guard.should_build,
+    haltOnFailure=True,
 ))
 
 ZumaPortable_factory.addStep(steps.ShellCommand(
@@ -118,7 +132,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="Zuma-Portable-releases",
+        name="Zuma-Portable-changes",
         change_filter=util.ChangeFilter(project='Zuma-Portable', branch='zuma'),
         treeStableTimer=60,
         builderNames=["Zuma-Portable-builder"]),

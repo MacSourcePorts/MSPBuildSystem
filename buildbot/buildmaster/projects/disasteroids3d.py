@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 disasteroids3d_factory = util.BuildFactory()
+
 disasteroids3d_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/disasteroids3d',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -28,6 +29,7 @@ disasteroids3d_factory.addStep(steps.Git(
     name="Git Pull Latest disasteroids3d Code",
     haltOnFailure=True
 ))
+
 disasteroids3d_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/disasteroids3d/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/disasteroids3d"),

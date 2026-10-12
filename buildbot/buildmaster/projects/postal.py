@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 postal_factory = util.BuildFactory()
+
 postal_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/POSTAL-SourceCode',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -29,6 +30,7 @@ postal_factory.addStep(steps.Git(
     name="Git Pull Latest postal Code",
     haltOnFailure=True
 ))
+
 postal_factory.addStep(steps.ShellCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/POSTAL-SourceCode/macsourceports_universal2.sh"), "notarize"],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/POSTAL-SourceCode"),

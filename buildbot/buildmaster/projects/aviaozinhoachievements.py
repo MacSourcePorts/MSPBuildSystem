@@ -20,6 +20,7 @@ change_source_list = [
 ]
 
 aviaozinhoachievements_factory = util.BuildFactory()
+
 aviaozinhoachievements_factory.addStep(steps.Git(
     repourl='https://github.com/MacSourcePorts/aviaozinhoachievements',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
@@ -59,7 +60,7 @@ builder_configs = [
 
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
-        name="aviaozinhoachievements-releases",
+        name="aviaozinhoachievements-changes",
         change_filter=util.ChangeFilter(project='aviaozinhoachievements'),
         treeStableTimer=60,
         builderNames=["aviaozinhoachievements-builder"]),
