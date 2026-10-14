@@ -52,6 +52,7 @@ InsaniquariumPortable_factory.addStep(steps.Git(
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     branch='insaniquarium',
+    alwaysUseLatest=True,
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Insaniquarium-Portable"),
     name="Git Pull Latest Insaniquarium-Portable Code",
     haltOnFailure=True

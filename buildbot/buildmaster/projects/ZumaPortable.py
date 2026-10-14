@@ -52,6 +52,7 @@ ZumaPortable_factory.addStep(steps.Git(
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     branch='zuma',
+    alwaysUseLatest=True,
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Zuma-Portable"),
     name="Git Pull Latest Zuma-Portable Code",
     haltOnFailure=True
@@ -133,7 +134,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="Zuma-Portable-changes",
-        change_filter=util.ChangeFilter(project='Zuma-Portable', branch='zuma'),
+        change_filter=util.ChangeFilter(project='Zuma-Portable'),
         treeStableTimer=60,
         builderNames=["Zuma-Portable-builder"]),
     schedulers.ForceScheduler(
