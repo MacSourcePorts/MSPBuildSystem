@@ -1,5 +1,198 @@
 [
     {
+        "sourcePortStub": "alephone1",
+        "repo": "Aleph-One-Marathon/alephone",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Marathon-*-Mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "alephone2",
+        "repo": "Aleph-One-Marathon/alephone",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Marathon2-*-Mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "alephone3",
+        "repo": "Aleph-One-Marathon/alephone",
+        "builds": [
+            { "buildType": 1, "assetGlob": "MarathonInfinity-*-Mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "ambermoonnet",
+        "repo": "Pyrdacor/Ambermoon.net",
+        "builds": [
+            { "buildType": 3, "assetGlob": "Ambermoon.net-Mac-ARM.zip" },
+            { "buildType": 4, "assetGlob": "Ambermoon.net-Mac.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "billyfrontier",
+        "repo": "jorio/BillyFrontier",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "BillyFrontier-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "bugdom",
+        "repo": "jorio/Bugdom",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Bugdom-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "bugdom2",
+        "repo": "jorio/Bugdom2",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Bugdom2-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "candycrisis",
+        "repo": "jorio/CandyCrisis",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "CandyCrisis-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "cromagrally",
+        "repo": "jorio/CroMagRally",
+        "builds": [
+            { "buildType": 1, "assetGlob": "CroMagRally-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "daggerfallunity",
+        "repo": "Interkarma/daggerfall-unity",
+        "tagRegex": "(?i)^(?!.*-rc)",
+        "builds": [
+            { "buildType": 4, "assetGlob": "dfu_mac_universal-*.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "devilutionx",
+        "repo": "diasurgical/DevilutionX",
+        "builds": [
+            { "buildType": 5, "assetGlob": "devilutionx-macOS-intel-x86.dmg" },
+            { "buildType": 6, "assetGlob": "devilutionx-macOS-10.4-tiger-ppc.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "eternityengine",
+        "repo": "team-eternity/eternity",
+        "builds": [
+            { "buildType": 3, "assetGlob": "ee-*-applesilicon.dmg" },
+            { "buildType": 4, "assetGlob": "ee-*-intel.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "fallout2ce",
+        "repo": "alexbatalov/fallout2-ce",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "fallout2-ce-macos.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "falloutce",
+        "repo": "alexbatalov/fallout1-ce",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "fallout-ce-macos.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "fs2open",
+        "repo": "scp-fs2open/fs2open.github.com",
+        "tagRegex": "^release_\\d+_\\d+_\\d+$",
+        "versionRegex": "^release_(\\d+)_(\\d+)_(\\d+)$",
+        "versionTemplate": "\\1.\\2.\\3",
+        "builds": [
+            { "buildType": 3, "assetGlob": "fs2_open_*-builds-Mac-arm64.tar.gz" },
+            { "buildType": 4, "assetGlob": "fs2_open_*-builds-Mac-x86_64.tar.gz" }
+        ]
+    },
+    {
+        "sourcePortStub": "gzdoom",
+        "repo": "ZDoom/gzdoom",
+        "builds": [
+            { "buildType": 1, "assetGlob": "gzdoom-*-macos.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "iortcwmp",
+        "repo": "iortcw/iortcw",
+        "builds": [
+            { "buildType": 2, "assetGlob": "iortcw-*-mac-ub.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "iortcwsp",
+        "repo": "iortcw/iortcw",
+        "builds": [
+            { "buildType": 2, "assetGlob": "iortcw-*-mac-ub.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "jazz2-native",
+        "repo": "deathkiller/jazz2",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Jazz2_*_MacOS.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "lab3dsdl",
+        "repo": "sacredbanana/lab3d-sdl",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Kens-Labyrinth-macOS-Universal.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "mightymike",
+        "repo": "jorio/MightyMike",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "MightyMike-*-mac.dmg" },
+            { "buildType": 2, "assetGlob": "MightyMike-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "moonchildfe",
+        "repo": "MorsGames/MoonChildFE",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "MoonChildFE-macOSUniversal.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "nanosaur",
+        "repo": "jorio/Nanosaur",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Nanosaur-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "nanosaur2",
+        "repo": "jorio/Nanosaur2",
+        "versionRegex": "^v?(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Nanosaur2-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "nolf2",
+        "repo": "MatzeLoCal/NOLF2",
+        "builds": [
+            { "buildType": 3, "assetGlob": "NOLF2Launcher.zip" }
+        ]
+    },
+    {
         "sourcePortStub": "odamex",
         "repo": "odamex/odamex",
         "builds": [
@@ -7,11 +200,17 @@
         ]
     },
     {
-        "sourcePortStub": "vcmi",
-        "repo": "vcmi/vcmi",
+        "sourcePortStub": "oniarm64",
+        "repo": "andiyar/OniARM64",
         "builds": [
-            { "buildType": 3, "assetGlob": "VCMI-macOS-arm.dmg" },
-            { "buildType": 4, "assetGlob": "VCMI-macOS-intel.dmg" }
+            { "buildType": 3, "assetGlob": "OniARM64.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "openannihilation",
+        "repo": "open-annihilation/open-annihilation",
+        "builds": [
+            { "buildType": 1, "assetGlob": "open-annihilation-*-macos-universal.zip" }
         ]
     },
     {
@@ -24,6 +223,58 @@
         ]
     },
     {
+        "sourcePortStub": "openra",
+        "repo": "OpenRA/OpenRA",
+        "tagRegex": "^release-",
+        "builds": [
+            { "buildType": 1, "assetGlob": "OpenRA-release-*.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "openrct2",
+        "repo": "OpenRCT2/OpenRCT2",
+        "builds": [
+            { "buildType": 1, "assetGlob": "OpenRCT2-v*-macos-universal.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "opensc2k",
+        "repo": "OpenSC2K/OpenSC2K",
+        "builds": [
+            { "buildType": 1, "assetGlob": "OpenSC2K-*-macos-universal.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "opentie",
+        "repo": "elyosh/OpenTIE",
+        "builds": [
+            { "buildType": 3, "assetGlob": "opentie-*-macos-arm64-release.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "openxwa",
+        "repo": "elyosh/OpenXWA",
+        "builds": [
+            { "buildType": 3, "assetGlob": "openxwa-*-macos-arm64-release.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "ottomatic",
+        "repo": "jorio/OttoMatic",
+        "builds": [
+            { "buildType": 1, "assetGlob": "OttoMatic-*-mac.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "psydoom",
+        "repo": "BodbDearg/PsyDoom",
+        "tagRegex": "^releases/",
+        "versionRegex": "^releases/(.*)$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "PsyDoom_*_MacOS_x86_64_Arm64.zip" }
+        ]
+    },
+    {
         "sourcePortStub": "quetoo",
         "repo": "jdolan/quetoo",
         "tagRegex": "^v\\d",
@@ -32,10 +283,48 @@
         ]
     },
     {
-        "sourcePortStub": "openannihilation",
-        "repo": "open-annihilation/open-annihilation",
+        "sourcePortStub": "raze",
+        "repo": "ZDoom/Raze",
         "builds": [
-            { "buildType": 1, "assetGlob": "open-annihilation-*-macos-universal.zip" }
+            { "buildType": 1, "assetGlob": "raze-macos-*.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "reflectionhle",
+        "repo": "ReflectionHLE/ReflectionHLE",
+        "builds": [
+            { "buildType": 1, "assetGlob": "reflectionhle-macos-universal2-*.tar.xz" }
+        ]
+    },
+    {
+        "sourcePortStub": "runelite",
+        "repo": "runelite/launcher",
+        "builds": [
+            { "buildType": 3, "assetGlob": "RuneLite-aarch64.dmg" },
+            { "buildType": 4, "assetGlob": "RuneLite-x64.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "sonicmania",
+        "repo": "Sappharad/Sonic-Mania-Decompilation",
+        "tagRegex": "-mac$",
+        "versionRegex": "^v(.*)-mac$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "RSDKv5.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "spatterlight",
+        "repo": "angstsmurf/spatterlight",
+        "builds": [
+            { "buildType": 1, "assetGlob": "Spatterlight.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "stx",
+        "repo": "supertuxkart/stk-code",
+        "builds": [
+            { "buildType": 1, "assetGlob": "SuperTuxKart-*-mac-signed.zip" }
         ]
     },
     {
@@ -46,11 +335,40 @@
         ]
     },
     {
-        "sourcePortStub": "ambermoonnet",
-        "repo": "Pyrdacor/Ambermoon.net",
+        "sourcePortStub": "unreal",
+        "repo": "OldUnreal/Unreal-testing",
         "builds": [
-            { "buildType": 3, "assetGlob": "Ambermoon.net-Mac-ARM.zip" },
-            { "buildType": 4, "assetGlob": "Ambermoon.net-Mac.zip" }
+            { "buildType": 1, "assetGlob": "OldUnreal-UnrealPatch*-macOS.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "unrealtournament",
+        "repo": "OldUnreal/UnrealTournamentPatches",
+        "tagRegex": "(?i)^(?!.*-rc)",
+        "builds": [
+            { "buildType": 1, "assetGlob": "OldUnreal-UTPatch*-macOS.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "unrealtournament2004",
+        "repo": "OldUnreal/UT2004Patches",
+        "builds": [
+            { "buildType": 1, "assetGlob": "OldUnreal-UT2004Patch*-macOS.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "vcmi",
+        "repo": "vcmi/vcmi",
+        "builds": [
+            { "buildType": 3, "assetGlob": "VCMI-macOS-arm.dmg" },
+            { "buildType": 4, "assetGlob": "VCMI-macOS-intel.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "warzone2100",
+        "repo": "Warzone2100/warzone2100",
+        "builds": [
+            { "buildType": 1, "assetGlob": "warzone2100_macOS_universal.zip" }
         ]
     }
 ]

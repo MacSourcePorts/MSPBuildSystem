@@ -31,6 +31,9 @@ thirdparty.json entry format:
         "tagRegex": "^openmw-\\\\d+\\\\.\\\\d+\\\\.\\\\d+$",   (optional)
         "versionRegex": "^v?(.*)$",                (optional; group 1 = version,
                                                     default is the tag as-is)
+        "versionTemplate": "\\\\1.\\\\2.\\\\3",            (optional, with versionRegex: build the
+                                                    version from several groups, e.g.
+                                                    release_26_0_1 -> 26.0.1)
         "includePrereleases": false,               (optional)
         "builds": [
             { "buildType": 3, "assetGlob": "OpenMW-*-macOS-arm64.dmg" },
@@ -62,6 +65,7 @@ import json
 import re
 import subprocess
 import sys
+import urllib.parse
 from pathlib import Path
 
 from publish_release import (
@@ -128,6 +132,8 @@ def version_from_tag(tag: str, entry: dict) -> str:
     m = re.search(entry["versionRegex"], tag)
     if not m:
         raise ValueError(f"versionRegex {entry['versionRegex']!r} does not match tag {tag!r}")
+    if "versionTemplate" in entry:
+        return m.expand(entry["versionTemplate"])
     return m.group(1)
 
 
@@ -198,7 +204,9 @@ def check_port(entry: dict, ports: list):
             )
             continue
         new_url = matches[0]["browser_download_url"]
-        if target.get("downloadURL") == new_url:
+        # Compare decoded: the API gives ".../download/releases/1.1.1/..." where
+        # the site may have the equivalent ".../download/releases%2F1.1.1/...".
+        if urllib.parse.unquote(target.get("downloadURL") or "") == urllib.parse.unquote(new_url):
             continue
         updates.append((target, port, {
             "downloadURL": new_url,
