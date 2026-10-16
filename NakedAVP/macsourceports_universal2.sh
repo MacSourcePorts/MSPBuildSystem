@@ -20,11 +20,6 @@ else
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
-
-# Tweak until/unless fixed (this file needs to know about SDL.h)
-gsed -i '1 i\#include <SDL3/SDL.h>' src/avp/win95/frontend/avp_menus.c
-
-rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cd ${BUILT_PRODUCTS_DIR}
