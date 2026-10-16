@@ -1,0 +1,56 @@
+[
+    {
+        "sourcePortStub": "odamex",
+        "repo": "odamex/odamex",
+        "builds": [
+            { "buildType": 1, "assetGlob": "odamex-macos-*.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "vcmi",
+        "repo": "vcmi/vcmi",
+        "builds": [
+            { "buildType": 3, "assetGlob": "VCMI-macOS-arm.dmg" },
+            { "buildType": 4, "assetGlob": "VCMI-macOS-intel.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "openmw",
+        "repo": "OpenMW/openmw",
+        "tagRegex": "^openmw-\\d+\\.\\d+\\.\\d+$",
+        "builds": [
+            { "buildType": 3, "assetGlob": "OpenMW-*-macOS-arm64.dmg" },
+            { "buildType": 4, "assetGlob": "OpenMW-*-macOS-x86_64.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "quetoo",
+        "repo": "jdolan/quetoo",
+        "tagRegex": "^v\\d",
+        "builds": [
+            { "buildType": 3, "assetGlob": "quetoo-arm64-apple-darwin.dmg" }
+        ]
+    },
+    {
+        "sourcePortStub": "openannihilation",
+        "repo": "open-annihilation/open-annihilation",
+        "builds": [
+            { "buildType": 1, "assetGlob": "open-annihilation-*-macos-universal.zip" }
+        ]
+    },
+    {
+        "sourcePortStub": "ultimatelemmings",
+        "repo": "ErikVeland/Lemmings",
+        "builds": [
+            { "buildType": 1, "assetRegex": "^UltimateLemmings-[\\d.]+-build\\d+\\.zip$" }
+        ]
+    },
+    {
+        "sourcePortStub": "ambermoonnet",
+        "repo": "Pyrdacor/Ambermoon.net",
+        "builds": [
+            { "buildType": 3, "assetGlob": "Ambermoon.net-Mac-ARM.zip" },
+            { "buildType": 4, "assetGlob": "Ambermoon.net-Mac.zip" }
+        ]
+    }
+]
