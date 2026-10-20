@@ -73,7 +73,6 @@ from publish_release import (
     find_port,
     format_build_date,
     git_commit_and_push,
-    iso_now,
     load_config,
     run,
 )
@@ -293,9 +292,13 @@ def main():
             f"{port['sourcePortStub']} (buildType {target['buildType']}): "
             f"{old_version} -> {new_values['version']}\n    {new_values['downloadURL']}"
         )
-    now = iso_now()
-    for port in touched_ports:
-        port["lastUpdated"] = now
+    # The site builds its RSS feeds (readers, Publer) from lastUpdated, and
+    # entries with identical timestamps cause trouble there -- so give each
+    # updated port its own second, counting back so the last one is "now".
+    now = datetime.datetime.now(datetime.timezone.utc)
+    for i, port in enumerate(touched_ports):
+        stamp = now - datetime.timedelta(seconds=len(touched_ports) - 1 - i)
+        port["lastUpdated"] = stamp.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
     for line in summary_lines:
         prefix = "[no-push] would update " if args.no_push else "[dry-run] would update " if args.dry_run else "Updated "
