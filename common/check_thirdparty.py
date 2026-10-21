@@ -35,15 +35,24 @@ thirdparty.json entry format:
                                                     version from several groups, e.g.
                                                     release_26_0_1 -> 26.0.1)
         "includePrereleases": false,               (optional)
+        "socialCooldownDays": 7,                   (optional: post to social.xml at
+                                                    most once per N days -- see below)
         "builds": [
             { "buildType": 3, "assetGlob": "OpenMW-*-macOS-arm64.dmg" },
             { "buildType": 4, "assetGlob": "OpenMW-*-macOS-x86_64.dmg" }
         ]
     }
 
+Social cooldown: ports that release constantly (e.g. Quetoo) can set
+"socialCooldownDays". The site keys social.xml posts on the port's
+"lastAnnounced" (falling back to "lastUpdated"), so this script always
+updates the download and lastUpdated, but only moves lastAnnounced -- i.e.
+makes a new social post -- once per cooldown. An update held back inside the
+cooldown is announced by the first daily run after the cooldown ends.
+
 Exit codes (so Buildbot can map them): 0 = nothing to do or changes
 pushed, 1 = fatal error, 2 = at least one port had a problem (others may
-still have been updated), 3 = --dry-run / --no-push found updates that
+still have been updated), 3 = --dry-run / --no-push found changes that
 would be made.
 
 Testing modes, least to most real:
@@ -53,7 +62,7 @@ Testing modes, least to most real:
               commits and pushes nothing.
 
 The last line of output is always MSP_THIRDPARTY_REPORT=<json> (mode,
-updates, problems), which the Buildbot step turns into a build property
+updates, social, problems), which the Buildbot step turns into a build property
 so the notification email can list the changes.
 """
 
@@ -221,6 +230,24 @@ def check_port(entry: dict, ports: list):
 
 
 # ---------------------------------------------------------------------------
+# Timestamps
+
+# The daily run's start time drifts by a few seconds, so allow an hour of
+# slack -- otherwise a 7-day cooldown would often slip to 8 days.
+COOLDOWN_GRACE = datetime.timedelta(hours=1)
+
+
+def parse_iso(value):
+    if not value:
+        return None
+    return datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+
+
+def iso_utc(dt: datetime.datetime) -> str:
+    return dt.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
+# ---------------------------------------------------------------------------
 # Main
 
 
@@ -276,6 +303,7 @@ def main():
 
     summary_lines = []
     touched_ports = []
+    previous_updated = {}
     report_updates = []
     for target, port, new_values, old_version in all_updates:
         report_updates.append({
@@ -288,28 +316,84 @@ def main():
         target.update(new_values)
         if port not in touched_ports:
             touched_ports.append(port)
+            previous_updated[port["sourcePortStub"]] = port.get("lastUpdated")
         summary_lines.append(
             f"{port['sourcePortStub']} (buildType {target['buildType']}): "
             f"{old_version} -> {new_values['version']}\n    {new_values['downloadURL']}"
         )
-    # The site builds its RSS feeds (readers, Publer) from lastUpdated, and
-    # entries with identical timestamps cause trouble there -- so give each
-    # updated port its own second, counting back so the last one is "now".
+
     now = datetime.datetime.now(datetime.timezone.utc)
-    for i, port in enumerate(touched_ports):
-        stamp = now - datetime.timedelta(seconds=len(touched_ports) - 1 - i)
-        port["lastUpdated"] = stamp.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    cooldowns = {e["sourcePortStub"]: e["socialCooldownDays"]
+                 for e in manifest if "socialCooldownDays" in e}
+
+    def cooled_down(announced, days):
+        return now - announced >= datetime.timedelta(days=days) - COOLDOWN_GRACE
+
+    # Throttled ports whose latest update was held back on an earlier run
+    # and whose cooldown has now passed: announce them today.
+    released_ports = []
+    for stub, days in cooldowns.items():
+        port = find_port(ports, stub)
+        if port is None or port in touched_ports:
+            continue
+        announced = parse_iso(port.get("lastAnnounced"))
+        updated = parse_iso(port.get("lastUpdated"))
+        if announced and updated and updated > announced and cooled_down(announced, days):
+            released_ports.append(port)
+
+    # The site builds its RSS feeds (readers, Publer) from these timestamps,
+    # and entries with identical timestamps cause trouble there -- so give
+    # each changed port its own second, counting back so the last one is "now".
+    changed_ports = touched_ports + released_ports
+    stamps = {
+        id(port): iso_utc(now - datetime.timedelta(seconds=len(changed_ports) - 1 - i))
+        for i, port in enumerate(changed_ports)
+    }
+    for port in touched_ports:
+        port["lastUpdated"] = stamps[id(port)]
+
+    # social.xml keys each post on lastAnnounced (falling back to
+    # lastUpdated), so a port with "socialCooldownDays" only gets a new post
+    # once per cooldown. An update inside the cooldown keeps the old
+    # lastAnnounced (no new post) and is released by a later run above.
+    social = []
+    for port in touched_ports:
+        stub = port["sourcePortStub"]
+        days = cooldowns.get(stub)
+        if days is None:
+            continue
+        last_posted_str = port.get("lastAnnounced") or previous_updated[stub]
+        last_posted = parse_iso(last_posted_str)
+        if last_posted is None or cooled_down(last_posted, days):
+            port["lastAnnounced"] = port["lastUpdated"]
+            social.append({"stub": stub, "action": "announced"})
+        else:
+            port["lastAnnounced"] = last_posted_str
+            until = (last_posted + datetime.timedelta(days=days)).date().isoformat()
+            social.append({"stub": stub, "action": "held", "until": until})
+    for port in released_ports:
+        port["lastAnnounced"] = stamps[id(port)]
+        social.append({"stub": port["sourcePortStub"], "action": "released"})
 
     for line in summary_lines:
         prefix = "[no-push] would update " if args.no_push else "[dry-run] would update " if args.dry_run else "Updated "
         print(prefix + line)
+    for s in social:
+        if s["action"] == "held":
+            print(f"Social post for {s['stub']} held until {s['until']} (socialCooldownDays)")
+        elif s["action"] == "released":
+            print(f"Social post for {s['stub']}'s held update released")
     for p in all_problems:
         print(f"PROBLEM: {p}")
 
-    if all_updates:
+    if changed_ports:
         new_text = json.dumps(ports, indent=4, ensure_ascii=False) + "\n"
-        stubs = ", ".join(p["sourcePortStub"] for p in touched_ports)
-        commit_message = f"Update third-party builds ({stubs})"
+        parts = []
+        if touched_ports:
+            parts.append("Update third-party builds (" + ", ".join(p["sourcePortStub"] for p in touched_ports) + ")")
+        if released_ports:
+            parts.append("Announce held updates (" + ", ".join(p["sourcePortStub"] for p in released_ports) + ")")
+        commit_message = "; ".join(parts)
         if args.no_push:
             old_text = json_path.read_text(encoding="utf-8")
             print(f"\n[no-push] would commit to {site_repo} on {branch}: {commit_message}\n")
@@ -326,11 +410,11 @@ def main():
 
     mode = "no-push" if args.no_push else "dry-run" if args.dry_run else "published"
     print("MSP_THIRDPARTY_REPORT=" + json.dumps(
-        {"mode": mode, "updates": report_updates, "problems": all_problems}))
+        {"mode": mode, "updates": report_updates, "social": social, "problems": all_problems}))
 
     if all_problems:
         sys.exit(2)
-    if all_updates and preview:
+    if changed_ports and preview:
         sys.exit(3)
 
 

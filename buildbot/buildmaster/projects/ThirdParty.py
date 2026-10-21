@@ -49,6 +49,10 @@ class ThirdPartyCheck(steps.ShellCommand):
             if report['updates']:
                 verb = "updated" if report['mode'] == "published" else "to update"
                 parts.append(f"{len(report['updates'])} {verb}")
+            released = [x for x in report.get('social', []) if x['action'] == 'released']
+            if released:
+                verb = "posted" if report['mode'] == "published" else "to post"
+                parts.append(f"{len(released)} held post(s) {verb}")
             if report['problems']:
                 parts.append(f"{len(report['problems'])} problem(s)")
             self.setProperty('resolved_tag', ", ".join(parts) or "nothing new", 'ThirdPartyCheck')

@@ -278,6 +278,7 @@
         "sourcePortStub": "quetoo",
         "repo": "jdolan/quetoo",
         "tagRegex": "^v\\d",
+        "socialCooldownDays": 7,
         "builds": [
             { "buildType": 3, "assetGlob": "quetoo-arm64-apple-darwin.dmg" }
         ]
@@ -330,6 +331,7 @@
     {
         "sourcePortStub": "ultimatelemmings",
         "repo": "ErikVeland/Lemmings",
+        "socialCooldownDays": 7,
         "builds": [
             { "buildType": 1, "assetRegex": "^UltimateLemmings-[\\d.]+-build\\d+\\.zip$" }
         ]
