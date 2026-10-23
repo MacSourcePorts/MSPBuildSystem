@@ -46,7 +46,7 @@
 
 15. Use pip3 (comes with Python) to install needed things
 
-	`pip3 install meson ninja packaging lit SCons cogapp generate-iconset`
+	`pip3 install meson ninja packaging lit SCons cogapp generate-iconset truststore `
 
 16. Install fmod SDK
 

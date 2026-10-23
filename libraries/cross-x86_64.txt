@@ -19,6 +19,8 @@ c_link_args = ['-arch', 'x86_64']
 cpp_link_args = ['-arch', 'x86_64']
 objc_args = ['-arch', 'x86_64']
 objcpp_args = ['-arch', 'x86_64']
+objc_link_args = ['-arch', 'x86_64']
+objcpp_link_args = ['-arch', 'x86_64']
 
 [host_machine]
 system = 'darwin'
