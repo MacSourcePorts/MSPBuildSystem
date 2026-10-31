@@ -149,8 +149,23 @@
 
 34. **If this is a LIVE build server (i.e., not a testing VM)** run the following
 
-	in `~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/`
-
 ```
     touch ~/.msp_publish_machine
+```
+
+35. Set up the machine config, for the name of the server and the URL
+
+Run this:
+
+```
+    touch ~/.msp_machine_config.json
+```
+
+And add this to it, edited as needed
+
+```
+{
+    "title": "MSP Build Server",
+    "buildbotURL": "http://localhost:8010/"
+}
 ```
