@@ -35,20 +35,17 @@ thirdparty.json entry format:
                                                     version from several groups, e.g.
                                                     release_26_0_1 -> 26.0.1)
         "includePrereleases": false,               (optional)
-        "socialCooldownDays": 7,                   (optional: post to social.xml at
-                                                    most once per N days -- see below)
         "builds": [
             { "buildType": 3, "assetGlob": "OpenMW-*-macOS-arm64.dmg" },
             { "buildType": 4, "assetGlob": "OpenMW-*-macOS-x86_64.dmg" }
         ]
     }
 
-Social cooldown: ports that release constantly (e.g. Quetoo) can set
-"socialCooldownDays". The site keys social.xml posts on the port's
-"lastAnnounced" (falling back to "lastUpdated"), so this script always
-updates the download and lastUpdated, but only moves lastAnnounced -- i.e.
-makes a new social post -- once per cooldown. An update held back inside the
-cooldown is announced by the first daily run after the cooldown ends.
+Social cooldown: ports listed in social_cooldown.json (see
+social_cooldown.py) only get a new social.xml post once per N days. This
+script applies that to the ports it updates, and -- since it runs daily --
+also releases held posts for EVERY port in that list, including our own
+builds published by publish_release.py.
 
 Exit codes (so Buildbot can map them): 0 = nothing to do or changes
 pushed, 1 = fatal error, 2 = at least one port had a problem (others may
@@ -77,6 +74,7 @@ import sys
 import urllib.parse
 from pathlib import Path
 
+from social_cooldown import apply_on_update, iso_utc, load_cooldowns, ports_to_release
 from publish_release import (
     ensure_gh_ready,
     find_port,
@@ -100,6 +98,9 @@ def load_thirdparty_manifest(path: Path) -> list:
         for key in ("sourcePortStub", "repo", "builds"):
             if key not in entry:
                 sys.exit(f"{path}: entry {i} is missing '{key}'")
+        if "socialCooldownDays" in entry:
+            sys.exit(f"{path}: entry {i} ({entry['sourcePortStub']}) has socialCooldownDays -- "
+                     f"that setting now lives in social_cooldown.json")
         for j, b in enumerate(entry["builds"]):
             if "buildType" not in b or ("assetGlob" in b) == ("assetRegex" in b):
                 sys.exit(f"{path}: entry {i} ({entry['sourcePortStub']}) build {j} needs "
@@ -230,24 +231,6 @@ def check_port(entry: dict, ports: list):
 
 
 # ---------------------------------------------------------------------------
-# Timestamps
-
-# The daily run's start time drifts by a few seconds, so allow an hour of
-# slack -- otherwise a 7-day cooldown would often slip to 8 days.
-COOLDOWN_GRACE = datetime.timedelta(hours=1)
-
-
-def parse_iso(value):
-    if not value:
-        return None
-    return datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
-
-
-def iso_utc(dt: datetime.datetime) -> str:
-    return dt.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-
-
-# ---------------------------------------------------------------------------
 # Main
 
 
@@ -323,23 +306,14 @@ def main():
         )
 
     now = datetime.datetime.now(datetime.timezone.utc)
-    cooldowns = {e["sourcePortStub"]: e["socialCooldownDays"]
-                 for e in manifest if "socialCooldownDays" in e}
+    cooldowns = load_cooldowns()
+    if args.only:
+        cooldowns = {stub: days for stub, days in cooldowns.items() if stub in args.only}
 
-    def cooled_down(announced, days):
-        return now - announced >= datetime.timedelta(days=days) - COOLDOWN_GRACE
-
-    # Throttled ports whose latest update was held back on an earlier run
-    # and whose cooldown has now passed: announce them today.
-    released_ports = []
-    for stub, days in cooldowns.items():
-        port = find_port(ports, stub)
-        if port is None or port in touched_ports:
-            continue
-        announced = parse_iso(port.get("lastAnnounced"))
-        updated = parse_iso(port.get("lastUpdated"))
-        if announced and updated and updated > announced and cooled_down(announced, days):
-            released_ports.append(port)
+    # Ports in social_cooldown.json (ours or third-party) whose held post's
+    # cooldown has now passed: announce them today.
+    released_ports, cooldown_problems = ports_to_release(ports, cooldowns, now, exclude=touched_ports)
+    all_problems += cooldown_problems
 
     # The site builds its RSS feeds (readers, Publer) from these timestamps,
     # and entries with identical timestamps cause trouble there -- so give
@@ -352,25 +326,11 @@ def main():
     for port in touched_ports:
         port["lastUpdated"] = stamps[id(port)]
 
-    # social.xml keys each post on lastAnnounced (falling back to
-    # lastUpdated), so a port with "socialCooldownDays" only gets a new post
-    # once per cooldown. An update inside the cooldown keeps the old
-    # lastAnnounced (no new post) and is released by a later run above.
     social = []
     for port in touched_ports:
         stub = port["sourcePortStub"]
-        days = cooldowns.get(stub)
-        if days is None:
-            continue
-        last_posted_str = port.get("lastAnnounced") or previous_updated[stub]
-        last_posted = parse_iso(last_posted_str)
-        if last_posted is None or cooled_down(last_posted, days):
-            port["lastAnnounced"] = port["lastUpdated"]
-            social.append({"stub": stub, "action": "announced"})
-        else:
-            port["lastAnnounced"] = last_posted_str
-            until = (last_posted + datetime.timedelta(days=days)).date().isoformat()
-            social.append({"stub": stub, "action": "held", "until": until})
+        if stub in cooldowns:
+            social.append(apply_on_update(port, previous_updated[stub], cooldowns[stub], now))
     for port in released_ports:
         port["lastAnnounced"] = stamps[id(port)]
         social.append({"stub": port["sourcePortStub"], "action": "released"})
@@ -380,7 +340,7 @@ def main():
         print(prefix + line)
     for s in social:
         if s["action"] == "held":
-            print(f"Social post for {s['stub']} held until {s['until']} (socialCooldownDays)")
+            print(f"Social post for {s['stub']} held until {s['until']} (social_cooldown.json)")
         elif s["action"] == "released":
             print(f"Social post for {s['stub']}'s held update released")
     for p in all_problems:

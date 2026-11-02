@@ -42,6 +42,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from social_cooldown import apply_on_update, load_cooldowns
+
 
 # ---------------------------------------------------------------------------
 # Config
@@ -331,9 +333,21 @@ def main():
     create_or_update_release(args.repo, args.tag, title, args.notes, dmg_paths, args.dry_run)
 
     summary_lines = []
+    previous_updated = {}
     for stub, build_type, url, version, build_date in updates:
+        previous_updated.setdefault(stub, find_port(ports, stub).get("lastUpdated"))
         old_version = apply_update(ports, stub, build_type, url, version, build_date)
         summary_lines.append(f"{stub} (buildType {build_type}): {old_version} -> {version}")
+
+    # Ports in social_cooldown.json only get a new social.xml post once per
+    # cooldown; a held post is released later by the daily ThirdParty job.
+    cooldowns = load_cooldowns()
+    now = datetime.datetime.now(datetime.timezone.utc)
+    for stub, previous in previous_updated.items():
+        if stub in cooldowns:
+            social = apply_on_update(find_port(ports, stub), previous, cooldowns[stub], now)
+            if social["action"] == "held":
+                summary_lines.append(f"{stub}: social post held until {social['until']} (social_cooldown.json)")
 
     new_text = json.dumps(ports, indent=4, ensure_ascii=False) + "\n"
 

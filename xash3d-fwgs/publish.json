@@ -1,7 +1,7 @@
 [
     {
         "filenameGlob": "Xash3D-FWGS-*.dmg",
-        "sourcePortStub": "xash3D-fwg",
+        "sourcePortStub": "xash3d-fwgs",
         "buildType": 1
     }
 ]

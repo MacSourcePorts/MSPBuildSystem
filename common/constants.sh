@@ -22,4 +22,12 @@ export X86_64_LIBS_FOLDER="libs-x86_64"
 
 export DATE_TIMESTAMP="$(date +'%Y-%m-%d')"
 
+# Latest-code builds: Buildbot passes the build's date (YYYYMMDD) so the
+# version -- and with it the DMG name and the Info.plist version keys --
+# becomes e.g. 0.20-20261030. Unset for everything else.
+if [ -n "${MSP_VERSION_DATE}" ]; then
+	export APP_VERSION="${APP_VERSION}-${MSP_VERSION_DATE}"
+	echo "Dated version: ${APP_VERSION}"
+fi
+
 set -e
