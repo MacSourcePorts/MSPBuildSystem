@@ -14,7 +14,7 @@ export MINIMUM_SYSTEM_VERSION="10.7"
 cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
-	export APP_VERSION="${2/v/}"
+	export APP_VERSION="${2/v./}"
 	echo "Setting version to: $APP_VERSION"
 else
 	echo "Leaving version at : $APP_VERSION"
@@ -27,6 +27,7 @@ mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 mkdir -p ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 cd ${BUILT_PRODUCTS_DIR}
 cmake \
+-DGIT_EXECUTABLE=OFF \
 -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 \
 ..
