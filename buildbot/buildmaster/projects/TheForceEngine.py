@@ -57,16 +57,16 @@ TheForceEngine_factory.addStep(steps.SetPropertyFromCommand(
     haltOnFailure=True
 ))
 
-# TheForceEngine_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('TheForceEngine_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/TheForceEngine"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True,
-#     doStepIf=TheForceEngine_guard.should_build
-# ))
+TheForceEngine_factory.addStep(steps.ShellCommand(
+    command=["git", "checkout", util.Property('TheForceEngine_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/TheForceEngine"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True,
+    doStepIf=TheForceEngine_guard.should_build
+))
 
 TheForceEngine_factory.addStep(steps.SetPropertyFromCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/TheForceEngine/macsourceports_universal2.sh"), "notarize", "1.22.420"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/TheForceEngine/macsourceports_universal2.sh"), "notarize", util.Property('TheForceEngine_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/TheForceEngine"),
     name="Run Build Script",
     haltOnFailure=True,
