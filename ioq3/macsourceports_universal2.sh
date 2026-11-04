@@ -7,13 +7,16 @@ export ICONSFILENAME="ioquake3"
 export EXECUTABLE_NAME="ioquake3"
 export PKGINFO="APPLIOQ3"
 
+# ioq3 dropped its Makefile; the version now lives in cmake/identity.cmake.
+# Set before constants.sh so a dated build (MSP_VERSION_DATE) dates it.
+export APP_VERSION=`sed -n 's/^set(PROJECT_VERSION \(.*\))$/\1/p' ../../ioq3/cmake/identity.cmake`
+
 # constants
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.9"
 
 cd ../../${PROJECT_NAME}
 
-export APP_VERSION=`grep '^VERSION=' Makefile | sed -e 's/.*=\(.*\)/\1/'`
 export RANLIB=/usr/bin/ranlib
 
 # ioq3 has everything scripted out so we just need to delete the last build
@@ -36,6 +39,8 @@ cp -R build/Release/"${WRAPPER_NAME}" "${BUILT_PRODUCTS_DIR}"
 cp "../MSPBuildSystem/ioq3/ioquake3.icns" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 gsed -i 's|org.ioquake.ioquake3|com.macsourceports.ioquake3|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 gsed -i 's|quake3_flat|ioquake3|' "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
+# ioq3's CMake sets these to e.g. 1.36_g52088b9e; use ours so dated builds show the date
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${APP_VERSION}" -c "Set :CFBundleVersion ${APP_VERSION}" "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Info.plist"
 
 export ENTITLEMENTS_FILE="misc/xcode/ioquake3/ioquake3.entitlements"
 
