@@ -48,7 +48,7 @@ mv ${BUILT_PRODUCTS_DIR}/Release/DOOM64EXPlus.app "${BUILT_PRODUCTS_DIR}/${WRAPP
 
 "../MSPBuildSystem/common/copy_dependencies.sh" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

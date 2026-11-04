@@ -51,7 +51,7 @@ cp ../MSPBuildSystem/systemshock/windows.sf2 ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED
 cp -a shaders/. ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/shaders
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

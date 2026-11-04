@@ -41,7 +41,7 @@ export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 export ICONS="${ICONSFILENAME}.icns"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
@@ -69,7 +69,7 @@ export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
 export ICONS="${ICONSFILENAME}.icns"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}

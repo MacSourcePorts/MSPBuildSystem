@@ -67,7 +67,7 @@ mv src/Bin/OpenEnroth/${WRAPPER_NAME} .
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}

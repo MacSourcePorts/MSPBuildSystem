@@ -51,7 +51,7 @@ install_name_tool -change ../../bin/release-arm64/dlls/minizip.dylib @executable
 cd ../..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 # create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}" ]; then

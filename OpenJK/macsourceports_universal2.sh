@@ -93,7 +93,7 @@ fi
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
@@ -172,7 +172,7 @@ fi
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create
@@ -249,7 +249,7 @@ fi
 
 # create the app bundle
 # since the one reference in the executable is covered we can skip lipo and dylibbundler in this script
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # lipo the executable and libs
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}" -create

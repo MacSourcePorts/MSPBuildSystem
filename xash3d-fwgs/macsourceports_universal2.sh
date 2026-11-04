@@ -259,7 +259,7 @@ cp -a dlls/* ../../${PROJECT_NAME}/${X86_64_BUILD_FOLDER}/install/dlls
 # Step 3: Build the Universal 2 bundle
 cd ../../${PROJECT_NAME}
 
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 echo install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 install_name_tool -add_rpath @executable_path/. "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"

@@ -70,7 +70,7 @@ mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 
 # create any app-specific directories

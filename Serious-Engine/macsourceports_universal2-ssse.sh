@@ -37,7 +37,7 @@ cp Debug/* ${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 cp /usr/local/lib/libvorbis.0.4.9.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libvorbis.dylib"
 cp /usr/local/lib/libvorbisfile.3.3.8.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libvorbisfile.dylib"

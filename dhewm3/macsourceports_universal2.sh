@@ -30,7 +30,7 @@ cmake --build . --parallel $NCPU
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" ]; then

@@ -87,7 +87,7 @@ cp "${ARM64_BUILD_FOLDER}/.install/renderer-vk_arm64.dylib" ${ARM64_BUILD_FOLDER
 mkdir ${BUILT_PRODUCTS_DIR}
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 mkdir -p ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}

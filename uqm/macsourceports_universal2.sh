@@ -45,7 +45,7 @@ mv "${WRAPPER_NAME}" ${ARM64_BUILD_FOLDER}
 
 # create the app bundle
 export BUNDLE_ID="com.macsourceports.uqm"
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 cd ${BUILT_PRODUCTS_DIR}
 mkdir -p "${FRAMEWORKS_FOLDER_PATH}"

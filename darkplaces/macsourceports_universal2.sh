@@ -37,7 +37,7 @@ mkdir -p ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 mv ${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 cd ${BUILT_PRODUCTS_DIR}
 install_name_tool -add_rpath @executable_path/../Frameworks/. "${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"

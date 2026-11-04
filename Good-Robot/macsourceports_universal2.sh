@@ -44,7 +44,7 @@ cp ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
 
 cd ..
 
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

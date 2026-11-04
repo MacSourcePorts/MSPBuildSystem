@@ -33,7 +33,7 @@ mv package/${PRODUCT_NAME}.app ${BUILT_PRODUCTS_DIR}
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

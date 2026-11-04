@@ -47,7 +47,7 @@ cp "Maelstrom_Sounds" ${BUILT_PRODUCTS_DIR}/"${UNLOCALIZED_RESOURCES_FOLDER_PATH
 cp "Maelstrom_Sprites" ${BUILT_PRODUCTS_DIR}/"${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # sign and notarize (with entitlements)
 export ENTITLEMENTS_FILE="Maelstrom.entitlements"

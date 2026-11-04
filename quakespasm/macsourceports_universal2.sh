@@ -67,7 +67,7 @@ xcodebuild \
 mv ${X86_64_BUILD_FOLDER}/Release/QuakeSpasm-SDL2-x64.app "${X86_64_BUILD_FOLDER}/${WRAPPER_NAME}"
 mv ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/QuakeSpasm-SDL2-x64 ${X86_64_BUILD_FOLDER}/"${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 install_name_tool -change @executable_path/libFLAC.dylib @rpath/libFLAC.dylib ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"
 install_name_tool -change @executable_path/libopus.dylib @rpath/libopus.dylib ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME}"

@@ -70,7 +70,7 @@ cp ja2-launcher "${EXECUTABLE_FOLDER_PATH}"
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 lipo ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ja2 ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}/ja2 -output "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/ja2" -create
 

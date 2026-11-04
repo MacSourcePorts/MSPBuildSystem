@@ -64,7 +64,7 @@ cp code/client/cgame/cgame.dylib "${EXECUTABLE_FOLDER_PATH}"
 cp code/server/fgame/game.dylib "${EXECUTABLE_FOLDER_PATH}"
 cd ..
 
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}

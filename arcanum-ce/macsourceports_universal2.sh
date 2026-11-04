@@ -37,7 +37,7 @@ mv "${EXECUTABLE_FOLDER_PATH}/Arcanum Community Edition" ${EXECUTABLE_FOLDER_PAT
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

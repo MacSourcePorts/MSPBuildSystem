@@ -49,7 +49,7 @@ echo mv ${BUILT_PRODUCTS_DIR}/Default/Homeworld.app "${BUILT_PRODUCTS_DIR}/${WRA
 mv ${BUILT_PRODUCTS_DIR}/Default/Homeworld.app "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"

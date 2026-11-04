@@ -39,7 +39,7 @@ cp ../extras/macosLauncher/rttr.terminal ${EXECUTABLE_FOLDER_PATH}
 cd ..
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
 # copy over any resources
 cp extras/macosLauncher/rttr.terminal ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}

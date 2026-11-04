@@ -57,7 +57,7 @@ cp ${ARM64_BUILD_FOLDER}/out/Release/jk2mvmenu_arm64.dylib ${ARM64_BUILD_FOLDER}
 mv ${ARM64_BUILD_FOLDER}/out/Release/jk2mvmp.app ${ARM64_BUILD_FOLDER}
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}

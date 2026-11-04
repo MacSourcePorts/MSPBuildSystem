@@ -74,7 +74,7 @@ export EXTRA_INFO_PLIST_ENTRIES="
     </dict>"
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 mkdir -p "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"
 lipo ${X86_64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libdxvk_d3d9.dylib ${ARM64_BUILD_FOLDER}/${FRAMEWORKS_FOLDER_PATH}/libdxvk_d3d9.dylib -output "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/libdxvk_d3d9.dylib" -create
 cp $VULKAN_SDK/lib/libvulkan.1.dylib "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}"

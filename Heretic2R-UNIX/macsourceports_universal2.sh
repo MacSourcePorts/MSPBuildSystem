@@ -34,7 +34,7 @@ mv build/release/* ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 rm -rd build/release
 
 # create the app bundle
-"../MSPBuildSystem/common/build_app_bundle.sh" "skiplibs"
+"../MSPBuildSystem/common/build_app_bundle.sh"
 
 # create any app-specific directories
 if [ ! -d "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/base" ]; then
