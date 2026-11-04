@@ -193,6 +193,13 @@
         ]
     },
     {
+        "sourcePortStub": "nolf1",
+        "repo": "MatzeLoCal/NOLF1",
+        "builds": [
+            { "buildType": 1, "assetGlob": "NOLF1.zip" }
+        ]
+    },
+    {
         "sourcePortStub": "odamex",
         "repo": "odamex/odamex",
         "builds": [
