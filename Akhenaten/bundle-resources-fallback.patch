@@ -1,0 +1,30 @@
+diff --git a/src/content/dir.cpp b/src/content/dir.cpp
+index e71b30112..dbc12786b 100644
+--- a/src/content/dir.cpp
++++ b/src/content/dir.cpp
+@@ -241,6 +241,25 @@ vfs::path vfs::path::resolve() {
+         return std::filesystem::absolute(from_pwd.c_str()).string().c_str();
+     }
+ 
++#if defined(__APPLE__)
++    // Fall back to files shipped inside the app bundle (SDL_GetBasePath() is
++    // Contents/Resources/ for a .app), e.g. the engine data packs in Resources/data/.
++    static const std::string bundle_base = [] {
++        std::string base;
++        if (char *p = SDL_GetBasePath()) {
++            base = p;
++            SDL_free(p);
++        }
++        return base;
++    }();
++    if (!bundle_base.empty()) {
++        const std::string from_bundle = bundle_base + filepath;
++        if (std::filesystem::exists(from_bundle)) {
++            return from_bundle.c_str();
++        }
++    }
++#endif
++
+     // Not found anywhere (new file) — return game-dir path so writes go to the right place.
+     return from_content;
+ #else

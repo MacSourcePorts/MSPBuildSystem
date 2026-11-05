@@ -28,6 +28,12 @@ gsed -i "s|v1.3.1|v1.3.2|" CMakeLists.txt
 # Let the x86_64 pass hand meson a cross file so libopenh264.a isn't arm64-only.
 gsed -i 's|--backend=${_oh_backend}$|--backend=${_oh_backend} ${OPENH264_MESON_EXTRA_ARGS}|' cmake/BuildOpenH264.cmake
 
+# Let the game find its engine data (neucha.ttf + the *_pack.sgx files) in Contents/Resources/data
+# when they aren't in the user's Pharaoh Data/ folder. Skip if the patch is already applied.
+if ! git apply -R --check "${CROSS_FILE_DIR}/bundle-resources-fallback.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/bundle-resources-fallback.patch"
+fi
+
 # Akhenaten builds its bundled SDL2/SDL2_mixer/freetype/harfbuzz/zlib in sub-builds, and a list-expansion bug
 # in its CMakeLists drops CMAKE_OSX_DEPLOYMENT_TARGET on the way, so they target the host OS (e.g. 26.0).
 # Sub-builds still pick up the deployment target from the environment.
@@ -63,6 +69,8 @@ cd ..
 
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
+cp -R ../data/. ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data/
 cd ..
 
 # sign and notarize
