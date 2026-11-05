@@ -71,6 +71,9 @@ unzip SDL2_mixer-2.8.0.zip
 # rtmidi
 curl -JLO https://github.com/thestk/rtmidi/archive/refs/tags/6.0.0.tar.gz
 tar -xzvf rtmidi-6.0.0.tar.gz
+# lua 5.4 - CorsixTH (and CMake's FindLua) don't support 5.5, which is what's in /usr/local now
+curl -JLO https://www.lua.org/ftp/lua-5.4.8.tar.gz
+tar -xzvf lua-5.4.8.tar.gz
 
 (cd SDL2-*; ./configure --disable-joystick --disable-haptic --prefix=${PREFIX_DIR} CFLAGS='-arch x86_64 -arch arm64  -mmacosx-version-min=10.7' LDFLAGS='-arch x86_64 -arch arm64 -mmacosx-version-min=10.7'; make clean; make -j$NCPU install)
 install_name_tool -id @rpath/libSDL2-2.0.0.dylib ${PREFIX_DIR}lib/libSDL2-2.0.0.dylib
@@ -90,8 +93,15 @@ install_name_tool -id @rpath/libopusfile.0.dylib ${PREFIX_DIR}lib/libopusfile.0.
 -DSDL2_DIR=${PREFIX_DIR}lib/cmake/SDL2 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 cmake --build build/ --target install)
 install_name_tool -id @rpath/libSDL2_mixer-2.0.801.0.0.dylib ${PREFIX_DIR}lib/libSDL2_mixer-2.0.801.0.0.dylib
-(cd rtmidi-6.0.0; ./autogen.sh --no-configure; ./configure --prefix=${PREFIX_DIR} CC="clang -arch arm64 -arch x86_64" CXX="clang++ -arch arm64 -arch x86_64" CPP="clang -E" CXXCPP="clang -E"; make -j$NCPU; make install)
-install_name_tool -id @rpath/librtmidi.7.dylib ${PREFIX_DIR}lib/librtmidi.7.dylib
+# built with CMake so it installs rtmidi-config.cmake; CorsixTH's pkg-config fallback links a bare -lrtmidi with no -L
+(cd rtmidi-6.0.0; rm -rf build; cmake -Bbuild . -DCMAKE_INSTALL_PREFIX=${PREFIX_DIR} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 -DRTMIDI_BUILD_TESTING=OFF -DCMAKE_INSTALL_NAME_DIR=@rpath -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake --build build/ --target install -j$NCPU)
+(cd lua-5.4.8/src; make liblua.a SYSCFLAGS="-DLUA_USE_MACOSX" MYCFLAGS="-arch x86_64 -arch arm64 -mmacosx-version-min=10.15" AR="/usr/bin/ar rcu" RANLIB=/usr/bin/ranlib
+mkdir -p ${PREFIX_DIR}include/lua ${PREFIX_DIR}lib
+cp lua.h luaconf.h lualib.h lauxlib.h lua.hpp ${PREFIX_DIR}include/lua/
+cc -dynamiclib -arch x86_64 -arch arm64 -mmacosx-version-min=10.15 -install_name @rpath/liblua.5.4.dylib \
+-compatibility_version 5.4 -current_version 5.4.8 -o ${PREFIX_DIR}lib/liblua.5.4.dylib -Wl,-all_load liblua.a)
 
 cd ..
 
@@ -109,9 +119,9 @@ cmake \
 -DCMAKE_LIBRARY_PATH=${PREFIX_DIR}/lib \
 -DWITH_LUAROCKS=on \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
--DLUA_LIBRARY=/usr/local/lib/liblua.5.4.dylib \
+-DLUA_LIBRARY=${PREFIX_DIR}lib/liblua.5.4.dylib \
+-DLUA_INCLUDE_DIR=${PREFIX_DIR}include/lua \
 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
--DWITH_MIDI_DEVICE=OFF \
 -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 make CorsixTH -j8 VERBOSE=1
 make install

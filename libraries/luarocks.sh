@@ -13,7 +13,7 @@ LUACONFIG='variables = {
    LDFLAGS = "-arch x86_64 -arch arm64 -mmacosx-version-min=10.7"
 }
 '
-echo "${LUACONFIG}" > ~/.luarocks/config-5.4.lua
+echo "${LUACONFIG}" > ~/.luarocks/config-5.5.lua
 
 sudo luarocks install luafilesystem
 sudo luarocks install lpeg

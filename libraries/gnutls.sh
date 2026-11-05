@@ -27,3 +27,11 @@ sudo install_name_tool -id "@rpath/libgnutlsxx.30.dylib" /usr/local/lib/libgnutl
 sudo install_name_tool -change /usr/local/lib/libgnutls.30.dylib @rpath/libgnutls.30.dylib /usr/local/lib/libgnutlsxx.30.dylib
 sudo install_name_tool -change /usr/local/lib/libgnutls-dane.0.dylib @rpath/libgnutls-dane.0.dylib /usr/local/lib/libgnutlsxx.30.dylib
 sudo install_name_tool -change /usr/local/lib/libgnutls.30.dylib @rpath/libgnutls.30.dylib /usr/local/lib/libgnutls-dane.0.dylib
+
+# libz/libzstd had absolute ids during the build, and nettle may too - point every
+# /usr/local/lib reference in the gnutls dylibs at @rpath so copy_dependencies picks them up
+for LIB_FILE in /usr/local/lib/libgnutls.30.dylib /usr/local/lib/libgnutls-dane.0.dylib /usr/local/lib/libgnutlsxx.30.dylib; do
+    for DEP in $(otool -L ${LIB_FILE} | awk '/\/usr\/local\/lib\//{print $1}'); do
+        sudo install_name_tool -change ${DEP} "@rpath/$(basename ${DEP})" ${LIB_FILE}
+    done
+done

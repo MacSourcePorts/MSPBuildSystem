@@ -22,6 +22,12 @@ gsed -i "s|\$(MYCFLAGS)*|-DLUA_USE_MACOSX -arch x86_64 -arch arm64|" source/${SO
 gsed -i "s|\$(MYLDFLAGS)*|-arch x86_64 -arch arm64|" source/${SOURCE_FOLDER}/src/Makefile
 gsed -i "s|-dynamiclib*|-dynamiclib -arch x86_64 -arch arm64|" source/${SOURCE_FOLDER}/src/Makefile
 
+# Lua 5.5 hides internal (LUAI_FUNC) symbols on Mach-O, so luac can't link against
+# liblua.dylib (luaU_dump, luaG_getfuncline etc.). Link it against the static lib instead.
+gsed -i 's|^\$(LUAC_T): \$(LUAC_O) \$(LUA_DYLIB)|$(LUAC_T): $(LUAC_O) $(LUA_A)|' source/${SOURCE_FOLDER}/src/Makefile
+gsed -i 's|\$(LUAC_O) \$(LUA_DYLIB) \$(LIBS)|$(LUAC_O) $(LUA_A) $(LIBS)|' source/${SOURCE_FOLDER}/src/Makefile
+
 source "../common/make_build.sh"
 
 sudo install_name_tool -add_rpath /usr/local/lib/. /usr/local/bin/lua
+sudo install_name_tool -add_rpath /usr/local/lib/. /usr/local/bin/luac
