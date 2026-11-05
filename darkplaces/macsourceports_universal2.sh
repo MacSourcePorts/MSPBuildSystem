@@ -32,7 +32,7 @@ mkdir -p ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 mv ${EXECUTABLE_NAME} ${X86_64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 
 make clean
-(SDL_CONFIG="usr/local/bin/sdl2-config" CC="clang -arch arm64 -mmacosx-version-min=10.7" make sdl-release -j$NCPU)
+(SDL_CONFIG="/usr/local/bin/sdl2-config" CC="clang -arch arm64 -mmacosx-version-min=10.7" make sdl-release -j$NCPU)
 mkdir -p ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 mv ${EXECUTABLE_NAME} ${ARM64_BUILD_FOLDER}/${EXECUTABLE_FOLDER_PATH}
 
