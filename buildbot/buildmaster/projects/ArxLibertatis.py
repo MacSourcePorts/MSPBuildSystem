@@ -17,12 +17,12 @@ from projects.version_guard import (
 ArxLibertatis_guard = VersionGuard(
     project_name="ArxLibertatis",
     tag_property="ArxLibertatis_latest_tag",
-    force_scheduler_names={"ArxLibertatis-force"},
+    force_scheduler_names={"ArxLibertatis-force", "ArxLibertatis-forcepublish"},
     meta_url="https://www.macsourceports.com/meta.json",
     meta_stub="arxLibertatis",
 )
 
-ArxLibertatis_publish_schedulers = {"ArxLibertatis-changes", "ArxLibertatis-publish"}
+ArxLibertatis_publish_schedulers = {"ArxLibertatis-changes", "ArxLibertatis-publish", "ArxLibertatis-forcepublish"}
 
 project_list = [
     util.Project(name="ArxLibertatis", description="ArxLibertatis source port project")
@@ -116,5 +116,10 @@ scheduler_list = [
         builderNames=["ArxLibertatis-builder"]),
     schedulers.ForceScheduler(
         name="ArxLibertatis-publish",
+        builderNames=["ArxLibertatis-builder"]),
+    # Rebuild and republish even when the site already has this tag
+    # (e.g. a packaging fix with no new upstream release)
+    schedulers.ForceScheduler(
+        name="ArxLibertatis-forcepublish",
         builderNames=["ArxLibertatis-builder"])
 ]
