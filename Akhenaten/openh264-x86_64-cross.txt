@@ -1,0 +1,18 @@
+[binaries]
+c = '/usr/bin/clang'
+cpp = '/usr/bin/clang++'
+ar = '/usr/bin/ar'
+strip = '/usr/bin/strip'
+nasm = 'nasm'
+
+[built-in options]
+c_args = ['-arch', 'x86_64', '-mmacosx-version-min=10.15']
+cpp_args = ['-arch', 'x86_64', '-mmacosx-version-min=10.15']
+c_link_args = ['-arch', 'x86_64', '-mmacosx-version-min=10.15']
+cpp_link_args = ['-arch', 'x86_64', '-mmacosx-version-min=10.15']
+
+[host_machine]
+system = 'darwin'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
