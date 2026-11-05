@@ -30,10 +30,16 @@ cmake \
 -DCMAKE_PREFIX_PATH=/usr/local \
 -DCMAKE_INSTALL_PREFIX=/usr/local \
 -DICON_TYPE=none \
+-DOPENAL_INCLUDE_DIR=/usr/local/include/AL \
+-DOPENAL_LIBRARY=/usr/local/lib/libopenal.dylib \
+-DRUNTIME_DATADIR=".:../Resources/data" \
 ..
 cmake --build . --parallel $NCPU
 mv ${EXECUTABLE_NAME} ${EXECUTABLE_FOLDER_PATH}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+# Arx Libertatis's own data (menu strings, fonts) - the build dir's data.dirs points at the source tree, so ship a copy
+mkdir -p ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data
+cp -R ../data/core/. ${UNLOCALIZED_RESOURCES_FOLDER_PATH}/data/
 cd ..
 
 # create the app bundle
