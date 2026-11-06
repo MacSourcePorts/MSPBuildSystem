@@ -20,6 +20,12 @@ export RANLIB=/usr/bin/ranlib
 
 gsed -i "s|<fp.h>|<math.h>|" lib/libpng/pngpriv.h
 
+# rd-rend2 builds compact_glsl and runs it during the build to generate glsl_shaders.cpp,
+# so in the x86_64 pass it needs Rosetta on Apple Silicon. Build that tool universal.
+if ! grep -q "compact_glsl PROPERTIES OSX_ARCHITECTURES" codemp/rd-rend2/CMakeLists.txt; then
+	gsed -i 's|^target_include_directories(compact_glsl PRIVATE.*$|&\nset_target_properties(compact_glsl PROPERTIES OSX_ARCHITECTURES "arm64;x86_64")|' codemp/rd-rend2/CMakeLists.txt
+fi
+
 # this one doesn't do releases, we just build latest
 rm -rf ${BUILT_PRODUCTS_DIR}
 
