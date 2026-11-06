@@ -18,6 +18,8 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 # create makefiles with cmake
 mkdir ${BUILT_PRODUCTS_DIR}
 cd ${BUILT_PRODUCTS_DIR}
+# no bundled fluidsynth-lite is built, so this compiles against the FluidSynth 2.x headers in
+# /usr/local/include and has to link the matching 2.x library (libfluidsynth.3), not the old 1.x one
 cmake \
     -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
     -DCMAKE_C_FLAGS="-DSDL_DISABLE_IMMINTRIN_H -DGL_SILENCE_DEPRECATION" \
@@ -28,7 +30,7 @@ cmake \
     -DSDL2_DIR=/usr/local/opt/sdl2/lib/cmake/SDL2 \
     -DSDL2_MIXER_LIBRARIES=/usr/local/lib/libSDL2_mixer.dylib \
     -DENABLE_FLUIDSYNTH="BUNDLED" \
-    -DFLUIDSYNTH_LIBRARY=/usr/local/lib/libfluidsynth.1.dylib \
+    -DFLUIDSYNTH_LIBRARY=/usr/local/lib/libfluidsynth.3.dylib \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -B. -S..
 
