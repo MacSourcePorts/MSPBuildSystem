@@ -17,6 +17,12 @@ export MINIMUM_SYSTEM_VERSION="12.0"
 cd ../../${PROJECT_NAME}
 
 cd tools/kas2c
+# lexer.l sets YY_NO_UNISTD_H, so the generated lexer.c calls isatty() undeclared,
+# which current clang rejects; that leaves the Missions/Generated sources missing.
+# gnu17 keeps the old-style yyerror() prototype legal if clang defaults to C23.
+if ! grep -q "include unistd.h" kas2c-macOS-compile.sh; then
+	gsed -i 's|^/usr/bin/gcc -o kas2c |/usr/bin/gcc -std=gnu17 -include unistd.h -o kas2c |' kas2c-macOS-compile.sh
+fi
 "./kas2c-macOS-compile.sh"
 cd ../..
 
