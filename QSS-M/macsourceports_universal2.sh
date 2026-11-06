@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="QSS-M"
 
 # constants
 source ../common/constants.sh
-export MINIMUM_SYSTEM_VERSION="10.13"
+export MINIMUM_SYSTEM_VERSION="12.0"
 
 cd ../../${PROJECT_NAME}
 
@@ -26,6 +26,10 @@ mkdir ${BUILT_PRODUCTS_DIR}
 # Note that this folder gets renamed to "macOS" after 1.6.5 sometime
 
 cd MacOSX
+# Xcode 27 won't build for anything below macOS 12.0, and the xcodebuild call lives in QSS-M's own script
+if ! grep -q "MACOSX_DEPLOYMENT_TARGET" build-macos.sh; then
+	gsed -i 's|^xcodebuild -project QuakeSpasm.xcodeproj -target QSS-M$|& MACOSX_DEPLOYMENT_TARGET=12.0|' build-macos.sh
+fi
 ./build-macos.sh
 cd ..
 
