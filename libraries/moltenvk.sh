@@ -27,12 +27,14 @@ cd MoltenVK
 xcodebuild -project ExternalDependencies.xcodeproj \
     -scheme "ExternalDependencies-macOS" \
     -configuration Release \
+    MACOSX_DEPLOYMENT_TARGET=12.0 \
     -arch x86_64 -arch arm64 \
     build
 
 xcodebuild -project MoltenVKPackaging.xcodeproj \
     -scheme "MoltenVK Package (macOS only)" \
     -configuration Release \
+    MACOSX_DEPLOYMENT_TARGET=12.0 \
     -arch x86_64 -arch arm64 \
     build
 

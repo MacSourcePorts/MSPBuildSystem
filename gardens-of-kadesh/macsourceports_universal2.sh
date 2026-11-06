@@ -12,7 +12,7 @@ export PKGINFO="APPLGOFK"
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
-export MINIMUM_SYSTEM_VERSION="11.5"
+export MINIMUM_SYSTEM_VERSION="12.0"
 
 cd ../../${PROJECT_NAME}
 
@@ -29,6 +29,7 @@ xcodebuild \
 	-project Mac/Homeworld.xcodeproj \
 	-scheme "Homeworld" \
 	-configuration Release \
+	MACOSX_DEPLOYMENT_TARGET=12.0 \
 	-arch x86_64 -arch arm64 \
 	clean \
 	build \

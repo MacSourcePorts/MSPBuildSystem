@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="QuakeSpasm"
 
 # constants
 source ../common/constants.sh
-export MINIMUM_SYSTEM_VERSION="10.13"
+export MINIMUM_SYSTEM_VERSION="12.0"
 
 cd ../../${PROJECT_NAME}
 
@@ -28,6 +28,7 @@ xcodebuild \
 	-project MacOSX/QuakeSpasm.xcodeproj \
 	-scheme "QuakeSpasm-SDL2-M1" \
 	-configuration Release \
+	MACOSX_DEPLOYMENT_TARGET=12.0 \
 	-arch x86_64 -arch arm64 \
 	clean \
 	build \
@@ -50,6 +51,7 @@ xcodebuild \
 	-project MacOSX/QuakeSpasm.xcodeproj \
 	-scheme "QuakeSpasm-SDL2-x64" \
 	-configuration Release \
+	MACOSX_DEPLOYMENT_TARGET=12.0 \
 	-arch x86_64 -arch arm64 \
 	clean \
 	build \

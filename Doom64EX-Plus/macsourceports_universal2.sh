@@ -8,7 +8,7 @@ export EXECUTABLE_NAME="DOOM64EXPlus"
 
 # constants
 source ../common/constants.sh
-export MINIMUM_SYSTEM_VERSION="10.13"
+export MINIMUM_SYSTEM_VERSION="12.0"
 
 cd ../../${PROJECT_NAME}
 
@@ -28,6 +28,7 @@ xcodebuild \
 	-project XCode/DOOM64EXPlus.xcodeproj \
 	-scheme "doom64explus" \
 	-configuration Release \
+	MACOSX_DEPLOYMENT_TARGET=12.0 \
 	-arch x86_64 -arch arm64 \
 	clean \
 	build \

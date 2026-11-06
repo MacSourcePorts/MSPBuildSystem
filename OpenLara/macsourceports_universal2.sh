@@ -8,6 +8,7 @@ export EXECUTABLE_NAME="OpenLara"
 
 # constants
 source ../common/constants.sh
+export MINIMUM_SYSTEM_VERSION="12.0"
 cd ../../${PROJECT_NAME}
 
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -29,7 +30,7 @@ xcodebuild \
 	WRAPPER_NAME=OpenLara.app \
 	EXECUTABLE_NAME=OpenLara \
 	ONLY_ACTIVE_ARCH="NO" \
-	MACOSX_DEPLOYMENT_TARGET="10.13" \
+	MACOSX_DEPLOYMENT_TARGET="12.0" \
 	SYMROOT=$PWD/${BUILT_PRODUCTS_DIR}
 
 echo $PWD
