@@ -10,6 +10,7 @@ export PKGINFO="APPLOGw"
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
+export MINIMUM_SYSTEM_VERSION="12.0"
 
 cd ../../${PROJECT_NAME}
 
@@ -28,7 +29,7 @@ mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cd ${BUILT_PRODUCTS_DIR}
 cmake -H. -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
 -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 \
 -DCMAKE_PREFIX_PATH=/usr/local \
 -DCMAKE_INSTALL_PREFIX=/usr/local \
 -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
