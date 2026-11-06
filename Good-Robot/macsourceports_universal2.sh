@@ -13,6 +13,10 @@ export MINIMUM_SYSTEM_VERSION="10.8"
 
 cd ../../${PROJECT_NAME}
 
+# CMake 4 forces policy CMP0023 on, which forbids mixing plain and keyword
+# target_link_libraries calls; make the two Apple-only PUBLIC calls plain like the rest
+gsed -i 's|target_link_libraries(good_robot PUBLIC |target_link_libraries(good_robot |' CMakeLists.txt
+
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 mkdir ${BUILT_PRODUCTS_DIR}
