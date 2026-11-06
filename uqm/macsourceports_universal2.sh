@@ -25,6 +25,13 @@ if [ ! -d "dist-packages" ]; then
     cp -a ../MSPBuildSystem/uqm/dist-packages/* dist-packages
 fi
 
+# The .o rules in Makefile.build don't name their source file, so "$<" is whatever the compiler's
+# dependency (.d) file lists first. Xcode 27's clang lists the SDK's SDKSettings.json first, so every
+# compile gets the JSON instead of the source. Give the rules their source as the first prerequisite.
+if grep -q "^%.c.o:$" Makefile.build; then
+	gsed -i 's|^%\.c\.o:$|$(OBJDIR)%.c.o: $(BUILD_ROOT)%.c|; s|^%\.cpp\.o:$|$(OBJDIR)%.cpp.o: $(BUILD_ROOT)%.cpp|; s|^%\.m\.o:$|$(OBJDIR)%.m.o: $(BUILD_ROOT)%.m|' Makefile.build
+fi
+
 ./build.sh uqm clean
 cp "../MSPBuildSystem/uqm/config_unix.h" .
 cp "../MSPBuildSystem/uqm/build.vars.x86_64" "build.vars"
