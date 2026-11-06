@@ -15,6 +15,12 @@ export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
+# Newer clang no longer lets -Wno-error=enum-constexpr-conversion downgrade an out-of-range
+# enum value in a case label, so switch on the plain int value instead
+if grep -q "case (CSessionProperties::GameDifficulty)-100:" Sources/SeriousSam/MenuGadgets.cpp; then
+	gsed -i 's|switch(_pGame->gm_ahseHighScores\[i\].hse_gdDifficulty) {|switch((int)_pGame->gm_ahseHighScores[i].hse_gdDifficulty) {|; s|case (CSessionProperties::GameDifficulty)-100:|case -100:|' Sources/SeriousSam/MenuGadgets.cpp
+fi
+
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 mkdir ${BUILT_PRODUCTS_DIR}
