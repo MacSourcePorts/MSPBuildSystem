@@ -20,13 +20,17 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}
 cd ${BUILT_PRODUCTS_DIR}
+# s25client wants Lua 5.2 and CMake's FindLua rejects the 5.5 in /usr/local, so use the universal
+# Lua 5.2 that ships in external/dev-tools (what the official macOS builds use)
 cmake \
 -DCMAKE_BUILD_TYPE=Release \
 -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
--DLUA_INCLUDE_DIR=/usr/local/include/lua \
--DLUA_LIBRARY=/usr/local/lib/liblua.dylib \
+-DLUA_INCLUDE_DIR="$(pwd)/../external/dev-tools/lua/include" \
+-DLUA_LIBRARY="$(pwd)/../external/dev-tools/lua/mac/lib/liblua52.a" \
 -DRTTR_BUNDLE=ON \
+-DBUILD_TESTING=OFF \
+-DRTTR_ENABLE_WERROR=OFF \
 -DRTTR_GAMEDIR="~/Library/Application Support/Return To The Roots" \
 ..
 make -j$NCPU
