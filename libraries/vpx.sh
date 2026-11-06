@@ -8,4 +8,4 @@ export CONFIGURE_X86_64_ARGS="--target=x86_64-darwin23-gcc"
 source "../common/get_source.sh"
 source "../common/make_build_lipo2.sh"
 
-sudo install_name_tool -id "@rpath/libvpx.9.dylib" /usr/local/lib/libvpx.9.dylib
+sudo install_name_tool -id "@rpath/libvpx.dylib" /usr/local/lib/libvpx.dylib
