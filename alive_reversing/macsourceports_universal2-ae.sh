@@ -17,6 +17,8 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}
 mkdir -p ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}
 cd ${BUILT_PRODUCTS_DIR}
+# options.cmake runs as a separate "cmake -P" during the build and does not see -D flags
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
 cmake \
 -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
