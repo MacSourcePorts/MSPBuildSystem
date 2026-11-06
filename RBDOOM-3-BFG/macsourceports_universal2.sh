@@ -15,6 +15,12 @@ cd ../../${PROJECT_NAME}
 
 gsed -i '/#define[[:space:]]\+fdopen(fd,mode)[[:space:]]\+NULL/ d' neo/libs/zlib/zutil.h
 
+# ShaderMake is built and then run during the build to compile the shaders,
+# so in the x86_64 pass it needs Rosetta on Apple Silicon. Build that tool (and the blob library it links) universal.
+if ! grep -q "ShaderMakeBlob PROPERTIES OSX_ARCHITECTURES" neo/CMakeLists.txt; then
+	gsed -i 's|^add_subdirectory(${SHADERMAKE_DIR})$|&\nset_target_properties(ShaderMake ShaderMakeBlob PROPERTIES OSX_ARCHITECTURES "arm64;x86_64")|' neo/CMakeLists.txt
+fi
+
 export VULKAN_SDK=~/VulkanSDK/${VULKAN_SDK_VERSION}/macOS
 export DYLD_LIBRARY_PATH=$VULKAN_SDK/lib:$DYLD_LIBRARY_PATH
 export CMAKE_PREFIX_PATH=$VULKAN_SDK:$CMAKE_PREFIX_PATH
