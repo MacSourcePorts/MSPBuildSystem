@@ -22,6 +22,8 @@ export X86_64_LIBS_FOLDER="libs-x86_64"
 
 export DATE_TIMESTAMP="$(date +'%Y-%m-%d')"
 
+export VULKAN_SDK_VERSION="1.4.357.1"
+
 # Latest-code builds: Buildbot passes the build's date (YYYYMMDD) so the
 # version -- and with it the DMG name and the Info.plist version keys --
 # becomes e.g. 0.20-20261030. Unset for everything else.

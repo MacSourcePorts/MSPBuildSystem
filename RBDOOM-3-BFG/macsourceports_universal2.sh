@@ -15,7 +15,7 @@ cd ../../${PROJECT_NAME}
 
 gsed -i '/#define[[:space:]]\+fdopen(fd,mode)[[:space:]]\+NULL/ d' neo/libs/zlib/zutil.h
 
-export VULKAN_SDK=~/VulkanSDK/1.4.313.0/macOS
+export VULKAN_SDK=~/VulkanSDK/${VULKAN_SDK_VERSION}/macOS
 export DYLD_LIBRARY_PATH=$VULKAN_SDK/lib:$DYLD_LIBRARY_PATH
 export CMAKE_PREFIX_PATH=$VULKAN_SDK:$CMAKE_PREFIX_PATH
 

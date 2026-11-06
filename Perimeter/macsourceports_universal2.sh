@@ -32,7 +32,7 @@ mkdir ${ARM64_BUILD_FOLDER}
 
 export MACOSX_DEPLOYMENT_TARGET=10.15
 
-source ~/VulkanSDK/1.4.313.0/setup-env.sh
+source ~/VulkanSDK/${VULKAN_SDK_VERSION}/setup-env.sh
 export PKG_CONFIG_PATH="$VULKAN_SDK/lib/pkgconfig/"
 export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib/:$DYLD_LIBRARY_PATH"
 
