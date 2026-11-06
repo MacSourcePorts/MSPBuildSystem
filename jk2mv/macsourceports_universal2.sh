@@ -15,6 +15,12 @@ cd ../../${PROJECT_NAME}
 
 export RANLIB=/usr/bin/ranlib
 
+# The QVM build runs the q3lcc/q3asm tools it just compiled, so in the x86_64 pass
+# they need Rosetta on Apple Silicon. Build those host tools universal in both passes.
+if ! grep -q "CMAKE_OSX_ARCHITECTURES" src/mvsdk/tools/CMakeLists.txt; then
+	gsed -i '1i set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")' src/mvsdk/tools/CMakeLists.txt
+fi
+
 # we just do the latest on this one as they haven't had a release tag since 2018
 
 rm -rf ${BUILT_PRODUCTS_DIR}
