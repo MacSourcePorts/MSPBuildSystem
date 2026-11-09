@@ -1,7 +1,7 @@
 [
     {
         "filenameGlob": "jk2mvmp-*.dmg",
-        "sourcePortStub": "jk2mvmp",
+        "sourcePortStub": "jk2mv",
         "buildType": 1
     }
 ]
