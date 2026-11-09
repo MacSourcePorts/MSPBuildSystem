@@ -26,9 +26,11 @@ export VULKAN_SDK_VERSION="1.4.357.1"
 
 # Latest-code builds: Buildbot passes the build's date (YYYYMMDD) so the
 # version -- and with it the DMG name and the Info.plist version keys --
-# becomes e.g. 0.20-20261030. Unset for everything else.
+# becomes e.g. 0.20-20261030. Unset for everything else. A project with no
+# version of its own (DarkPlaces) leaves APP_VERSION empty and gets just the
+# date, e.g. 20261030.
 if [ -n "${MSP_VERSION_DATE}" ]; then
-	export APP_VERSION="${APP_VERSION}-${MSP_VERSION_DATE}"
+	export APP_VERSION="${APP_VERSION:+${APP_VERSION}-}${MSP_VERSION_DATE}"
 	echo "Dated version: ${APP_VERSION}"
 fi
 

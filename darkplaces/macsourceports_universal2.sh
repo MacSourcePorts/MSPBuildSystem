@@ -1,5 +1,11 @@
 # game/app specific values
-export APP_VERSION="1.0"
+# DarkPlaces has never had a version number: dated builds are just the date
+# (20261109, see constants.sh); a build without one is still called 1.0
+if [ -n "${MSP_VERSION_DATE}" ]; then
+	export APP_VERSION=""
+else
+	export APP_VERSION="1.0"
+fi
 export PRODUCT_NAME="darkplaces"
 export PROJECT_NAME="darkplaces"
 export PORT_NAME="darkplaces"
