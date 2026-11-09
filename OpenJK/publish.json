@@ -8,5 +8,10 @@
         "filenameGlob": "OpenJK-MP-*.dmg",
         "sourcePortStub": "openjkmp",
         "buildType": 1
+    },
+    {
+        "filenameGlob": "OpenJO-SP-*.dmg",
+        "sourcePortStub": "openjo",
+        "buildType": 1
     }
 ]

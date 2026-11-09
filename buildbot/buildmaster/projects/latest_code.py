@@ -46,22 +46,41 @@ def version_date_env():
     return {"MSP_VERSION_DATE": util.Property(VERSION_DATE_PROPERTY)}
 
 
-def make_release_extractor(dmg_property, version_property):
+def make_release_extractor(dmg_property, version_property, dmg_count=1):
     """extract_fn for the build step's SetPropertyFromCommand: reads the
     MSP_RELEASE_DMG= and MSP_RELEASE_VERSION= lines package_dmg.sh prints.
-    Missing lines become None; pair with RequireProperty for each."""
+    Missing lines become None; pair with RequireProperty for each.
+
+    A script that packages several apps (OpenJK) prints one DMG line per
+    app: pass dmg_count, and dmg_property becomes a list of the paths --
+    or None unless there are exactly that many. Pass it to the publish
+    step with dmg_args()."""
     dmg_re = re.compile(r'^MSP_RELEASE_DMG=(.*)$', re.MULTILINE)
     version_re = re.compile(r'^MSP_RELEASE_VERSION=(.*)$', re.MULTILINE)
 
     def _extract(rc, stdout, stderr):
-        dmg = dmg_re.search(stdout)
+        dmgs = [m.strip() for m in dmg_re.findall(stdout)]
         version = version_re.search(stdout)
         version = version.group(1).strip() if version else None
+        if dmg_count == 1:
+            dmg = dmgs[0] if dmgs else None
+        else:
+            dmg = dmgs if len(dmgs) == dmg_count else None
         return {
-            dmg_property: dmg.group(1).strip() if dmg else None,
+            dmg_property: dmg,
             version_property: version,
             # shown in the notification email's subject (master.cfg)
             "resolved_tag": version or "?",
         }
 
     return _extract
+
+
+def dmg_args(dmg_property):
+    """publish_release.py arguments for a dmg_count > 1 extractor's list:
+    --dmg a --dmg b ... (Buildbot flattens the nested list)."""
+    @util.renderer
+    def _args(props):
+        return [["--dmg", dmg] for dmg in props.getProperty(dmg_property)]
+
+    return _args

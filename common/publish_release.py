@@ -42,7 +42,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from social_cooldown import apply_on_update, load_cooldowns
+from social_cooldown import apply_on_update, iso_utc, load_cooldowns
 
 
 # ---------------------------------------------------------------------------
@@ -162,12 +162,6 @@ def format_build_date(d: datetime.date) -> str:
     return f"{d.strftime('%B')} {d.day}, {d.year}"
 
 
-def iso_now() -> str:
-    return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="milliseconds").replace(
-        "+00:00", "Z"
-    )
-
-
 def find_port(ports: list, stub: str):
     return next((p for p in ports if p.get("sourcePortStub") == stub), None)
 
@@ -208,7 +202,7 @@ def validate_targets_exist(ports: list, updates: list):
 
 
 def apply_update(ports: list, stub: str, build_type: int, new_url: str,
-                  version: str, build_date: str) -> str:
+                  version: str, build_date: str, updated: str) -> str:
     """Mutates the matched builds[] entry in place. Assumes
     validate_targets_exist has already confirmed it exists. Returns the
     entry's previous version string, for reporting."""
@@ -218,7 +212,7 @@ def apply_update(ports: list, stub: str, build_type: int, new_url: str,
     entry["downloadURL"] = new_url
     entry["version"] = version
     entry["buildDate"] = build_date
-    port["lastUpdated"] = iso_now()
+    port["lastUpdated"] = updated
     return old_version
 
 
@@ -334,15 +328,20 @@ def main():
 
     summary_lines = []
     previous_updated = {}
+    # Each port gets its own second, counting back from now: the site's
+    # RSS/Publer feeds trip over entries with identical timestamps (OpenJK
+    # publishes three ports at once).
+    now = datetime.datetime.now(datetime.timezone.utc)
     for stub, build_type, url, version, build_date in updates:
-        previous_updated.setdefault(stub, find_port(ports, stub).get("lastUpdated"))
-        old_version = apply_update(ports, stub, build_type, url, version, build_date)
+        if stub not in previous_updated:
+            previous_updated[stub] = find_port(ports, stub).get("lastUpdated")
+            updated = iso_utc(now - datetime.timedelta(seconds=len(previous_updated) - 1))
+        old_version = apply_update(ports, stub, build_type, url, version, build_date, updated)
         summary_lines.append(f"{stub} (buildType {build_type}): {old_version} -> {version}")
 
     # Ports in social_cooldown.json only get a new social.xml post once per
     # cooldown; a held post is released later by the daily ThirdParty job.
     cooldowns = load_cooldowns()
-    now = datetime.datetime.now(datetime.timezone.utc)
     for stub, previous in previous_updated.items():
         if stub in cooldowns:
             social = apply_on_update(find_port(ports, stub), previous, cooldowns[stub], now)
