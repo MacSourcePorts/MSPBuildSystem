@@ -1,7 +1,7 @@
 [
     {
         "filenameGlob": "openQ4-*.dmg",
-        "sourcePortStub": "openQ4",
+        "sourcePortStub": "openq4",
         "buildType": 1
     }
 ]
