@@ -11,7 +11,7 @@ project_list = [
 
 change_source_list = [
     changes.GitPoller(
-        repourl='https://github.com/MacSourcePorts/BurgerDoom',
+        repourl='https://github.com/atsb/BurgerDoom',
         workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/buildbot/workdirs/BurgerDoom"),
         project="BurgerDoom",
         only_tags=True,
@@ -21,7 +21,7 @@ change_source_list = [
 
 BurgerDoom_factory = util.BuildFactory()
 BurgerDoom_factory.addStep(steps.Git(
-    repourl='https://github.com/MacSourcePorts/BurgerDoom',
+    repourl='https://github.com/atsb/BurgerDoom',
     mode='full',  # Equivalent to 'git fetch' + 'git reset --hard'
     method='clobber',  # Remove untracked files
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/BurgerDoom"),
@@ -37,15 +37,18 @@ BurgerDoom_factory.addStep(steps.SetPropertyFromCommand(
     haltOnFailure=True
 ))
 
-# BurgerDoom_factory.addStep(steps.ShellCommand(
-#     command=["git", "checkout", util.Property('BurgerDoom_latest_tag')],
-#     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/BurgerDoom"),
-#     name="Checkout Latest Tag",
-#     haltOnFailure=True
-# ))
+# -f is required: upstream master carries case-duplicate headers (source/Doom.h and
+# source/doom.h, etc.), which on a case-insensitive macOS volume always show up as
+# locally modified right after the clone and make a plain checkout refuse to switch.
+BurgerDoom_factory.addStep(steps.ShellCommand(
+    command=["git", "checkout", "-f", util.Property('BurgerDoom_latest_tag')],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/BurgerDoom"),
+    name="Checkout Latest Tag",
+    haltOnFailure=True
+))
 
 BurgerDoom_factory.addStep(steps.ShellCommand(
-    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/BurgerDoom/macsourceports_universal2.sh"), "notarize", "1.1.0"],
+    command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/BurgerDoom/macsourceports_universal2.sh"), "notarize", util.Property('BurgerDoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/BurgerDoom"),
     name="Run Build Script",
     haltOnFailure=True

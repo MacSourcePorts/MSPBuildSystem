@@ -164,6 +164,7 @@
 ./fluidsynth-lite.sh
 ./abseil.sh
 ./adlmidi.sh
+./wildmidi.sh
 ./cpptrace.sh
 ./deflate.sh
 ./dwarf.sh

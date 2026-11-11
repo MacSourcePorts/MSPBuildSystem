@@ -147,6 +147,7 @@ export VORBIS_URL="https://ftp.osuosl.org/pub/xiph/releases/vorbis/libvorbis-1.3
 export VPX_URL="https://github.com/webmproject/libvpx/archive/refs/tags/v1.16.0.tar.gz"
 export WAVPACK_URL="https://www.wavpack.com/wavpack-5.9.0.tar.bz2"
 export WEBP_URL="https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.6.0.tar.gz"
+export WILDMIDI_URL="https://github.com/Mindwerks/wildmidi/archive/refs/tags/wildmidi-0.5.0.tar.gz"
 export WXWIDGETS_URL="https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.2/wxWidgets-3.3.2.tar.bz2"
 export X11_URL="https://www.x.org/archive/individual/lib/libX11-1.8.13.tar.gz"
 export X264_URL="https://code.videolan.org/videolan/x264.git"
