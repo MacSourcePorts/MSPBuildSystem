@@ -1,0 +1,41 @@
+diff --git a/Source/relive/Exe.cpp b/Source/relive/Exe.cpp
+index 381d98c..60c60e0 100644
+--- a/Source/relive/Exe.cpp
++++ b/Source/relive/Exe.cpp
+@@ -310,23 +310,22 @@ bool RunningAsInjectedDll()
+ #include <mach-o/dyld.h>
+ #include <unistd.h>
+ 
++// MacSourcePorts: run from ~/Library/Application Support/Oddworld/AO (or AE),
++// where the player copies their game data, rather than from inside the app
++// bundle. One build serves both games: the AO app's executable is named
++// relive-AO, which picks the AO folder here -- and WinMain's own "AO on the
++// command line" check (argv[0] included) then starts AO too.
+ static void __attribute__((constructor)) FixCWD()
+ {
+-    char* imagePath = strdup(_dyld_get_image_name(0));
+-    if (!imagePath)
+-    {
+-        return;
+-    }
+-    
+-    for (u32 i = strlen(imagePath); --i;)
++    const char* imagePath = _dyld_get_image_name(0);
++    const char* exeName = imagePath ? strrchr(imagePath, '/') : nullptr;
++    const bool isAo = exeName && strstr(exeName, "AO");
++
++    char* prefPath = SDL_GetPrefPath("Oddworld", isAo ? "AO" : "AE");
++    if (prefPath)
+     {
+-        if (imagePath[i] == '/')
+-        {
+-            imagePath[i] = 0;
+-            chdir(imagePath);
+-            break;
+-        }
++        chdir(prefPath);
++        SDL_free(prefPath);
+     }
+-    free(imagePath);
+ }
+ #endif

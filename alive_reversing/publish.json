@@ -1,11 +1,11 @@
 [
     {
-        "filenameGlob": "relive-ao-*-ao.dmg",
-        "sourcePortStub": "reliveae",
+        "filenameGlob": "relive-ao-*.dmg",
+        "sourcePortStub": "reliveao",
         "buildType": 1
     },
     {
-        "filenameGlob": "relive-ae-*-ae.dmg",
+        "filenameGlob": "relive-ae-*.dmg",
         "sourcePortStub": "reliveae",
         "buildType": 1
     }
