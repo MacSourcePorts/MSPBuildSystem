@@ -1,0 +1,39 @@
+diff --git a/src/hw/sdl/hwsdl_audio.c b/src/hw/sdl/hwsdl_audio.c
+index cefe33b0..f2130e8a 100644
+--- a/src/hw/sdl/hwsdl_audio.c
++++ b/src/hw/sdl/hwsdl_audio.c
+@@ -126,6 +126,19 @@ int hw_audio_init(void)
+         sfx_playing = -1;
+         mus_playing = -1;
+         log_message("SDLA: init %i Hz slice %i\n", audio_rate, slice);
++#if defined(__APPLE__) && SDL_VERSION_ATLEAST(2, 0, 0)
++        /* MacSourcePorts: use the soundfont bundled in the app's Resources
++           (a soundfont set with the game's own option still overrides it) */
++        {
++            char *base = SDL_GetBasePath();
++            if (base) {
++                char path[2048];
++                snprintf(path, sizeof(path), "%smusic.sf2", base);
++                Mix_SetSoundFonts(path);
++                SDL_free(base);
++            }
++        }
++#endif
+         {
+             const char *sfstr;
+             sfstr = Mix_GetSoundFonts();
+diff --git a/src/os/unix/os.c b/src/os/unix/os.c
+index bb78d128..5eee5bdc 100644
+--- a/src/os/unix/os.c
++++ b/src/os/unix/os.c
+@@ -102,6 +102,10 @@ const char **os_get_paths_data(void)
+             p = getenv("HOME");
+             if (p) {
+                 all_data_paths[i++] = util_concat(p, "/.local/share/1oom", NULL);;
++#ifdef __APPLE__
++                /* MacSourcePorts: where players put their MOO1 LBX files */
++                all_data_paths[i++] = util_concat(p, "/Library/Application Support/1oom", NULL);
++#endif
+             }
+         }
+         all_data_paths[i++] = lib_stralloc("/usr/share/1oom");

@@ -1,5 +1,5 @@
 # game/app specific values
-export APP_VERSION="1.0"
+export APP_VERSION="1.11.9"
 export PRODUCT_NAME="1oom"
 export PROJECT_NAME="1oom"
 export PORT_NAME="1oom"
@@ -10,13 +10,22 @@ export PKGINFO="APPLBGDM"
 # constants
 source ../common/constants.sh
 
+CROSS_FILE_DIR=$PWD
+
 cd ../../${PROJECT_NAME}
 
+# release tags look like v1.11.9
 if [ -n "$2" ]; then
-	export APP_VERSION="${2/v/}"
+	export APP_VERSION="${2#v}"
 	echo "Setting version to: $APP_VERSION"
 else
 	echo "Leaving version at : $APP_VERSION"
+fi
+
+# Look for the MOO1 LBX files in ~/Library/Application Support/1oom and load
+# the soundfont bundled in the app -- see the patch. Skip if it's already applied.
+if ! git apply -R --check "${CROSS_FILE_DIR}/msp-macos.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/msp-macos.patch"
 fi
 
 autoreconf -fi
