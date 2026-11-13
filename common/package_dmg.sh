@@ -1,3 +1,10 @@
+# sign_and_notarize.sh leaves this marker when signing or notarization failed
+NOTARIZE_FAILED_MARKER="${BUILT_PRODUCTS_DIR}/.${WRAPPER_NAME}.notarize-failed"
+if [ -f "${NOTARIZE_FAILED_MARKER}" ]; then
+  echo "error: not packaging ${WRAPPER_NAME}: $(cat "${NOTARIZE_FAILED_MARKER}")" >&2
+  exit 1
+fi
+
 # move app bundle to a subfolder
 mkdir -p ${BUILT_PRODUCTS_DIR}/source_folder
 mv "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}" ${BUILT_PRODUCTS_DIR}/source_folder
