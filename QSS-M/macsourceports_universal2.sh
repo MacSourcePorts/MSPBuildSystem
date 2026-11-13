@@ -23,17 +23,18 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}
 
 # This one has a script that does most of the work
-# Note that this folder gets renamed to "macOS" after 1.6.5 sometime
 
-cd MacOSX
+cd macOS
 # Xcode 27 won't build for anything below macOS 12.0, and the xcodebuild call lives in QSS-M's own script
 if ! grep -q "MACOSX_DEPLOYMENT_TARGET" build-macos.sh; then
 	gsed -i 's|^xcodebuild -project QuakeSpasm.xcodeproj -target QSS-M$|& MACOSX_DEPLOYMENT_TARGET=12.0|' build-macos.sh
 fi
+# overwrite SDKROOT to keep script's nettle happy
+export SDKROOT="$(xcrun --sdk macosx --show-sdk-path)"
 ./build-macos.sh
 cd ..
 
-mv "MacOSX/build/Release/QSS-M.app" "${BUILT_PRODUCTS_DIR}"
+mv "macOS/build/Release/QSS-M.app" "${BUILT_PRODUCTS_DIR}"
 
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
 
