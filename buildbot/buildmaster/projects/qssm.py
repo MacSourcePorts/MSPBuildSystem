@@ -86,7 +86,7 @@ qssm_factory.addStep(steps.ShellCommand(
         "python3",
         os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
         "--project", "QSS-M",
-        "--tag", util.Interpolate("QSS-M_%(prop:QSS-M_latest_tag)s"),
+        "--tag", util.Interpolate("QSS-M_%(prop:qssm_latest_tag)s"),
         "--version", util.Property('qssm_latest_tag'),
         "--dmg", util.Property('qssm_dmg_path')
     ],
@@ -109,7 +109,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="qssm-changes",
-        change_filter=util.ChangeFilter(project='qssm', branch='stable'),
+        change_filter=util.ChangeFilter(project='qssm'),
         treeStableTimer=60,
         builderNames=["qssm-builder"]),
     schedulers.ForceScheduler(

@@ -1,6 +1,6 @@
 [
     {
-        "filenameGlob": "Doom64EXPlus_-*.dmg",
+        "filenameGlob": "DOOM64EXPlus-*.dmg",
         "sourcePortStub": "doom64ex",
         "buildType": 1
     }

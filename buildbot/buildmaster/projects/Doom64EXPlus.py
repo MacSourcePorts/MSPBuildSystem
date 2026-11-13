@@ -81,8 +81,8 @@ Doom64EXPlus_factory.addStep(steps.ShellCommand(
         "python3",
         os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/common/publish_release.py"),
         "--project", "Doom64EX-Plus",
-        "--tag", util.Interpolate("Doom64EXPlus_%(prop:Doom64EXPlus_latest_tag)s"),
-        "--version", util.Property('Doom64EXPlus_latest_tag'),
+        "--tag", util.Interpolate("Doom64EXPlus_%(prop:Doom64EX-Plus_latest_tag)s"),
+        "--version", util.Property('Doom64EX-Plus_latest_tag'),
         "--dmg", util.Property('Doom64EXPlus_dmg_path')
     ],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/Doom64EX-Plus"),
@@ -104,7 +104,7 @@ builder_configs = [
 scheduler_list = [ 
     schedulers.SingleBranchScheduler(
         name="Doom64EX-Plus-changes",
-        change_filter=util.ChangeFilter(project='Doom64EX-Plus', branch='stable'),
+        change_filter=util.ChangeFilter(project='Doom64EX-Plus'),
         treeStableTimer=60,
         builderNames=["Doom64EX-Plus-builder"]),
     schedulers.ForceScheduler(
