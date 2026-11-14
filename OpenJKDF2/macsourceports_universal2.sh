@@ -24,6 +24,10 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 
 # because this port does so much of the packaging itself all we need to do is run the script
 gsed -i 's|opt/homebrew/opt/llvm@19/bin|usr/bin|' "distpkg_macos.sh"
+
+# Stop clang 21+ from breaking OpenJKDF2's 16-bit wchar_t
+gsed -i '/fno-builtin-wcslen/! s|\(CMAKE_C\(XX\)\?_FLAGS.*\)-fshort-wchar|\1-fshort-wchar -fno-builtin-wcslen|' \
+	cmake_modules/plat_macos.cmake cmake_modules/plat_macos_x86_64.cmake
 export VERBOSE=1
 ./distpkg_macos.sh
 
