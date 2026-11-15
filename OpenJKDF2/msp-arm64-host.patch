@@ -1,0 +1,93 @@
+diff --git a/cmake_modules/build_protobuf.cmake b/cmake_modules/build_protobuf.cmake
+index cabc0256..2ab98811 100644
+--- a/cmake_modules/build_protobuf.cmake
++++ b/cmake_modules/build_protobuf.cmake
+@@ -112,11 +112,12 @@ ExternalProject_Add(
+     BINARY_DIR             ${Protobuf_ROOT}
+     INSTALL_DIR            ${Protobuf_ROOT}
+     UPDATE_DISCONNECTED    TRUE
++    LIST_SEPARATOR    |
+     CMAKE_ARGS             --toolchain ${CMAKE_TOOLCHAIN_FILE}
+                            --install-prefix ${Protobuf_ROOT}
+                            -DCMAKE_INSTALL_LIBDIR=lib
+                            -DCMAKE_BUILD_TYPE:STRING=Release
+-                           -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
++                           -DCMAKE_OSX_ARCHITECTURES=arm64|x86_64
+                            ${PROTOBUF_EXTRA_FLAGS}
+                            -DCMAKE_POLICY_DEFAULT_CMP0074:STRING=NEW
+                            -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+diff --git a/cmake_modules/build_zlib.cmake b/cmake_modules/build_zlib.cmake
+index 5dd37440..322b9c67 100644
+--- a/cmake_modules/build_zlib.cmake
++++ b/cmake_modules/build_zlib.cmake
+@@ -32,11 +32,12 @@ ExternalProject_Add(
+     BINARY_DIR          ${ZLIB_BINARY_DIR}
+     INSTALL_DIR         ${ZLIB_INSTALL_DIR}
+     UPDATE_DISCONNECTED TRUE
++    LIST_SEPARATOR |
+     CMAKE_ARGS          --install-prefix ${ZLIB_INSTALL_DIR} -DCMAKE_INSTALL_LIBDIR=lib
+                         ${ZLIB_TOOLCHAIN_ARG}
+                         -DCMAKE_INSTALL_LIBDIR=lib
+                         -DCMAKE_BUILD_TYPE:STRING=Release
+-                        -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
++                        -DCMAKE_OSX_ARCHITECTURES=arm64|x86_64
+                         -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+                         -DZLIB_BUILD_TESTING=OFF
+     BUILD_BYPRODUCTS    ${ZLIB_STATIC_LIBRARY_PATH} ${ZLIB_SHARED_LIBRARY_PATH}
+diff --git a/cmake_modules/toolchain_macos_x86_64.cmake b/cmake_modules/toolchain_macos_x86_64.cmake
+index c4ead948..ddd05839 100644
+--- a/cmake_modules/toolchain_macos_x86_64.cmake
++++ b/cmake_modules/toolchain_macos_x86_64.cmake
+@@ -1,4 +1,6 @@
+-set(CMAKE_OSX_ARCHITECTURES "x86_64")
++if(NOT CMAKE_OSX_ARCHITECTURES)
++    set(CMAKE_OSX_ARCHITECTURES "x86_64")
++endif()
+ set(PLAT_MACOS_X86_64 TRUE)
+ 
+ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+@@ -11,4 +13,5 @@ set(CMAKE_IGNORE_PATH "/opt/homebrew")
+ set(CMAKE_IGNORE_PATH "/opt/homebrew/include")
+ set(CMAKE_IGNORE_PATH "/opt/homebrew/lib")
+ 
+-list(APPEND CMAKE_PREFIX_PATH /usr/local)
+\ No newline at end of file
++list(APPEND CMAKE_PREFIX_PATH /usr/local)
++set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
+diff --git a/cmake_modules/toolchain_native.cmake b/cmake_modules/toolchain_native.cmake
+index 7b35e565..1cd58a0a 100644
+--- a/cmake_modules/toolchain_native.cmake
++++ b/cmake_modules/toolchain_native.cmake
+@@ -1 +1,2 @@
+-# No-op
+\ No newline at end of file
++# No-op
++set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
+diff --git a/distpkg_macos.sh b/distpkg_macos.sh
+index 13ede067..dd787fa1 100755
+--- a/distpkg_macos.sh
++++ b/distpkg_macos.sh
+@@ -31,8 +31,8 @@ export PKG_CONFIG_PATH_OLD=$PKG_CONFIG_PATH
+ 
+ cmake .. -DCMAKE_OSX_ARCHITECTURES=x86_64 -DPLAT_MACOS_X86_64=true --toolchain $(pwd)/../cmake_modules/toolchain_macos_x86_64.cmake -DCMAKE_OSX_ARCHITECTURES="x86_64" &&
+ cmake .. -DCMAKE_OSX_ARCHITECTURES=x86_64 -DPLAT_MACOS_X86_64=true --toolchain $(pwd)/../cmake_modules/toolchain_macos_x86_64.cmake -DCMAKE_OSX_ARCHITECTURES="x86_64" &&
+-(make -j $(nproc) PROTOBUF || make -j1 PROTOBUF) && 
+-( make -j $(nproc) openjkdf2-64 || make -j1 openjkdf2-64)
++(make -j $(sysctl -n hw.ncpu) PROTOBUF || make -j1 PROTOBUF) && 
++( make -j $(sysctl -n hw.ncpu) openjkdf2-64 || make -j1 openjkdf2-64)
+ if [ $? -ne 0 ]; then
+     exit -1
+ fi
+@@ -49,9 +49,9 @@ mkdir -p build_darwin64 && pushd build_darwin64
+ export PKG_CONFIG_PATH_OLD=$PKG_CONFIG_PATH
+ #export PKG_CONFIG_PATH=$PKG_CONFIG_PATH_OLD:/opt/homebrew/opt/openssl@3/lib/pkgconfig
+ 
+-cmake -DCMAKE_OSX_ARCHITECTURES=arm64 .. &&
+-(make -j $(nproc) PROTOBUF || make -j1 PROTOBUF) && 
+-(make -j $(nproc) openjkdf2-64 || make -j1 openjkdf2-64)
++cmake -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_NO_SYSTEM_FROM_IMPORTED=ON .. &&
++(make -j $(sysctl -n hw.ncpu) PROTOBUF || make -j1 PROTOBUF) && 
++(make -j $(sysctl -n hw.ncpu) openjkdf2-64 || make -j1 openjkdf2-64)
+ if [ $? -ne 0 ]; then
+     exit -1
+ fi

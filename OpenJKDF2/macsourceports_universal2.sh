@@ -11,6 +11,8 @@ export PKGINFO="APPLJKDF2"
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.15"
 
+CROSS_FILE_DIR=$PWD
+
 cd ../../${PROJECT_NAME}
 
 if [ -n "$2" ]; then
@@ -24,6 +26,16 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 
 # because this port does so much of the packaging itself all we need to do is run the script
 gsed -i 's|opt/homebrew/opt/llvm@19/bin|usr/bin|' "distpkg_macos.sh"
+
+# Build on an Apple Silicon Mac without Rosetta -- see the patch:
+# - protobuf (protoc runs during the build) and zlib are built universal,
+#   so the x86_64 pass doesn't make an x86_64-only protoc ("Bad CPU type")
+# - keep /usr/local's newer zlib headers out of the bundled libpng/zlib builds
+# - nproc doesn't exist on macOS; use sysctl
+# Skip if it's already applied.
+if ! git apply -R --check "${CROSS_FILE_DIR}/msp-arm64-host.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/msp-arm64-host.patch" || exit 1
+fi
 
 # Stop clang 21+ from breaking OpenJKDF2's 16-bit wchar_t
 gsed -i '/fno-builtin-wcslen/! s|\(CMAKE_C\(XX\)\?_FLAGS.*\)-fshort-wchar|\1-fshort-wchar -fno-builtin-wcslen|' \
