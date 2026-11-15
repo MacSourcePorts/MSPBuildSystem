@@ -66,6 +66,16 @@ crispydoom_factory.addStep(steps.ShellCommand(
     doStepIf=crispydoom_guard.should_build
 ))
 
+# The Git step left the submodules at master's commits. Move them to the tag's,
+# or the tag gets built against master's versions of its libraries.
+crispydoom_factory.addStep(steps.ShellCommand(
+    command=["git", "submodule", "update", "--init", "--recursive", "--force"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/crispy-doom"),
+    name="Update Submodules to Tag",
+    haltOnFailure=True,
+    doStepIf=crispydoom_guard.should_build
+))
+
 crispydoom_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/crispy-doom/macsourceports_universal2.sh"), "notarize", util.Property('crispydoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/crispy-doom"),

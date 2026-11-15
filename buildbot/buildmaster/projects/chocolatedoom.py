@@ -66,6 +66,16 @@ chocolatedoom_factory.addStep(steps.ShellCommand(
     doStepIf=chocolatedoom_guard.should_build
 ))
 
+# The Git step left the submodules at master's commits. Move them to the tag's,
+# or the tag gets built against master's versions of its libraries.
+chocolatedoom_factory.addStep(steps.ShellCommand(
+    command=["git", "submodule", "update", "--init", "--recursive", "--force"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/chocolate-doom"),
+    name="Update Submodules to Tag",
+    haltOnFailure=True,
+    doStepIf=chocolatedoom_guard.should_build
+))
+
 chocolatedoom_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/chocolate-doom/macsourceports_universal2.sh"), "notarize", util.Property('chocolatedoom_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/chocolate-doom"),

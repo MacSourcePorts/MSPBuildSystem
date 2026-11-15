@@ -65,6 +65,16 @@ dethrace_factory.addStep(steps.ShellCommand(
     doStepIf=dethrace_guard.should_build
 ))
 
+# The Git step left the submodules at master's commits. Move them to the tag's,
+# or the tag gets built against master's versions of its libraries.
+dethrace_factory.addStep(steps.ShellCommand(
+    command=["git", "submodule", "update", "--init", "--recursive", "--force"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/dethrace"),
+    name="Update Submodules to Tag",
+    haltOnFailure=True,
+    doStepIf=dethrace_guard.should_build
+))
+
 dethrace_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dethrace/macsourceports_universal2.sh"), "notarize", util.Property('dethrace_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dethrace"),

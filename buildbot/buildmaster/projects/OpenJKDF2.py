@@ -66,6 +66,17 @@ OpenJKDF2_factory.addStep(steps.ShellCommand(
     doStepIf=OpenJKDF2_guard.should_build
 ))
 
+# The Git step left the submodules at master's commits. Move them to the tag's,
+# or the tag gets built against master's libraries (master moved to SDL3, the
+# v0.9.9 tag still uses SDL2).
+OpenJKDF2_factory.addStep(steps.ShellCommand(
+    command=["git", "submodule", "update", "--init", "--recursive", "--force"],
+    workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/OpenJKDF2"),
+    name="Update Submodules to Tag",
+    haltOnFailure=True,
+    doStepIf=OpenJKDF2_guard.should_build
+))
+
 OpenJKDF2_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJKDF2/macsourceports_universal2.sh"), "notarize", util.Property('OpenJKDF2_latest_tag')],
     workdir=os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJKDF2"),
