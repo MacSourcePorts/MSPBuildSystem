@@ -1,5 +1,10 @@
 # game/app specific values
-export APP_VERSION="0.7.8"
+# Built from the latest upstream code. Upstream's last tag (v0.8.2) is old, so
+# it's only the base of the version; a dated build (MSP_VERSION_DATE) makes it
+# e.g. 0.8.2-20261114. The --match skips old fork tags like v0.78_2025-07-12
+# and upstream's own early v.0.5.x tags. Set before constants.sh so it gets dated.
+APP_VERSION=`git -C ../../systemshock describe --tags --abbrev=0 --match 'v[0-9]*.[0-9]*.[0-9]*'`
+export APP_VERSION="${APP_VERSION#v}"
 export ICONSFILENAME="systemshock"
 export PRODUCT_NAME="Shockolate"
 export PROJECT_NAME="systemshock"
@@ -18,8 +23,9 @@ rm -rf ${BUILT_PRODUCTS_DIR}
 # create makefiles with cmake
 mkdir ${BUILT_PRODUCTS_DIR}
 cd ${BUILT_PRODUCTS_DIR}
-# no bundled fluidsynth-lite is built, so this compiles against the FluidSynth 2.x headers in
-# /usr/local/include and has to link the matching 2.x library (libfluidsynth.3), not the old 1.x one
+# Use the FluidSynth 2.x in /usr/local (found via pkg-config), like SDL2 and SDL2_mixer.
+# Upstream's BUNDLED option now downloads fluidsynth-lite, which fakes clock_gettime
+# for targets before 10.12 and so fails to build against the current SDK at 10.9.
 cmake \
     -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
     -DCMAKE_C_FLAGS="-DSDL_DISABLE_IMMINTRIN_H -DGL_SILENCE_DEPRECATION" \
@@ -29,8 +35,7 @@ cmake \
     -DENABLE_SOUND=ON \
     -DSDL2_DIR=/usr/local/opt/sdl2/lib/cmake/SDL2 \
     -DSDL2_MIXER_LIBRARIES=/usr/local/lib/libSDL2_mixer.dylib \
-    -DENABLE_FLUIDSYNTH="BUNDLED" \
-    -DFLUIDSYNTH_LIBRARY=/usr/local/lib/libfluidsynth.3.dylib \
+    -DENABLE_FLUIDSYNTH=ON \
     -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -B. -S..
 
