@@ -16,7 +16,8 @@ CROSS_FILE_DIR=$PWD
 cd ../../${PROJECT_NAME}
 
 # Built from LTCHIPS/rottexpr. Look for the game data in
-# ~/Library/Application Support/rott/ (used to be our fork). Skip if it's already applied.
+# ~/Library/Application Support/rott/ (used to be our fork), and use the bundled
+# soundfont for music. Skip if it's already applied.
 if ! git apply -R --check "${CROSS_FILE_DIR}/msp-appsupport.patch" 2>/dev/null; then
 	git apply "${CROSS_FILE_DIR}/msp-appsupport.patch" || exit 1
 fi
@@ -32,6 +33,10 @@ cd ..
 mkdir -p ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
 mv src/"${EXECUTABLE_NAME}" ${BUILT_PRODUCTS_DIR}/"${EXECUTABLE_FOLDER_PATH}"
 "../MSPBuildSystem/common/copy_dependencies.sh" ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}
+# The music is MIDI, played by SDL_mixer through FluidSynth, which needs a
+# soundfont -- the patch points it at this one (same file as 1oom's)
+mkdir -p ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
+cp ../MSPBuildSystem/rottexpr/music.sf2 ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}
 
 # create the app bundle
 "../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
