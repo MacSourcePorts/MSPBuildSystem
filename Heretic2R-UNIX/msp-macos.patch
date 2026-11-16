@@ -1,0 +1,166 @@
+diff --git a/Makefile b/Makefile
+index 467bc05f..0f10a88a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -6,7 +6,7 @@
+ 
+ # Detect OS
+ UNAME := $(shell uname -s)
+-ARCH := $(shell uname -m)
++ARCH ?= $(shell uname -m)
+ 
+ # Normalize architecture names
+ ifeq ($(ARCH),i686)
+@@ -95,8 +95,8 @@ ifeq ($(UNAME),OpenBSD)
+ endif
+ 
+ ifeq ($(UNAME),Darwin)
+-  CFLAGS += -DMACOS_X -arch $(ARCH)
+-  LDFLAGS := -arch $(ARCH)
++  CFLAGS += -DMACOS_X -arch $(ARCH) $(CFLAGS)
++  LDFLAGS := -arch $(ARCH) $(LDFLAGS)
+   # Symbols referenced by plugins are resolved at dlopen time from the host exe.
+   SHARED_LDFLAGS := -undefined dynamic_lookup
+   SHARED_EXT := .dylib
+diff --git a/src/game/src/q_Shared.h b/src/game/src/q_Shared.h
+index bdbdf9ba..6a223c01 100644
+--- a/src/game/src/q_Shared.h
++++ b/src/game/src/q_Shared.h
+@@ -220,6 +220,7 @@ qboolean Sys_IsDir(const char* path); // YQ2
+ qboolean Sys_IsFile(const char* path); // YQ2
+ qboolean Sys_GetWorkingDir(char* buffer, size_t len); // YQ2
+ qboolean Sys_GetOSUserDir(char* buffer, size_t len); //mxd
++qboolean Sys_GetExecutableDir(char *dir, size_t size);
+ 
+ // Directory searching.
+ #define SFF_ARCH	0x01
+diff --git a/src/quake2/src/client/cl_main.c b/src/quake2/src/client/cl_main.c
+index c98be8ef..66f28577 100644
+--- a/src/quake2/src/client/cl_main.c
++++ b/src/quake2/src/client/cl_main.c
+@@ -1341,7 +1341,7 @@ qboolean CL_WriteConfiguration(void) //mxd. Made public, changed return type fro
+ 	if (cls.state == ca_uninitialized)
+ 		return false;
+ 
+-	char path[MAX_QPATH];
++	char path[MAX_OSPATH];
+ 	Com_sprintf(path, sizeof(path), "%s/config.cfg", FS_Userdir()); // FS_Gamedir in Q2
+ 	FS_CreatePath(path); // H2
+ 
+diff --git a/src/quake2/src/cs_shared/files.c b/src/quake2/src/cs_shared/files.c
+index 0a6c59b0..5a44e821 100644
+--- a/src/quake2/src/cs_shared/files.c
++++ b/src/quake2/src/cs_shared/files.c
+@@ -787,7 +787,8 @@ void FS_InitFilesystem(void)
+ 	else
+ 	{
+ 		char workdir[MAX_OSPATH];
+-		Sys_GetWorkingDir(workdir, sizeof(workdir)); //mxd. _getcwd() -> Sys_GetWorkingDir().
++		// Sys_GetWorkingDir(workdir, sizeof(workdir)); //mxd. _getcwd() -> Sys_GetWorkingDir().
++		Sys_GetExecutableDir(workdir, sizeof(workdir));
+ 
+ 		fs_basedir = Cvar_Get("basedir", workdir, CVAR_NOSET); // "C:\Games\Heretic2"
+ 	}
+@@ -795,7 +796,22 @@ void FS_InitFilesystem(void)
+ 	//mxd. Skip fs_cddir / "-cddir" command line arg logic.
+ 
+ 	// Start up with 'base' by default.
+-	FS_AddGameDirectory(va("%s/"BASEDIRNAME, fs_basedir->string));
++	// FS_AddGameDirectory(va("%s/"BASEDIRNAME, fs_basedir->string));
++
++	char basepath[MAX_OSPATH];
++	Com_sprintf(basepath, sizeof(basepath),  "%s/base", fs_basedir->string);
++	FS_AddGameDirectory(basepath);
++
++	#ifdef __APPLE__
++	{
++		char osdir[MAX_OSPATH];
++
++		if (Sys_GetOSUserDir(osdir, sizeof(osdir)))
++		{
++			FS_AddGameDirectory(va("%s/"BASEDIRNAME, osdir));
++		}
++	}
++	#endif
+ 
+ 	// Any set gamedirs will be freed up to here.
+ 	fs_base_searchpaths = fs_searchpaths;
+diff --git a/src/quake2/src/unix/sys_unix.c b/src/quake2/src/unix/sys_unix.c
+index c4a8b3dd..3b45323b 100644
+--- a/src/quake2/src/unix/sys_unix.c
++++ b/src/quake2/src/unix/sys_unix.c
+@@ -36,6 +36,8 @@
+ 
+ #ifdef __APPLE__
+ #include <mach/mach_time.h>
++#include <mach-o/dyld.h>
++#include <libgen.h>
+ #endif
+ 
+ #include <sys/select.h>
+@@ -233,6 +235,24 @@ qboolean Sys_GetWorkingDir(char* buffer, size_t len)
+ 	return false;
+ }
+ 
++qboolean Sys_GetExecutableDir(char *dir, size_t size)
++{
++    char path[PATH_MAX];
++    uint32_t len = sizeof(path);
++
++    if (_NSGetExecutablePath(path, &len) != 0)
++        return false;
++
++    char resolved[PATH_MAX];
++    if (realpath(path, resolved) == NULL)
++        return false;
++
++    char *d = dirname(resolved);
++
++	strlcpy(dir, d, size);
++    return true;
++}
++
+ static DIR* finddir = NULL;
+ static char findpath[MAX_OSPATH];
+ static char findpattern[MAX_OSPATH];
+@@ -390,8 +410,11 @@ qboolean Sys_GetOSUserDir(char* buffer, size_t len)
+ 	char* home = getenv("HOME");
+ 	if (!home)
+ 		return false;
+-
++#if defined(__APPLE__)
++	snprintf(buffer, len, "%s/Library/Application Support/Heretic2", home);
++#else
+ 	snprintf(buffer, len, "%s/.Heretic2R", home);
++#endif
+ 
+ 	if (!Sys_IsDir(buffer))
+ 		Sys_Mkdir(buffer);
+diff --git a/src/quake2/src/unix/vid_sdl3.c b/src/quake2/src/unix/vid_sdl3.c
+index 165b670a..6adda086 100644
+--- a/src/quake2/src/unix/vid_sdl3.c
++++ b/src/quake2/src/unix/vid_sdl3.c
+@@ -302,7 +302,8 @@ qboolean VID_InitGraphics(int width, int height)
+ 
+     const char* driver = SDL_GetCurrentVideoDriver();
+     const qboolean highdpi = (vid_highdpiaware->value != 0) && (driver != NULL) &&
+-                             (SDL_strcmp(driver, "wayland") == 0 || SDL_strcmp(driver, "x11") == 0);
++                             (SDL_strcmp(driver, "wayland") == 0 || SDL_strcmp(driver, "x11") == 0 ||
++                              SDL_strcmp(driver, "cocoa") == 0);
+     if (highdpi)
+         flags |= SDL_WINDOW_HIGH_PIXEL_DENSITY;
+ 
+@@ -332,6 +333,13 @@ qboolean VID_InitGraphics(int width, int height)
+         return false;
+     }
+ 
++#ifdef __APPLE__
++    // macOS: use desktop fullscreen rather than switching the display mode, and wait
++    // for the fullscreen transition so the drawable size read below is the final one.
++    if ((int)vid_fullscreen->value == 1)
++        SDL_SyncWindow(window);
++    else
++#endif
+     if ((int)vid_fullscreen->value == 1)
+     {
+         SDL_DisplayMode closest;

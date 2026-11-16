@@ -1,5 +1,10 @@
 # game/app specific values
-export APP_VERSION="1.0"
+# Built from the latest m0rb/Heretic2R-UNIX code, versioned by its newest release
+# tag reachable from it plus the date (MSP_VERSION_DATE), e.g. R6-20261115.
+# R1-unix..R6-unix all sit on one commit, so git describe would pick any of
+# them; sort by version instead. Set before constants.sh so it gets dated.
+APP_VERSION=`git -C ../../Heretic2R-UNIX tag --merged HEAD --list 'R[0-9]*-unix' --sort=-v:refname | head -1`
+export APP_VERSION="${APP_VERSION%-unix}"
 export PRODUCT_NAME="Heretic2R-UNIX"
 export PROJECT_NAME="Heretic2R-UNIX"
 export PORT_NAME="Heretic2R-UNIX"
@@ -15,7 +20,18 @@ ARM64_LDFLAGS="-mmacosx-version-min=10.14 -headerpad_max_install_names"
 x86_64_CFLAGS="-mmacosx-version-min=10.14"
 x86_64_LDFLAGS="-mmacosx-version-min=10.14 -headerpad_max_install_names"
 
+CROSS_FILE_DIR=$PWD
+
 cd ../../${PROJECT_NAME}
+
+# Built from m0rb/Heretic2R-UNIX. Apply what used to live in our fork:
+# - Makefile takes ARCH, CFLAGS and LDFLAGS from us (for the universal build)
+# - find base/ next to the executable, and also use ~/Library/Application Support/Heretic2
+# - config.cfg path buffer big enough for that longer user dir
+# Skip if it's already applied.
+if ! git apply -R --check "${CROSS_FILE_DIR}/msp-macos.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/msp-macos.patch" || exit 1
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 rm -rf ${X86_64_BUILD_FOLDER}
