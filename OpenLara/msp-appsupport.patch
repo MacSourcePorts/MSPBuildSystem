@@ -1,0 +1,36 @@
+diff --git a/src/platform/osx/OpenLara.xcodeproj/project.pbxproj b/src/platform/osx/OpenLara.xcodeproj/project.pbxproj
+index b867a01..9443129 100644
+--- a/src/platform/osx/OpenLara.xcodeproj/project.pbxproj
++++ b/src/platform/osx/OpenLara.xcodeproj/project.pbxproj
+@@ -217,10 +217,6 @@
+ 			isa = PBXResourcesBuildPhase;
+ 			buildActionMask = 2147483647;
+ 			files = (
+-				99BF38D221E7202500D90A38 /* audio in Resources */,
+-				99BF38D321E7202500D90A38 /* DELDATA in Resources */,
+-				99BF38D421E7202500D90A38 /* PSXDATA in Resources */,
+-				99BF38D521E7202500D90A38 /* FMV in Resources */,
+ 				9975BF0B21E9F5D300F13342 /* Assets.xcassets in Resources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+diff --git a/src/platform/osx/main.mm b/src/platform/osx/main.mm
+index 4f61077..92136e4 100644
+--- a/src/platform/osx/main.mm
++++ b/src/platform/osx/main.mm
+@@ -535,12 +535,10 @@ int main() {
+     [view setWantsBestResolutionOpenGLSurface:enableRetina];
+     
+     // get path to game content
+-    // Use the directory containing the .app bundle so that game data folders
+-    // (level/, audio/, DATA/, etc.) placed next to the app are found correctly.
+-    NSBundle *bundle    = [NSBundle mainBundle];
+-    NSURL *parentURL    = bundle.bundleURL.URLByDeletingLastPathComponent;
+-    [parentURL getFileSystemRepresentation:contentDir maxLength:sizeof(contentDir)];
+-    strcat(contentDir, "/");
++    // MacSourcePorts: game data lives in ~/Library/Application Support/OpenLara/tr1/
++    // so the app can be a standalone, signed bundle anywhere.
++    [supportPath getCString:contentDir maxLength:sizeof(contentDir) encoding:NSUTF8StringEncoding];
++    strcat(contentDir, "/tr1/");
+     
+     [supportPath getCString:saveDir maxLength:sizeof(saveDir) encoding:NSUTF8StringEncoding];
+     strcat(saveDir, "/");
