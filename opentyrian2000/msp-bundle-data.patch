@@ -1,0 +1,34 @@
+diff --git a/src/file.c b/src/file.c
+index 0329098..5e865ed 100644
+--- a/src/file.c
++++ b/src/file.c
+@@ -33,9 +33,29 @@ const char *custom_data_dir = NULL;
+ // finds the Tyrian data directory
+ const char *data_dir(void)
+ {
++#ifdef __APPLE__
++	// MacSourcePorts: the data folder inside the app bundle. In a bundle,
++	// SDL_GetBasePath() is .../Contents/Resources/
++	static char *bundle_data_dir = NULL;
++	if (bundle_data_dir == NULL)
++	{
++		char *base_path = SDL_GetBasePath();
++		if (base_path != NULL)
++		{
++			size_t size = strlen(base_path) + strlen("data") + 1;
++			bundle_data_dir = malloc(size);
++			snprintf(bundle_data_dir, size, "%sdata", base_path);
++			SDL_free(base_path);
++		}
++	}
++#endif
++
+ 	const char *const dirs[] =
+ 	{
+ 		custom_data_dir,
++#ifdef __APPLE__
++		bundle_data_dir,
++#endif
+ 		TYRIAN_DIR,
+ 		"data",
+ 		".",
