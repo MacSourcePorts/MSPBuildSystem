@@ -1,0 +1,35 @@
+diff --git a/src/rt_main.c b/src/rt_main.c
+index 4238d18..dcfde0e 100644
+--- a/src/rt_main.c
++++ b/src/rt_main.c
+@@ -23,6 +23,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ #include <fcntl.h>
+ #include <string.h>
+ #include <signal.h>
++#ifdef __APPLE__
++#include <unistd.h>
++#endif
+ 
+ #if USE_SDL
+ /* Need to redefine main to SDL_main on some platforms... */
+@@ -178,6 +181,20 @@ int main (int argc, char *argv[])
+     }
+ #endif
+ 
++#if defined(__APPLE__) && !defined(PLATFORM_MACOSX)
++    {
++        /* MacSourcePorts: the game data lives in ~/Library/Application Support/rott/
++           (SDL creates it if it's missing). */
++        char *path = SDL_GetPrefPath("", "rott");
++        if (path != NULL)
++        {
++            printf("Changing to working directory: \"%s\"\n", path);
++            chdir(path);
++            SDL_free(path);
++        }
++    }
++#endif
++
+     signal (11, crash_print);
+ 
+     if (setup_homedir() == -1) return 1;

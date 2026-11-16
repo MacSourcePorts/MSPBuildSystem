@@ -11,7 +11,15 @@ export PKGINFO="APPLROTT"
 source ../common/constants.sh
 export MINIMUM_SYSTEM_VERSION="10.9"
 
+CROSS_FILE_DIR=$PWD
+
 cd ../../${PROJECT_NAME}
+
+# Built from LTCHIPS/rottexpr. Look for the game data in
+# ~/Library/Application Support/rott/ (used to be our fork). Skip if it's already applied.
+if ! git apply -R --check "${CROSS_FILE_DIR}/msp-appsupport.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/msp-appsupport.patch" || exit 1
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 mkdir ${BUILT_PRODUCTS_DIR}
