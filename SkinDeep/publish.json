@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "SkinDeep-*.dmg",
+        "sourcePortStub": "skindeep",
+        "buildType": 1
+    }
+]
