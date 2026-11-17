@@ -6,7 +6,7 @@ export PROJECT_NAME="dxx-rebirth"
 
 # constants
 source ../common/constants.sh
-export MINIMUM_SYSTEM_VERSION="10.13"
+export MINIMUM_SYSTEM_VERSION="11.0"
 
 # this port is not HiDPI aware
 export HIGH_RESOLUTION_CAPABLE="false"
@@ -29,10 +29,10 @@ mkdir ${BUILT_PRODUCTS_DIR}
 # because this port does so much of the work itself all we need to do is 
 # run the build command twice for the two platforms
 rm -rf ${X86_64_BUILD_FOLDER}
-scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${X86_64_BUILD_FOLDER} --config=force CPPFLAGS="-mmacosx-version-min=10.13 -arch x86_64" CXXFLAGS="-mmacosx-version-min=10.13 -arch x86_64" LINKFLAGS="-mmacosx-version-min=10.13 -arch x86_64" -j$NCPU
+scons PKG_CONFIG=/usr/local/bin/pkg-config opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${X86_64_BUILD_FOLDER} --config=force CPPFLAGS="-mmacosx-version-min=${MINIMUM_SYSTEM_VERSION} -arch x86_64" CXXFLAGS="-mmacosx-version-min=${MINIMUM_SYSTEM_VERSION} -arch x86_64" LINKFLAGS="-mmacosx-version-min=${MINIMUM_SYSTEM_VERSION} -arch x86_64" -j$NCPU
 
 rm -rf ${ARM64_BUILD_FOLDER}
-scons opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${ARM64_BUILD_FOLDER} --config=force CPPFLAGS="-mmacosx-version-min=10.13 -arch arm64" CXXFLAGS="-mmacosx-version-min=10.13 -arch arm64" LINKFLAGS="-mmacosx-version-min=10.13 -arch arm64" -j$NCPU
+scons PKG_CONFIG=/usr/local/bin/pkg-config opengl=1 sdlmixer=1 d1x=1 d2x=1 macos_add_frameworks=0 builddir=${ARM64_BUILD_FOLDER} --config=force CPPFLAGS="-mmacosx-version-min=${MINIMUM_SYSTEM_VERSION} -arch arm64" CXXFLAGS="-mmacosx-version-min=${MINIMUM_SYSTEM_VERSION} -arch arm64" LINKFLAGS="-mmacosx-version-min=${MINIMUM_SYSTEM_VERSION} -arch arm64" -j$NCPU
 
 # descent1 values
 export PRODUCT_NAME="D1X-Rebirth"
