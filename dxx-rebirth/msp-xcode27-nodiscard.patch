@@ -1,0 +1,26 @@
+diff --git a/SConstruct b/SConstruct
+index 7326fc076..2d592b603 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -601,8 +601,8 @@ struct A_%(N)s
+ 		Cxx20RequiredFeature('std::make_unique_for_overwrite', '''
+ #include <memory>
+ ''', '''
+-	std::make_unique_for_overwrite<int>();
+-	std::make_unique_for_overwrite<int[]>(1);
++	(void)std::make_unique_for_overwrite<int>();
++	(void)std::make_unique_for_overwrite<int[]>(1);
+ '''),
+ 		Cxx20RequiredFeature('requires clause', '''
+ template <typename T>
+@@ -754,8 +754,8 @@ int a_%(N)s = U_%(N)s + 1;
+ 		Cxx14RequiredFeature('std::make_unique', '''
+ #include <memory>
+ ''', '''
+-	std::make_unique<int>(0);
+-	std::make_unique<int[]>(1);
++	(void)std::make_unique<int>(0);
++	(void)std::make_unique<int[]>(1);
+ '''),
+ 		Cxx11RequiredFeature('std::addressof', '''
+ #include <memory>

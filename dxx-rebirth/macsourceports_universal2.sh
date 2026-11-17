@@ -22,6 +22,13 @@ if ! git apply -R --check "${CROSS_FILE_DIR}/msp-soundfont.patch" 2>/dev/null; t
 	git apply "${CROSS_FILE_DIR}/msp-soundfont.patch" || exit 1
 fi
 
+# Xcode 27's libc++ marks std::make_unique [[nodiscard]], so SConstruct's
+# configure checks that discard its result fail under -Werror and the build
+# reports "C++ compiler does not support std::make_unique". Skip if applied.
+if ! git apply -R --check "${CROSS_FILE_DIR}/msp-xcode27-nodiscard.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/msp-xcode27-nodiscard.patch" || exit 1
+fi
+
 rm -rf ${BUILT_PRODUCTS_DIR}
 
 mkdir ${BUILT_PRODUCTS_DIR}
