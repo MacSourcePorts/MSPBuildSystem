@@ -11,7 +11,16 @@ export MINIMUM_SYSTEM_VERSION="10.13"
 # this port is not HiDPI aware
 export HIGH_RESOLUTION_CAPABLE="false"
 
+CROSS_FILE_DIR=$PWD
+
 cd ../../${PROJECT_NAME}
+
+# The music is MIDI, which SDL_mixer plays with FluidSynth, which needs a
+# soundfont: point it at the music.sf2 bundled in each app (copied in below).
+# Skip if it's already applied.
+if ! git apply -R --check "${CROSS_FILE_DIR}/msp-soundfont.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/msp-soundfont.patch" || exit 1
+fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
 
@@ -45,6 +54,7 @@ export ICONS="${ICONSFILENAME}.icns"
 
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cp "../../MSPBuildSystem/dxx-rebirth/music.sf2" "${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 cd ..
 
 # sign and notarize
@@ -73,6 +83,7 @@ export ICONS="${ICONSFILENAME}.icns"
 
 cd ${BUILT_PRODUCTS_DIR}
 "../../MSPBuildSystem/common/copy_dependencies.sh" ${EXECUTABLE_FOLDER_PATH}/${EXECUTABLE_NAME} ${FRAMEWORKS_FOLDER_PATH}
+cp "../../MSPBuildSystem/dxx-rebirth/music.sf2" "${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 cd ..
 
 # sign and notarize

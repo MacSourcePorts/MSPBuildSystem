@@ -1,0 +1,25 @@
+diff --git a/similar/arch/sdl/digi_mixer.cpp b/similar/arch/sdl/digi_mixer.cpp
+index 177b5b6ed..a1efbae45 100644
+--- a/similar/arch/sdl/digi_mixer.cpp
++++ b/similar/arch/sdl/digi_mixer.cpp
+@@ -123,6 +123,20 @@ int digi_mixer_init()
+ #endif
+ 	if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) Error("SDL audio initialisation failed: %s.", SDL_GetError());
+ 
++#if defined(__APPLE__) && SDL_MAJOR_VERSION != 1
++	/* MacSourcePorts: SDL_mixer plays the MIDI music with FluidSynth, which
++	 * needs a soundfont -- use the one bundled in the app's Resources (an
++	 * SDL_SOUNDFONTS set by the player still wins).
++	 */
++	if (const auto base_path = SDL_GetBasePath())
++	{
++		char soundfont[1024];
++		snprintf(soundfont, sizeof(soundfont), "%smusic.sf2", base_path);
++		setenv("SDL_SOUNDFONTS", soundfont, 0);
++		SDL_free(base_path);
++	}
++#endif
++
+ #if SDL_MAJOR_VERSION == 1
+ 	if (Mix_OpenAudio(digi_sample_rate, MIX_OUTPUT_FORMAT, MIX_OUTPUT_CHANNELS, SOUND_BUFFER_SIZE))
+ #else
