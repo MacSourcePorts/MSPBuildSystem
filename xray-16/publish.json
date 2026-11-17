@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "openxray-*.dmg",
+        "sourcePortStub": "openxray",
+        "buildType": 1
+    }
+]

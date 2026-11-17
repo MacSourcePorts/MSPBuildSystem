@@ -1,0 +1,21 @@
+diff --git a/src/xrCore/LocatorAPI.cpp b/src/xrCore/LocatorAPI.cpp
+index 84adc7391..81ae8880c 100644
+--- a/src/xrCore/LocatorAPI.cpp
++++ b/src/xrCore/LocatorAPI.cpp
+@@ -899,7 +899,16 @@ void CLocatorAPI::setup_fs_path(pcstr fs_name)
+              * I propose adding shaders from <CMAKE_INSTALL_FULL_DATAROOTDIR>/openxray/gamedata/shaders so that we remove unnecessary questions from users who want to start
+              * the game using resources not from the proposed ~/.local/share/GSC Game World/Game in this case, this section of code can be safely removed */
+             chdir(pref_path);
++#if defined(XR_PLATFORM_APPLE)
++            // MacSourcePorts: fsgame.ltx and the OpenGL shaders are bundled in
++            // the app's Resources folder (Resources/openxray/...)
++            string_path install_dir;
++            char* bundle_dir = SDL_GetBasePath();
++            xr_strcpy(install_dir, bundle_dir ? bundle_dir : "");
++            SDL_free(bundle_dir);
++#else
+             static constexpr pcstr install_dir = CMAKE_INSTALL_FULL_DATAROOTDIR;
++#endif
+             string_path tmp, tmp_link;
+             xr_sprintf(tmp, "%sfsgame.ltx", pref_path);
+             struct stat statbuf;

@@ -1,0 +1,22 @@
+diff --git a/Externals/LuaJIT-proj/CMakeLists.txt b/Externals/LuaJIT-proj/CMakeLists.txt
+index cf6006826..f234dfacd 100644
+--- a/Externals/LuaJIT-proj/CMakeLists.txt
++++ b/Externals/LuaJIT-proj/CMakeLists.txt
+@@ -137,8 +137,16 @@ set(CCOPTIONS "${CCOPT};${XCFLAGS}")
+ 
+ target_compile_options(xrLuaJIT PRIVATE ${CCOPTIONS})
+ 
++# MacSourcePorts: detect the target architecture, not the build machine's, so
++# an x86_64 build on Apple Silicon (or the reverse) gets the right VM.
++if (APPLE AND CMAKE_OSX_ARCHITECTURES)
++    foreach(arch ${CMAKE_OSX_ARCHITECTURES})
++        list(APPEND TESTARCH_FLAGS -arch ${arch})
++    endforeach()
++endif()
++
+ execute_process(
+-    COMMAND ${CMAKE_C_COMPILER} ${CCOPTIONS} -E lj_arch.h -dM
++    COMMAND ${CMAKE_C_COMPILER} ${CCOPTIONS} ${TESTARCH_FLAGS} -E lj_arch.h -dM
+     WORKING_DIRECTORY "${LUAJIT_DIR}"
+     OUTPUT_VARIABLE TESTARCH_OUTPUT
+     ERROR_VARIABLE TESTARCH_ERROR
