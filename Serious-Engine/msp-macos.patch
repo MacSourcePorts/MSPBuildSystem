@@ -1,0 +1,140 @@
+diff --git a/Sources/CMakeLists.txt b/Sources/CMakeLists.txt
+index 87889fd..5c8fc88 100755
+--- a/Sources/CMakeLists.txt
++++ b/Sources/CMakeLists.txt
+@@ -115,8 +115,6 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_C_CO
+ 		add_compile_options(-marm)
+                 elseif(NOT (MACOSX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64"))
+                     add_compile_options(-mfpu=neon)
+-		else()
+-		add_compile_options(-mfpu=neon)
+ 		endif()
+ 		add_compile_options(-fsigned-char)
+ 	endif()
+diff --git a/Sources/Engine/Base/Unix/UnixFileSystem.cpp b/Sources/Engine/Base/Unix/UnixFileSystem.cpp
+index 779a0e6..2b731a3 100644
+--- a/Sources/Engine/Base/Unix/UnixFileSystem.cpp
++++ b/Sources/Engine/Base/Unix/UnixFileSystem.cpp
+@@ -114,7 +114,13 @@ BOOL CFileSystem::IsDirectory(const char *fname)
+ 
+ CUnixFileSystem::CUnixFileSystem(const char *argv0, const char *gamename)
+ {
++#ifdef __APPLE__
++    // MacSourcePorts: no /proc on macOS. The app bundle's Resources folder,
++    // where the game libraries are, stands in for the executable's folder.
++    exePath = SDL_GetBasePath();
++#else
+     exePath = readSymLink("/proc/self/exe");
++#endif
+     userDir = SDL_GetPrefPath("Serious Engine", gamename);
+ }
+ 
+diff --git a/Sources/Engine/Engine.cpp b/Sources/Engine/Engine.cpp
+index 90700a9..9076200 100755
+--- a/Sources/Engine/Engine.cpp
++++ b/Sources/Engine/Engine.cpp
+@@ -269,6 +269,14 @@ static void AnalyzeApplicationPath(void)
+   char strTmpPath[MAX_PATH] = "";
+ 
+   _pFileSystem->GetExecutablePath(strExePath, sizeof (strExePath)-1);
++#ifdef __APPLE__
++  // MacSourcePorts: the game data lives in the user directory,
++  // ~/Library/Application Support/Serious Engine/<game>/
++  _pFileSystem->GetUserDirectory(strDirPath, sizeof (strDirPath)-1);
++  strDirPath[sizeof(strDirPath)-1] = 0;
++  delete[] dirsep;
++  return;
++#endif
+   strncpy(strTmpPath, strExePath, sizeof(strTmpPath)-1);
+   strDirPath[sizeof(strTmpPath)-1] = 0;
+   // remove name from application path
+diff --git a/Sources/Engine/Entities/EntityClass.cpp b/Sources/Engine/Entities/EntityClass.cpp
+index 1fb1881..66ff978 100644
+--- a/Sources/Engine/Entities/EntityClass.cpp
++++ b/Sources/Engine/Entities/EntityClass.cpp
+@@ -247,7 +247,13 @@ void CEntityClass::Read_t( CTStream *istr) // throw char *
+     CTFileName fnmExpanded;
+     ExpandFilePath(EFP_READ, fnmDLL, fnmExpanded);
+     dllName = fnmExpanded;
++#ifdef __APPLE__
++    // MacSourcePorts: the libraries are in the app bundle, not the game data
++    // folder -- load by name so the loader finds them next to the executable.
++    ec_hiClassDLL = CDynamicLoader::GetInstance(fnmDLL.FileName());
++#else
+     ec_hiClassDLL = CDynamicLoader::GetInstance(fnmExpanded);
++#endif
+   #endif
+ 
+   if (ec_hiClassDLL->GetError() != NULL)
+diff --git a/Sources/Engine/Terrain/TerrainMisc.cpp b/Sources/Engine/Terrain/TerrainMisc.cpp
+index fbf6a5b..9cb1884 100755
+--- a/Sources/Engine/Terrain/TerrainMisc.cpp
++++ b/Sources/Engine/Terrain/TerrainMisc.cpp
+@@ -312,6 +312,9 @@ Rect ExtractPolygonsInBox(CTerrain *ptrTerrain, const FLOATaabbox3D &bboxExtract
+ #if !defined(__i386__) && !defined(__x86_64__)
+ #if defined(PLATFORM_PANDORA) || defined(PLATFORM_PYRA)
+   #define Isinf(a) (((*(unsigned int*)&a)&0x7fffffff)==0x7f800000)
++#elif defined(__APPLE__)
++  // MacSourcePorts: isinff is glibc-only
++  #define Isinf isinf
+ #else
+   #define Isinf isinff
+ #endif
+diff --git a/Sources/Engine/World/WorldCollisionGrid.cpp b/Sources/Engine/World/WorldCollisionGrid.cpp
+index b65c00b..7bf606d 100755
+--- a/Sources/Engine/World/WorldCollisionGrid.cpp
++++ b/Sources/Engine/World/WorldCollisionGrid.cpp
+@@ -50,6 +50,9 @@ static inline void BoxToGrid(
+ #if !defined(__i386__) && !defined(__x86_64__)
+ #if defined(PLATFORM_PANDORA) || defined(PLATFORM_PYRA)
+   #define Isinf(a) (((*(unsigned int*)&a)&0x7fffffff)==0x7f800000)
++#elif defined(__APPLE__)
++  // MacSourcePorts: isinff is glibc-only
++  #define Isinf isinf
+ #else
+   #define Isinf isinff
+ #endif
+diff --git a/Sources/SeriousSam/MenuGadgets.cpp b/Sources/SeriousSam/MenuGadgets.cpp
+index 858b0e4..c321146 100644
+--- a/Sources/SeriousSam/MenuGadgets.cpp
++++ b/Sources/SeriousSam/MenuGadgets.cpp
+@@ -622,10 +622,10 @@ void CMGHighScore::Render( CDrawPort *pdp)
+   strHighScores[0][5] = TRANS("Score");
+ 
+   {for (INDEX i=0; i<HIGHSCORE_COUNT; i++) {
+-    switch(_pGame->gm_ahseHighScores[i].hse_gdDifficulty) {
++    switch((int)_pGame->gm_ahseHighScores[i].hse_gdDifficulty) {
+     default:
+       ASSERT(FALSE);
+-    case (CSessionProperties::GameDifficulty)-100:
++    case -100:
+       strHighScores[i+1][1] = "---";
+       continue;
+       break;
+diff --git a/Sources/SeriousSam/SeriousSam.cpp b/Sources/SeriousSam/SeriousSam.cpp
+index 6dd64c1..03c61f5 100755
+--- a/Sources/SeriousSam/SeriousSam.cpp
++++ b/Sources/SeriousSam/SeriousSam.cpp
+@@ -451,7 +451,13 @@ void InitializeGame(void)
+     #endif
+   
+     const char *err;
++#ifdef __APPLE__
++    // MacSourcePorts: the libraries are in the app bundle, not the game data
++    // folder -- load by name so the loader finds them next to the executable.
++    CDynamicLoader *hGame = CDynamicLoader::GetInstance(fnmDLL.FileName());
++#else
+     CDynamicLoader *hGame = CDynamicLoader::GetInstance(fnmExpanded);
++#endif
+     if ((err = hGame->GetError()) != NULL) {
+       ThrowF_t("%s", err);
+     }
+@@ -1400,7 +1406,7 @@ void CheckModReload(void)
+     MessageBoxA(0, "Error launching the Mod!\n", "Serious Sam", MB_OK|MB_ICONERROR);
+ #else
+     execv(argv0, (char* const*)argv);
+-    fprintf(stderr, "Error launching Mod '%s'! execv(%s, ...)\n", strMod, argv0);
++    fprintf(stderr, "Error launching Mod '%s'! execv(%s, ...)\n", strMod.str_String, argv0);
+ #endif
+   }
+ }

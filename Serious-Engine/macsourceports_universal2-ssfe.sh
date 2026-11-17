@@ -13,12 +13,16 @@ source ../common/constants.sh
 source ../common/signing_values.local
 export MINIMUM_SYSTEM_VERSION="10.15"
 
+CROSS_FILE_DIR=$PWD
+
 cd ../../${PROJECT_NAME}
 
-# Newer clang no longer lets -Wno-error=enum-constexpr-conversion downgrade an out-of-range
-# enum value in a case label, so switch on the plain int value instead
-if grep -q "case (CSessionProperties::GameDifficulty)-100:" Sources/SeriousSam/MenuGadgets.cpp; then
-	gsed -i 's|switch(_pGame->gm_ahseHighScores\[i\].hse_gdDifficulty) {|switch((int)_pGame->gm_ahseHighScores[i].hse_gdDifficulty) {|; s|case (CSessionProperties::GameDifficulty)-100:|case -100:|' Sources/SeriousSam/MenuGadgets.cpp
+# Our macOS changes (formerly the MacSourcePorts fork): game data from
+# ~/Library/Application Support/Serious Engine/<game>/, game libraries from
+# the app's Resources, no -mfpu=neon on arm64, and the high score switch that
+# newer clang rejects. Skip if it's already applied.
+if ! git apply -R --check "${CROSS_FILE_DIR}/msp-macos.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/msp-macos.patch" || exit 1
 fi
 
 rm -rf ${BUILT_PRODUCTS_DIR}
