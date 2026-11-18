@@ -1,7 +1,7 @@
 [
     {
         "filenameGlob": "s25client-*.dmg",
-        "sourcePortStub": "s25client",
+        "sourcePortStub": "rttr",
         "buildType": 1
     }
 ]

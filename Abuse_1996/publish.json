@@ -1,6 +1,6 @@
 [
     {
-        "filenameGlob": "Abuse_1996-*.dmg",
+        "filenameGlob": "abuse-*.dmg",
         "sourcePortStub": "abuse-1996",
         "buildType": 1
     }

@@ -7,14 +7,19 @@ export ICONSFILENAME="gardens-of-kadesh"
 export EXECUTABLE_NAME="Homeworld"
 export PKGINFO="APPLGOFK"
 
-# TODO: be able to pass in tag
-
 # constants
 source ../common/constants.sh
 source ../common/signing_values.local
 export MINIMUM_SYSTEM_VERSION="12.0"
 
 cd ../../${PROJECT_NAME}
+
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	echo "Setting version to: $APP_VERSION"
+else
+	echo "Leaving version at: $APP_VERSION"
+fi
 
 cd tools/kas2c
 # lexer.l sets YY_NO_UNISTD_H, so the generated lexer.c calls isatty() undeclared,

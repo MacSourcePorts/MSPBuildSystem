@@ -1,11 +1,11 @@
 [
     {
-        "filenameGlob": "iortcwsp-*.dmg",
+        "filenameGlob": "iowolfsp-*.dmg",
         "sourcePortStub": "iortcwsp",
         "buildType": 1
     },
     {
-        "filenameGlob": "iortcwmp-*.dmg",
+        "filenameGlob": "iowolfmp-*.dmg",
         "sourcePortStub": "iortcwmp",
         "buildType": 1
     }

@@ -14,7 +14,13 @@ source ../common/constants.sh
 
 cd ../../${PROJECT_NAME}
 
-export APP_VERSION=`grep '^VERSION=' Makefile | sed -e 's/.*=\(.*\)/\1/'`
+# SP/Makefile's VERSION is e.g. 1.51d-SP; drop the -SP
+export APP_VERSION=`grep '^VERSION=' SP/Makefile | sed -e 's/.*=\(.*\)/\1/' -e 's/-SP$//'`
+# constants.sh dated the script's placeholder version; date this one instead
+if [ -n "${MSP_VERSION_DATE}" ]; then
+	export APP_VERSION="${APP_VERSION}-${MSP_VERSION_DATE}"
+	echo "Dated version: ${APP_VERSION}"
+fi
 
 export RANLIB=/usr/bin/ranlib
 export USE_INTERNAL_FREETYPE=0

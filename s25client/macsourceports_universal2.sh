@@ -1,5 +1,6 @@
 # game/app specific values
-export APP_VERSION="1.0"
+# its last release; the build is of master, so this gets the date appended
+export APP_VERSION="0.9.5"
 export PRODUCT_NAME="s25client"
 export PROJECT_NAME="s25client"
 export PORT_NAME="s25client"

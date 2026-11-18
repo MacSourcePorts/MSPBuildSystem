@@ -13,6 +13,13 @@ export MINIMUM_SYSTEM_VERSION="10.15"
 
 cd ../../${PROJECT_NAME}
 
+if [ -n "$2" ]; then
+	export APP_VERSION="${2/v/}"
+	echo "Setting version to: $APP_VERSION"
+else
+	echo "Leaving version at: $APP_VERSION"
+fi
+
 gsed -i '/#define[[:space:]]\+fdopen(fd,mode)[[:space:]]\+NULL/ d' neo/libs/zlib/zutil.h
 
 # ShaderMake is built and then run during the build to compile the shaders,
