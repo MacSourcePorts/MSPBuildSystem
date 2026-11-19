@@ -9,9 +9,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 uqm_publish_schedulers = {"uqm-daily", "uqm-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+uqm_guard = CommitGuard("uqm", force_scheduler_names={"uqm-force", "uqm-publish"})
 
 project_list = [
     util.Project(name="uqm", description="uqm source port project")
@@ -41,6 +45,7 @@ uqm_factory.addStep(steps.Git(
 ))
 
 uqm_factory.addStep(version_date_step())
+uqm_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/uqm"))
 
 uqm_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/uqm/macsourceports_universal2.sh"), "notarize"],
@@ -48,6 +53,7 @@ uqm_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=uqm_guard.should_build,
     extract_fn=make_release_extractor("uqm_dmg_path", "uqm_version"),
 ))
 
@@ -55,12 +61,14 @@ uqm_factory.addStep(RequireProperty(
     "uqm_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=uqm_guard.should_build,
 ))
 
 uqm_factory.addStep(RequireProperty(
     "uqm_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=uqm_guard.should_build,
 ))
 
 uqm_factory.addStep(steps.ShellCommand(
@@ -77,6 +85,7 @@ uqm_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, uqm_publish_schedulers),
+        uqm_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

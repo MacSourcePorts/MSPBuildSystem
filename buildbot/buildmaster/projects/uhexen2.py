@@ -7,9 +7,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 uhexen2_publish_schedulers = {"uhexen2-daily", "uhexen2-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+uhexen2_guard = CommitGuard("uhexen2", force_scheduler_names={"uhexen2-force", "uhexen2-publish"})
 
 project_list = [
     util.Project(name="uhexen2",description="uhexen2 source port project")
@@ -37,6 +41,7 @@ uhexen2_factory.addStep(steps.Git(
 ))
 
 uhexen2_factory.addStep(version_date_step())
+uhexen2_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/uhexen2"))
 
 uhexen2_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/uhexen2/macsourceports_universal2.sh"), "notarize"],
@@ -44,6 +49,7 @@ uhexen2_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=uhexen2_guard.should_build,
     extract_fn=make_release_extractor("uhexen2_dmg_path", "uhexen2_version"),
 ))
 
@@ -51,12 +57,14 @@ uhexen2_factory.addStep(RequireProperty(
     "uhexen2_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=uhexen2_guard.should_build,
 ))
 
 uhexen2_factory.addStep(RequireProperty(
     "uhexen2_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=uhexen2_guard.should_build,
 ))
 
 uhexen2_factory.addStep(steps.ShellCommand(
@@ -73,6 +81,7 @@ uhexen2_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, uhexen2_publish_schedulers),
+        uhexen2_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

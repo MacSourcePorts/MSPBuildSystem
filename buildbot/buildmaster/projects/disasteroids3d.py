@@ -8,9 +8,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 disasteroids3d_publish_schedulers = {"disasteroids3d-daily", "disasteroids3d-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+disasteroids3d_guard = CommitGuard("disasteroids3d", force_scheduler_names={"disasteroids3d-force", "disasteroids3d-publish"})
 
 project_list = [
     util.Project(name="disasteroids3d", description="disasteroids3d source port project")
@@ -40,6 +44,7 @@ disasteroids3d_factory.addStep(steps.Git(
 ))
 
 disasteroids3d_factory.addStep(version_date_step())
+disasteroids3d_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/disasteroids3d"))
 
 disasteroids3d_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/disasteroids3d/macsourceports_universal2.sh"), "notarize"],
@@ -47,6 +52,7 @@ disasteroids3d_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=disasteroids3d_guard.should_build,
     extract_fn=make_release_extractor("disasteroids3d_dmg_path", "disasteroids3d_version"),
 ))
 
@@ -54,12 +60,14 @@ disasteroids3d_factory.addStep(RequireProperty(
     "disasteroids3d_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=disasteroids3d_guard.should_build,
 ))
 
 disasteroids3d_factory.addStep(RequireProperty(
     "disasteroids3d_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=disasteroids3d_guard.should_build,
 ))
 
 disasteroids3d_factory.addStep(steps.ShellCommand(
@@ -76,6 +84,7 @@ disasteroids3d_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, disasteroids3d_publish_schedulers),
+        disasteroids3d_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

@@ -7,9 +7,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 Quake3e_publish_schedulers = {"Quake3e-daily", "Quake3e-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+Quake3e_guard = CommitGuard("Quake3e", force_scheduler_names={"Quake3e-force", "Quake3e-publish"})
 
 project_list = [
     util.Project(name="Quake3e",description="Quake3e source port project")
@@ -37,6 +41,7 @@ Quake3e_factory.addStep(steps.Git(
 ))
 
 Quake3e_factory.addStep(version_date_step())
+Quake3e_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/Quake3e"))
 
 Quake3e_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Quake3e/macsourceports_universal2.sh"), "notarize"],
@@ -44,6 +49,7 @@ Quake3e_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=Quake3e_guard.should_build,
     extract_fn=make_release_extractor("Quake3e_dmg_path", "Quake3e_version"),
 ))
 
@@ -51,12 +57,14 @@ Quake3e_factory.addStep(RequireProperty(
     "Quake3e_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=Quake3e_guard.should_build,
 ))
 
 Quake3e_factory.addStep(RequireProperty(
     "Quake3e_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=Quake3e_guard.should_build,
 ))
 
 Quake3e_factory.addStep(steps.ShellCommand(
@@ -73,6 +81,7 @@ Quake3e_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, Quake3e_publish_schedulers),
+        Quake3e_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

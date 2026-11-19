@@ -10,9 +10,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, dmg_args
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, dmg_args, CommitGuard, last_commit_date_step
 
 dxxrebirth_publish_schedulers = {"dxx-rebirth-daily", "dxx-rebirth-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+dxxrebirth_guard = CommitGuard("dxx-rebirth", force_scheduler_names={"dxx-rebirth-force", "dxx-rebirth-publish"})
 
 project_list = [
     util.Project(name="dxx-rebirth",description="dxx-rebirth source port project")
@@ -42,6 +46,7 @@ dxxrebirth_factory.addStep(steps.Git(
 ))
 
 dxxrebirth_factory.addStep(version_date_step())
+dxxrebirth_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/dxx-rebirth"))
 
 dxxrebirth_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/dxx-rebirth/macsourceports_universal2.sh"), "notarize"],
@@ -49,6 +54,7 @@ dxxrebirth_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=dxxrebirth_guard.should_build,
     extract_fn=make_release_extractor("dxxrebirth_dmg_paths", "dxxrebirth_version", dmg_count=2),
 ))
 
@@ -56,12 +62,14 @@ dxxrebirth_factory.addStep(RequireProperty(
     "dxxrebirth_dmg_paths",
     name="Verify Build Produced Both DMGs",
     haltOnFailure=True,
+    doStepIf=dxxrebirth_guard.should_build,
 ))
 
 dxxrebirth_factory.addStep(RequireProperty(
     "dxxrebirth_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=dxxrebirth_guard.should_build,
 ))
 
 dxxrebirth_factory.addStep(steps.ShellCommand(
@@ -78,6 +86,7 @@ dxxrebirth_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, dxxrebirth_publish_schedulers),
+        dxxrebirth_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

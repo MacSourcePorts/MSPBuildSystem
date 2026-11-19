@@ -11,9 +11,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, dmg_args
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, dmg_args, CommitGuard, last_commit_date_step
 
 OpenJK_publish_schedulers = {"OpenJK-daily", "OpenJK-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+OpenJK_guard = CommitGuard("OpenJK", force_scheduler_names={"OpenJK-force", "OpenJK-publish"})
 
 project_list = [
     util.Project(name="OpenJK",description="OpenJK source port project")
@@ -41,6 +45,7 @@ OpenJK_factory.addStep(steps.Git(
 ))
 
 OpenJK_factory.addStep(version_date_step())
+OpenJK_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/OpenJK"))
 
 OpenJK_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenJK/macsourceports_universal2.sh"), "notarize"],
@@ -48,6 +53,7 @@ OpenJK_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=OpenJK_guard.should_build,
     extract_fn=make_release_extractor("OpenJK_dmg_paths", "OpenJK_version", dmg_count=3),
 ))
 
@@ -55,12 +61,14 @@ OpenJK_factory.addStep(RequireProperty(
     "OpenJK_dmg_paths",
     name="Verify Build Produced All Three DMGs",
     haltOnFailure=True,
+    doStepIf=OpenJK_guard.should_build,
 ))
 
 OpenJK_factory.addStep(RequireProperty(
     "OpenJK_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=OpenJK_guard.should_build,
 ))
 
 OpenJK_factory.addStep(steps.ShellCommand(
@@ -77,6 +85,7 @@ OpenJK_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, OpenJK_publish_schedulers),
+        OpenJK_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

@@ -11,9 +11,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 systemshock_publish_schedulers = {"systemshock-daily", "systemshock-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+systemshock_guard = CommitGuard("systemshock", force_scheduler_names={"systemshock-force", "systemshock-publish"})
 
 project_list = [
     util.Project(name="systemshock",description="systemshock source port project")
@@ -41,6 +45,7 @@ systemshock_factory.addStep(steps.Git(
 ))
 
 systemshock_factory.addStep(version_date_step())
+systemshock_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/systemshock"))
 
 systemshock_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/systemshock/macsourceports_universal2.sh"), "notarize"],
@@ -48,6 +53,7 @@ systemshock_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=systemshock_guard.should_build,
     extract_fn=make_release_extractor("systemshock_dmg_path", "systemshock_version"),
 ))
 
@@ -55,12 +61,14 @@ systemshock_factory.addStep(RequireProperty(
     "systemshock_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=systemshock_guard.should_build,
 ))
 
 systemshock_factory.addStep(RequireProperty(
     "systemshock_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=systemshock_guard.should_build,
 ))
 
 systemshock_factory.addStep(steps.ShellCommand(
@@ -77,6 +85,7 @@ systemshock_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, systemshock_publish_schedulers),
+        systemshock_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

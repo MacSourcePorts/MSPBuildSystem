@@ -7,9 +7,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 OpenXcom_publish_schedulers = {"OpenXcom-daily", "OpenXcom-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+OpenXcom_guard = CommitGuard("OpenXcom", force_scheduler_names={"OpenXcom-force", "OpenXcom-publish"})
 
 project_list = [
     util.Project(name="OpenXcom",description="OpenXcom source port project")
@@ -37,6 +41,7 @@ OpenXcom_factory.addStep(steps.Git(
 ))
 
 OpenXcom_factory.addStep(version_date_step())
+OpenXcom_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/OpenXcom"))
 
 OpenXcom_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenXcom/macsourceports_universal2.sh"), "notarize"],
@@ -44,6 +49,7 @@ OpenXcom_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=OpenXcom_guard.should_build,
     extract_fn=make_release_extractor("OpenXcom_dmg_path", "OpenXcom_version"),
 ))
 
@@ -51,12 +57,14 @@ OpenXcom_factory.addStep(RequireProperty(
     "OpenXcom_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=OpenXcom_guard.should_build,
 ))
 
 OpenXcom_factory.addStep(RequireProperty(
     "OpenXcom_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=OpenXcom_guard.should_build,
 ))
 
 OpenXcom_factory.addStep(steps.ShellCommand(
@@ -73,6 +81,7 @@ OpenXcom_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, OpenXcom_publish_schedulers),
+        OpenXcom_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

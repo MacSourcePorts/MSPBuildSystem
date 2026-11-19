@@ -12,9 +12,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 OpenLara_publish_schedulers = {"OpenLara-daily", "OpenLara-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+OpenLara_guard = CommitGuard("OpenLara", force_scheduler_names={"OpenLara-force", "OpenLara-publish"})
 
 project_list = [
     util.Project(name="OpenLara",description="OpenLara source port project")
@@ -44,6 +48,7 @@ OpenLara_factory.addStep(steps.Git(
 ))
 
 OpenLara_factory.addStep(version_date_step())
+OpenLara_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/OpenLara"))
 
 OpenLara_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/OpenLara/macsourceports_universal2.sh"), "notarize"],
@@ -51,6 +56,7 @@ OpenLara_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=OpenLara_guard.should_build,
     extract_fn=make_release_extractor("OpenLara_dmg_path", "OpenLara_version"),
 ))
 
@@ -58,12 +64,14 @@ OpenLara_factory.addStep(RequireProperty(
     "OpenLara_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=OpenLara_guard.should_build,
 ))
 
 OpenLara_factory.addStep(RequireProperty(
     "OpenLara_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=OpenLara_guard.should_build,
 ))
 
 OpenLara_factory.addStep(steps.ShellCommand(
@@ -80,6 +88,7 @@ OpenLara_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, OpenLara_publish_schedulers),
+        OpenLara_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

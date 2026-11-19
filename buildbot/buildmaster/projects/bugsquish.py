@@ -9,9 +9,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 bugsquish_publish_schedulers = {"bugsquish-daily", "bugsquish-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+bugsquish_guard = CommitGuard("bugsquish", force_scheduler_names={"bugsquish-force", "bugsquish-publish"})
 
 project_list = [
     util.Project(name="bugsquish", description="bugsquish source port project")
@@ -41,6 +45,7 @@ bugsquish_factory.addStep(steps.Git(
 ))
 
 bugsquish_factory.addStep(version_date_step())
+bugsquish_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/bugsquish"))
 
 bugsquish_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/bugsquish/macsourceports_universal2.sh"), "notarize"],
@@ -48,6 +53,7 @@ bugsquish_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=bugsquish_guard.should_build,
     extract_fn=make_release_extractor("bugsquish_dmg_path", "bugsquish_version"),
 ))
 
@@ -55,12 +61,14 @@ bugsquish_factory.addStep(RequireProperty(
     "bugsquish_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=bugsquish_guard.should_build,
 ))
 
 bugsquish_factory.addStep(RequireProperty(
     "bugsquish_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=bugsquish_guard.should_build,
 ))
 
 bugsquish_factory.addStep(steps.ShellCommand(
@@ -77,6 +85,7 @@ bugsquish_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, bugsquish_publish_schedulers),
+        bugsquish_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

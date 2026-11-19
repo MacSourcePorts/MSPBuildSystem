@@ -9,9 +9,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 wrathplaces_publish_schedulers = {"wrathplaces-daily", "wrathplaces-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+wrathplaces_guard = CommitGuard("wrathplaces", force_scheduler_names={"wrathplaces-force", "wrathplaces-publish"})
 
 project_list = [
     util.Project(name="wrathplaces", description="wrathplaces source port project")
@@ -42,6 +46,7 @@ wrathplaces_factory.addStep(steps.Git(
 ))
 
 wrathplaces_factory.addStep(version_date_step())
+wrathplaces_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/wrathplaces"))
 
 wrathplaces_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/wrathplaces/macsourceports_universal2.sh"), "notarize"],
@@ -49,6 +54,7 @@ wrathplaces_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=wrathplaces_guard.should_build,
     extract_fn=make_release_extractor("wrathplaces_dmg_path", "wrathplaces_version"),
 ))
 
@@ -56,12 +62,14 @@ wrathplaces_factory.addStep(RequireProperty(
     "wrathplaces_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=wrathplaces_guard.should_build,
 ))
 
 wrathplaces_factory.addStep(RequireProperty(
     "wrathplaces_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=wrathplaces_guard.should_build,
 ))
 
 wrathplaces_factory.addStep(steps.ShellCommand(
@@ -78,6 +86,7 @@ wrathplaces_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, wrathplaces_publish_schedulers),
+        wrathplaces_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

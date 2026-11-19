@@ -7,9 +7,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 xash3dfwgs_publish_schedulers = {"xash3d-fwgs-daily", "xash3d-fwgs-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+xash3dfwgs_guard = CommitGuard("xash3d-fwgs", force_scheduler_names={"xash3d-fwgs-force", "xash3d-fwgs-publish"})
 
 project_list = [ 
     util.Project(name="xash3d-fwgs",description="xash3d-fwgs source port project")
@@ -55,6 +59,7 @@ xash3dfwgs_factory.addStep(steps.Git(
 ))
 
 xash3dfwgs_factory.addStep(version_date_step())
+xash3dfwgs_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/xash3d-fwgs", "~/Documents/GitHub/MacSourcePorts/hlsdk-portable"))
 
 xash3dfwgs_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/xash3d-fwgs/macsourceports_universal2.sh"), "notarize"],
@@ -62,6 +67,7 @@ xash3dfwgs_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=xash3dfwgs_guard.should_build,
     extract_fn=make_release_extractor("xash3dfwgs_dmg_path", "xash3dfwgs_version"),
 ))
 
@@ -69,12 +75,14 @@ xash3dfwgs_factory.addStep(RequireProperty(
     "xash3dfwgs_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=xash3dfwgs_guard.should_build,
 ))
 
 xash3dfwgs_factory.addStep(RequireProperty(
     "xash3dfwgs_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=xash3dfwgs_guard.should_build,
 ))
 
 xash3dfwgs_factory.addStep(steps.ShellCommand(
@@ -91,6 +99,7 @@ xash3dfwgs_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, xash3dfwgs_publish_schedulers),
+        xash3dfwgs_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

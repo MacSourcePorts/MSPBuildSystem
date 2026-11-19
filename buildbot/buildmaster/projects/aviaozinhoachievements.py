@@ -9,9 +9,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 aviaozinhoachievements_publish_schedulers = {"aviaozinhoachievements-daily", "aviaozinhoachievements-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+aviaozinhoachievements_guard = CommitGuard("aviaozinhoachievements", force_scheduler_names={"aviaozinhoachievements-force", "aviaozinhoachievements-publish"})
 
 project_list = [
     util.Project(name="aviaozinhoachievements", description="aviaozinhoachievements source port project")
@@ -41,6 +45,7 @@ aviaozinhoachievements_factory.addStep(steps.Git(
 ))
 
 aviaozinhoachievements_factory.addStep(version_date_step())
+aviaozinhoachievements_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/aviaozinhoachievements"))
 
 aviaozinhoachievements_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/aviaozinhoachievements/macsourceports_universal2_bdd3.sh"), "notarize"],
@@ -48,6 +53,7 @@ aviaozinhoachievements_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script for BDD3",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
     extract_fn=make_release_extractor("aviaozinhoachievements_bdd3_dmg_path", "aviaozinhoachievements_bdd3_version"),
 ))
 
@@ -55,12 +61,14 @@ aviaozinhoachievements_factory.addStep(RequireProperty(
     "aviaozinhoachievements_bdd3_dmg_path",
     name="Verify BDD3 Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
 ))
 
 aviaozinhoachievements_factory.addStep(RequireProperty(
     "aviaozinhoachievements_bdd3_version",
     name="Verify BDD3 Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
 ))
 
 aviaozinhoachievements_factory.addStep(steps.SetPropertyFromCommand(
@@ -69,6 +77,7 @@ aviaozinhoachievements_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script for BDDB4",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
     extract_fn=make_release_extractor("aviaozinhoachievements_bddb4_dmg_path", "aviaozinhoachievements_bddb4_version"),
 ))
 
@@ -76,12 +85,14 @@ aviaozinhoachievements_factory.addStep(RequireProperty(
     "aviaozinhoachievements_bddb4_dmg_path",
     name="Verify BDDB4 Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
 ))
 
 aviaozinhoachievements_factory.addStep(RequireProperty(
     "aviaozinhoachievements_bddb4_version",
     name="Verify BDDB4 Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
 ))
 
 aviaozinhoachievements_factory.addStep(steps.SetPropertyFromCommand(
@@ -90,6 +101,7 @@ aviaozinhoachievements_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script for FLESHCANCER",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
     extract_fn=make_release_extractor("aviaozinhoachievements_fleshcancer_dmg_path", "aviaozinhoachievements_fleshcancer_version"),
 ))
 
@@ -97,12 +109,14 @@ aviaozinhoachievements_factory.addStep(RequireProperty(
     "aviaozinhoachievements_fleshcancer_dmg_path",
     name="Verify FLESHCANCER Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
 ))
 
 aviaozinhoachievements_factory.addStep(RequireProperty(
     "aviaozinhoachievements_fleshcancer_version",
     name="Verify FLESHCANCER Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=aviaozinhoachievements_guard.should_build,
 ))
 
 # Publish all of them as one release, once they've all built.
@@ -122,6 +136,7 @@ aviaozinhoachievements_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, aviaozinhoachievements_publish_schedulers),
+        aviaozinhoachievements_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

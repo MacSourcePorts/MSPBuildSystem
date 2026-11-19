@@ -10,9 +10,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 RigelEngine_publish_schedulers = {"RigelEngine-daily", "RigelEngine-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+RigelEngine_guard = CommitGuard("RigelEngine", force_scheduler_names={"RigelEngine-force", "RigelEngine-publish"})
 
 project_list = [
     util.Project(name="RigelEngine", description="RigelEngine source port project")
@@ -43,6 +47,7 @@ RigelEngine_factory.addStep(steps.Git(
 ))
 
 RigelEngine_factory.addStep(version_date_step())
+RigelEngine_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/RigelEngine"))
 
 RigelEngine_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/RigelEngine/macsourceports_universal2.sh"), "notarize"],
@@ -50,6 +55,7 @@ RigelEngine_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=RigelEngine_guard.should_build,
     extract_fn=make_release_extractor("RigelEngine_dmg_path", "RigelEngine_version"),
 ))
 
@@ -57,12 +63,14 @@ RigelEngine_factory.addStep(RequireProperty(
     "RigelEngine_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=RigelEngine_guard.should_build,
 ))
 
 RigelEngine_factory.addStep(RequireProperty(
     "RigelEngine_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=RigelEngine_guard.should_build,
 ))
 
 RigelEngine_factory.addStep(steps.ShellCommand(
@@ -79,6 +87,7 @@ RigelEngine_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, RigelEngine_publish_schedulers),
+        RigelEngine_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

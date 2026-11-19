@@ -11,9 +11,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 heretic2r_publish_schedulers = {"heretic2r-daily", "heretic2r-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+heretic2r_guard = CommitGuard("Heretic2R-UNIX", force_scheduler_names={"heretic2r-force", "heretic2r-publish"})
 
 project_list = [
     util.Project(name="heretic2r",description="heretic2r source port project")
@@ -43,6 +47,7 @@ heretic2r_factory.addStep(steps.Git(
 ))
 
 heretic2r_factory.addStep(version_date_step())
+heretic2r_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/Heretic2R-UNIX"))
 
 heretic2r_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/Heretic2R-UNIX/macsourceports_universal2.sh"), "notarize"],
@@ -50,6 +55,7 @@ heretic2r_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=heretic2r_guard.should_build,
     extract_fn=make_release_extractor("heretic2r_dmg_path", "heretic2r_version"),
 ))
 
@@ -57,12 +63,14 @@ heretic2r_factory.addStep(RequireProperty(
     "heretic2r_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=heretic2r_guard.should_build,
 ))
 
 heretic2r_factory.addStep(RequireProperty(
     "heretic2r_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=heretic2r_guard.should_build,
 ))
 
 heretic2r_factory.addStep(steps.ShellCommand(
@@ -79,6 +87,7 @@ heretic2r_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, heretic2r_publish_schedulers),
+        heretic2r_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

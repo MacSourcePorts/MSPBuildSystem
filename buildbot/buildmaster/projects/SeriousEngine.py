@@ -15,9 +15,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 SeriousEngine_publish_schedulers = {"Serious-Engine-daily", "Serious-Engine-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+SeriousEngine_guard = CommitGuard("Serious-Engine", force_scheduler_names={"Serious-Engine-force", "Serious-Engine-publish"})
 
 project_list = [
     util.Project(name="Serious-Engine",description="Serious-Engine source port project")
@@ -47,6 +51,7 @@ SeriousEngine_factory.addStep(steps.Git(
 ))
 
 SeriousEngine_factory.addStep(version_date_step())
+SeriousEngine_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/Serious-Engine"))
 
 # (script, step name, property prefix)
 SeriousEngine_games = [
@@ -61,6 +66,7 @@ for script, title, prop in SeriousEngine_games:
         env=version_date_env(),
         name=f"Run Build Script for {title}",
         haltOnFailure=True,
+        doStepIf=SeriousEngine_guard.should_build,
         extract_fn=make_release_extractor(f"{prop}_dmg_path", f"{prop}_version"),
     ))
 
@@ -68,12 +74,14 @@ for script, title, prop in SeriousEngine_games:
         f"{prop}_dmg_path",
         name=f"Verify {title} Build Produced a DMG",
         haltOnFailure=True,
+        doStepIf=SeriousEngine_guard.should_build,
     ))
 
     SeriousEngine_factory.addStep(RequireProperty(
         f"{prop}_version",
         name=f"Verify {title} Build Reported a Version",
         haltOnFailure=True,
+        doStepIf=SeriousEngine_guard.should_build,
     ))
 
 # The scripts' versions carry a game prefix (ssfe-1.1-20261117) so their
@@ -98,6 +106,7 @@ SeriousEngine_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, SeriousEngine_publish_schedulers),
+        SeriousEngine_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

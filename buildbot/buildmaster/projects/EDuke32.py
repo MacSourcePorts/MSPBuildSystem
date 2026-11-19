@@ -9,9 +9,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 EDuke32_publish_schedulers = {"EDuke32-daily", "EDuke32-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+EDuke32_guard = CommitGuard("EDuke32", force_scheduler_names={"EDuke32-force", "EDuke32-publish"})
 
 project_list = [
     util.Project(name="EDuke32", description="EDuke32 source port project")
@@ -41,6 +45,7 @@ EDuke32_factory.addStep(steps.Git(
 ))
 
 EDuke32_factory.addStep(version_date_step())
+EDuke32_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/EDuke32"))
 
 EDuke32_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/EDuke32/macsourceports_universal2.sh"), "notarize"],
@@ -48,6 +53,7 @@ EDuke32_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=EDuke32_guard.should_build,
     extract_fn=make_release_extractor("EDuke32_dmg_path", "EDuke32_version"),
 ))
 
@@ -55,12 +61,14 @@ EDuke32_factory.addStep(RequireProperty(
     "EDuke32_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=EDuke32_guard.should_build,
 ))
 
 EDuke32_factory.addStep(RequireProperty(
     "EDuke32_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=EDuke32_guard.should_build,
 ))
 
 EDuke32_factory.addStep(steps.ShellCommand(
@@ -77,6 +85,7 @@ EDuke32_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, EDuke32_publish_schedulers),
+        EDuke32_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

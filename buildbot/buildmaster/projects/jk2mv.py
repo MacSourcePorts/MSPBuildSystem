@@ -7,9 +7,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 jk2mv_publish_schedulers = {"jk2mv-daily", "jk2mv-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+jk2mv_guard = CommitGuard("jk2mv", force_scheduler_names={"jk2mv-force", "jk2mv-publish"})
 
 project_list = [
     util.Project(name="jk2mv",description="jk2mv source port project")
@@ -38,6 +42,7 @@ jk2mv_factory.addStep(steps.Git(
 ))
 
 jk2mv_factory.addStep(version_date_step())
+jk2mv_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/jk2mv"))
 
 jk2mv_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/jk2mv/macsourceports_universal2.sh"), "notarize"],
@@ -45,6 +50,7 @@ jk2mv_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=jk2mv_guard.should_build,
     extract_fn=make_release_extractor("jk2mv_dmg_path", "jk2mv_version"),
 ))
 
@@ -52,12 +58,14 @@ jk2mv_factory.addStep(RequireProperty(
     "jk2mv_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=jk2mv_guard.should_build,
 ))
 
 jk2mv_factory.addStep(RequireProperty(
     "jk2mv_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=jk2mv_guard.should_build,
 ))
 
 jk2mv_factory.addStep(steps.ShellCommand(
@@ -74,6 +82,7 @@ jk2mv_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, jk2mv_publish_schedulers),
+        jk2mv_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

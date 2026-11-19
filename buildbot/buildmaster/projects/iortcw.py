@@ -9,9 +9,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, dmg_args
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, dmg_args, CommitGuard, last_commit_date_step
 
 iortcw_publish_schedulers = {"iortcw-daily", "iortcw-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+iortcw_guard = CommitGuard("iortcw", force_scheduler_names={"iortcw-force", "iortcw-publish"})
 
 project_list = [
     util.Project(name="iortcw", description="iortcw source port project")
@@ -41,6 +45,7 @@ iortcw_factory.addStep(steps.Git(
 ))
 
 iortcw_factory.addStep(version_date_step())
+iortcw_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/iortcw"))
 
 iortcw_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/iortcw/macsourceports_universal2.sh"), "notarize"],
@@ -48,6 +53,7 @@ iortcw_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=iortcw_guard.should_build,
     extract_fn=make_release_extractor("iortcw_dmg_paths", "iortcw_version", dmg_count=2),
 ))
 
@@ -55,12 +61,14 @@ iortcw_factory.addStep(RequireProperty(
     "iortcw_dmg_paths",
     name="Verify Build Produced its DMGs",
     haltOnFailure=True,
+    doStepIf=iortcw_guard.should_build,
 ))
 
 iortcw_factory.addStep(RequireProperty(
     "iortcw_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=iortcw_guard.should_build,
 ))
 
 iortcw_factory.addStep(steps.ShellCommand(
@@ -77,6 +85,7 @@ iortcw_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, iortcw_publish_schedulers),
+        iortcw_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))

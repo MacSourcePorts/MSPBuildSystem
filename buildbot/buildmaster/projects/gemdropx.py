@@ -9,9 +9,13 @@
 import os
 from buildbot.plugins import steps, util, changes, schedulers
 from projects.version_guard import scheduler_in, and_steps, is_publish_machine, RequireProperty
-from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor
+from projects.latest_code import daily_scheduler, version_date_step, version_date_env, make_release_extractor, CommitGuard, last_commit_date_step
 
 gemdropx_publish_schedulers = {"gemdropx-daily", "gemdropx-publish"}
+
+# skip the nightly build when the site already has one made since the
+# last commit -- see CommitGuard in latest_code.py
+gemdropx_guard = CommitGuard("gemdropx", force_scheduler_names={"gemdropx-force", "gemdropx-publish"})
 
 project_list = [
     util.Project(name="gemdropx", description="gemdropx source port project")
@@ -41,6 +45,7 @@ gemdropx_factory.addStep(steps.Git(
 ))
 
 gemdropx_factory.addStep(version_date_step())
+gemdropx_factory.addStep(last_commit_date_step("~/Documents/GitHub/MacSourcePorts/gemdropx"))
 
 gemdropx_factory.addStep(steps.SetPropertyFromCommand(
     command=["/bin/bash", os.path.expanduser("~/Documents/GitHub/MacSourcePorts/MSPBuildSystem/gemdropx/macsourceports_universal2.sh"), "notarize"],
@@ -48,6 +53,7 @@ gemdropx_factory.addStep(steps.SetPropertyFromCommand(
     env=version_date_env(),
     name="Run Build Script",
     haltOnFailure=True,
+    doStepIf=gemdropx_guard.should_build,
     extract_fn=make_release_extractor("gemdropx_dmg_path", "gemdropx_version"),
 ))
 
@@ -55,12 +61,14 @@ gemdropx_factory.addStep(RequireProperty(
     "gemdropx_dmg_path",
     name="Verify Build Produced a DMG",
     haltOnFailure=True,
+    doStepIf=gemdropx_guard.should_build,
 ))
 
 gemdropx_factory.addStep(RequireProperty(
     "gemdropx_version",
     name="Verify Build Reported a Version",
     haltOnFailure=True,
+    doStepIf=gemdropx_guard.should_build,
 ))
 
 gemdropx_factory.addStep(steps.ShellCommand(
@@ -77,6 +85,7 @@ gemdropx_factory.addStep(steps.ShellCommand(
     haltOnFailure=True,
     doStepIf=and_steps(
         lambda step: scheduler_in(step, gemdropx_publish_schedulers),
+        gemdropx_guard.should_build,
         lambda step: is_publish_machine(),
     )
 ))
