@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Descent3-*.dmg",
+        "sourcePortStub": "descent3",
+        "buildType": 1
+    }
+]

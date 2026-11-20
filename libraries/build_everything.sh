@@ -13,6 +13,7 @@
 ./brotli.sh
 ./ca-certificates.sh
 ./cjson.sh
+./cpp-httplib.sh
 ./cppunit.sh
 ./nasm.sh
 ./dav1d.sh
@@ -55,6 +56,7 @@
 ./pcre2.sh
 ./physfs.sh
 ./pixman.sh
+./plog.sh
 ./png.sh
 ./portaudio.sh
 ./readline.sh

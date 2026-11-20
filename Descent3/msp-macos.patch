@@ -1,0 +1,891 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c2fd58f2..32a41580 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -56,7 +56,8 @@ function (macos_sign target)
+   if(DEFINED CODESIGN_IDENTITY AND NOT "${CODESIGN_IDENTITY}" STREQUAL "")
+     message(STATUS "Code signing ${target}")
+     add_custom_command(TARGET ${target} POST_BUILD
+-            COMMAND codesign --verbose --sign "${CODESIGN_IDENTITY}" --force --timestamp --deep -o runtime $<TARGET_FILE:${target}>)
++            COMMAND codesign --verbose --sign "${CODESIGN_IDENTITY}" --force --timestamp --deep -o runtime $<TARGET_FILE:${target}>
++            VERBATIM)
+   endif()
+ endfunction()
+ 
+diff --git a/Descent3/CMakeLists.txt b/Descent3/CMakeLists.txt
+index 9e2efae2..4a68fafd 100644
+--- a/Descent3/CMakeLists.txt
++++ b/Descent3/CMakeLists.txt
+@@ -349,6 +349,23 @@ target_link_libraries(Descent3 PRIVATE
+   vecmat
+   ${PLATFORM_LIBS})
+ target_include_directories(Descent3 PRIVATE ${PROJECT_BINARY_DIR}/lib ${SDL3_INCLUDE_DIRS})
++
++# Ogg Theora movies, as shipped with the Steam release (optional)
++option(ENABLE_OGV "Play Ogg Theora (.ogv) movies when .mve movies are not present" ON)
++if(ENABLE_OGV)
++  find_package(PkgConfig QUIET)
++  if(PkgConfig_FOUND)
++    pkg_check_modules(OGV IMPORTED_TARGET theoradec vorbis ogg)
++  endif()
++  if(OGV_FOUND)
++    message(STATUS "Ogg Theora movie support enabled")
++    target_sources(Descent3 PRIVATE ogvmovie.cpp ogvmovie.h)
++    target_compile_definitions(Descent3 PRIVATE USE_OGV)
++    target_link_libraries(Descent3 PRIVATE PkgConfig::OGV)
++  else()
++    message(STATUS "theoradec, vorbis or ogg not found: Ogg Theora movie support disabled")
++  endif()
++endif()
+ target_link_options(Descent3 PRIVATE $<$<PLATFORM_ID:Windows>:/DEBUG:FULL>)
+ set_target_properties(Descent3 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
+ add_dependencies(Descent3
+diff --git a/Descent3/d3movie.cpp b/Descent3/d3movie.cpp
+index c03a283c..0c5c1aeb 100644
+--- a/Descent3/d3movie.cpp
++++ b/Descent3/d3movie.cpp
+@@ -31,6 +31,13 @@
+ #include "mvelib.h"
+ #include "renderer.h"
+ 
++#ifdef USE_OGV
++#include <algorithm>
++#include <unordered_set>
++#include <SDL3/SDL_timer.h>
++#include "ogvmovie.h"
++#endif
++
+ namespace {
+ MovieFrameCallback_fp Movie_callback = nullptr;
+ uint16_t CurrentPalette[256];
+@@ -53,6 +60,15 @@ static bool mve_InitSound();
+ static void mve_CloseSound();
+ #endif
+ 
++#ifdef USE_OGV
++static std::filesystem::path LocateOgv(const std::filesystem::path &mve_name);
++static int PlayOgvMovie(const std::filesystem::path &path, oeApplication *pApp);
++static intptr_t StartOgvSequence(const std::filesystem::path &path, bool looping);
++static bool IsOgvSequence(intptr_t handle);
++static intptr_t OgvSequenceFrame(intptr_t handle, int *bm_handle);
++static void CloseOgvSequence(intptr_t handle);
++#endif
++
+ int mve_Init() {
+ #ifndef NO_MOVIES
+   return MVELIB_NOERROR;
+@@ -76,6 +92,15 @@ int mve_PlayMovie(const std::filesystem::path &pMovieName, oeApplication *pApp)
+ #ifndef NO_MOVIES
+   // first, find that movie.
+   std::filesystem::path real_name = cf_LocatePath("movies" / pMovieName);
++#ifdef USE_OGV
++  // The Steam release has Ogg Theora movies instead
++  if (real_name.empty()) {
++    std::filesystem::path ogv_name = LocateOgv(pMovieName);
++    if (!ogv_name.empty()) {
++      return PlayOgvMovie(ogv_name, pApp);
++    }
++  }
++#endif
+   if (real_name.empty()) {
+     LOG_ERROR << "MOVIE: File " << pMovieName << " not found, skipping playback";
+     return MVELIB_FILE_ERROR;
+@@ -319,10 +344,166 @@ void CallbackShowFrameNoFlip(unsigned char *buf, unsigned int bufw, unsigned int
+ }
+ #endif
+ 
++#ifdef USE_OGV
++namespace {
++struct OgvSequence {
++  OgvDecoder decoder;
++  uint64_t start_ns = 0;
++  bool looping = false;
++  bool have_frame = false;
++};
++std::unordered_set<intptr_t> Ogv_sequences;
++
++double SecondsSince(uint64_t start_ns) { return (double)(SDL_GetTicksNS() - start_ns) / 1e9; }
++} // namespace
++
++std::filesystem::path LocateOgv(const std::filesystem::path &mve_name) {
++  std::filesystem::path name = mve_name;
++  name.replace_extension(".ogv");
++  return cf_LocatePath(std::filesystem::path("movies") / name);
++}
++
++int PlayOgvMovie(const std::filesystem::path &path, oeApplication *pApp) {
++  OgvDecoder decoder;
++  if (!decoder.Open(path, FindArg("-nosound") == 0)) {
++    LOG_ERROR << "MOVIE: Unable to open " << path;
++    return MVELIB_INIT_ERROR;
++  }
++
++  Movie_bm_handle = -1;
++  Movie_current_framenum = 0;
++  // center the movie on the 640x480 movie screen (the Steam movies are 640x320 or 640x480)
++  const int w = decoder.Width(), h = decoder.Height();
++  const int dstx = std::max(0, (640 - w) / 2);
++  const int dsty = std::max(0, (480 - h) / 2);
++
++  decoder.QueueAudio(0.5);
++  decoder.StartAudio();
++  const uint64_t start = SDL_GetTicksNS();
++
++  bool aborted = false;
++  while (!aborted && decoder.NextFrame()) {
++    const double frame_time = decoder.FrameTime();
++    decoder.QueueAudio(frame_time + 0.5);
++
++    // wait until it's time for this frame
++    while (SecondsSince(start) < frame_time) {
++      pApp->defer();
++      if (ddio_KeyInKey() == KEY_ESC) {
++        aborted = true;
++        break;
++      }
++      SDL_Delay(1);
++    }
++    if (aborted)
++      break;
++
++    // skip drawing frames we're already too late for
++    if (SecondsSince(start) > frame_time + 2 * decoder.FrameDuration())
++      continue;
++
++    CallbackShowFrame(const_cast<uint8_t *>(reinterpret_cast<const uint8_t *>(decoder.Pixels())), w, h, 0, 0, w, h,
++                      dstx, dsty, 1);
++    pApp->defer();
++    if (ddio_KeyInKey() == KEY_ESC)
++      aborted = true;
++  }
++
++  // let the rest of the soundtrack play out
++  if (!aborted) {
++    decoder.QueueAudio(1e9);
++    while (decoder.AudioPending() > 0.0) {
++      pApp->defer();
++      if (ddio_KeyInKey() == KEY_ESC)
++        break;
++      SDL_Delay(5);
++    }
++  }
++
++  if (Movie_bm_handle != -1) {
++    bm_FreeBitmap(Movie_bm_handle);
++    Movie_bm_handle = -1;
++  }
++
++  return aborted ? MVELIB_PLAYBACK_ABORTED : MVELIB_NOERROR;
++}
++
++intptr_t StartOgvSequence(const std::filesystem::path &path, bool looping) {
++  auto *seq = new OgvSequence;
++  if (!seq->decoder.Open(path, false)) {
++    LOG_WARNING << "MOVIE: Unable to open " << path;
++    delete seq;
++    return 0;
++  }
++  seq->looping = looping;
++  seq->start_ns = SDL_GetTicksNS();
++  Movie_bm_handle = -1;
++  rend_SetFrameBufferCopyState(true);
++
++  auto handle = reinterpret_cast<intptr_t>(seq);
++  Ogv_sequences.insert(handle);
++  return handle;
++}
++
++bool IsOgvSequence(intptr_t handle) { return Ogv_sequences.count(handle) != 0; }
++
++intptr_t OgvSequenceFrame(intptr_t handle, int *bm_handle) {
++  auto *seq = reinterpret_cast<OgvSequence *>(handle);
++  OgvDecoder &decoder = seq->decoder;
++
++  // catch up to the current time
++  bool decoded = false;
++  double elapsed = SecondsSince(seq->start_ns);
++  while (!seq->have_frame || decoder.FrameTime() + decoder.FrameDuration() <= elapsed) {
++    if (decoder.NextFrame()) {
++      seq->have_frame = true;
++      decoded = true;
++      continue;
++    }
++    // end of the movie
++    if (!seq->looping || !seq->have_frame || !decoder.Rewind()) {
++      return -1;
++    }
++    seq->start_ns = SDL_GetTicksNS();
++    seq->have_frame = false;
++    elapsed = 0.0;
++  }
++
++  if (decoded) {
++    int texW, texH;
++    BlitToMovieBitmap(const_cast<uint8_t *>(reinterpret_cast<const uint8_t *>(decoder.Pixels())), decoder.Width(),
++                      decoder.Height(), 1, false, texW, texH);
++  }
++  if (bm_handle) {
++    *bm_handle = Movie_bm_handle;
++  }
++  return handle;
++}
++
++void CloseOgvSequence(intptr_t handle) {
++  Ogv_sequences.erase(handle);
++  delete reinterpret_cast<OgvSequence *>(handle);
++
++  if (Movie_bm_handle != -1) {
++    bm_FreeBitmap(Movie_bm_handle);
++    Movie_bm_handle = -1;
++  }
++  rend_SetFrameBufferCopyState(false);
++}
++#endif
++
+ intptr_t mve_SequenceStart(const char *mvename, void *fhandle, oeApplication *app, bool looping) {
+ #ifndef NO_MOVIES
+   // first, find that movie..
+   std::filesystem::path real_name = cf_LocatePath(std::filesystem::path("movies") / mvename);
++#ifdef USE_OGV
++  if (real_name.empty()) {
++    std::filesystem::path ogv_name = LocateOgv(mvename);
++    if (!ogv_name.empty()) {
++      return StartOgvSequence(ogv_name, looping);
++    }
++  }
++#endif
+   fhandle = fopen(PATH_TO_CSTR(real_name), "rb");
+ 
+   if (fhandle == nullptr) {
+@@ -365,6 +546,12 @@ intptr_t mve_SequenceFrame(intptr_t handle, void *fhandle, bool sequence, int *b
+     return -1;
+   }
+ 
++#ifdef USE_OGV
++  if (IsOgvSequence(handle)) {
++    return OgvSequenceFrame(handle, bm_handle);
++  }
++#endif
++
+   static unsigned sw = 0, sh = 0, hicolor = 0;
+   int err = 0;
+ 
+@@ -403,6 +590,13 @@ bool mve_SequenceClose(intptr_t hMovie, void *hFile) {
+   if (hMovie == -1)
+     return false;
+ 
++#ifdef USE_OGV
++  if (IsOgvSequence(hMovie)) {
++    CloseOgvSequence(hMovie);
++    return true;
++  }
++#endif
++
+   MVE_rmEndMovie((MVESTREAM *)hMovie);
+ 
+   // free our bitmap
+diff --git a/Descent3/damage.cpp b/Descent3/damage.cpp
+index 459be3a7..4a780982 100644
+--- a/Descent3/damage.cpp
++++ b/Descent3/damage.cpp
+@@ -1442,9 +1442,12 @@ void ShakePlayer() {
+ 
+   float mag = Shake_magnitude;
+ 
+-  uint16_t pitch_adjust = ((ps_rand() % 5) - 2) * mag;
+-  uint16_t bank_adjust = ((ps_rand() % 5) - 2) * mag;
+-  uint16_t heading_adjust = ((ps_rand() % 5) - 2) * mag;
++  // The adjustments are often negative. Converting a negative float straight to
++  // an unsigned type is undefined behavior -- on arm64 it produced garbage angles,
++  // a degenerate shake matrix and a collapsed view for the frame. Go through int.
++  angle pitch_adjust = (angle)(int)(((ps_rand() % 5) - 2) * mag);
++  angle bank_adjust = (angle)(int)(((ps_rand() % 5) - 2) * mag);
++  angle heading_adjust = (angle)(int)(((ps_rand() % 5) - 2) * mag);
+   matrix m, tempm;
+ 
+   Old_player_orient = Player_object->orient;
+diff --git a/Descent3/init.cpp b/Descent3/init.cpp
+index 6b695ccb..6dce3152 100644
+--- a/Descent3/init.cpp
++++ b/Descent3/init.cpp
+@@ -1471,6 +1471,17 @@ void InitIOSystems(bool editor) {
+     platform_dir = std::filesystem::canonical(platform_dir);
+     cf_AddBaseDirectory(platform_dir);
+   }
++#ifdef __APPLE__
++  // The Steam release's data, where Steam for Mac installs it
++  if (const char *home = getenv("HOME")) {
++    std::filesystem::path steam_dir =
++        std::filesystem::path(home) / "Library/Application Support/Steam/steamapps/common/Descent 3";
++    std::error_code ec;
++    if (std::filesystem::is_directory(steam_dir, ec)) {
++      cf_AddBaseDirectory(steam_dir);
++    }
++  }
++#endif
+   // TODO: add Steam/registry locations
+ 
+   // Add path of executable
+diff --git a/Descent3/multi_ui.cpp b/Descent3/multi_ui.cpp
+index 93061d80..6879a6d5 100644
+--- a/Descent3/multi_ui.cpp
++++ b/Descent3/multi_ui.cpp
+@@ -450,6 +450,12 @@ int MainMultiplayerMenu() {
+ 
+                          std::replace(filename.begin(), filename.end(), '~', '/');
+ 
++                         // the same service may be in more than one base directory
++                         for (const auto &existing : dllnames) {
++                           if (stricmp(existing.c_str(), filename.c_str()) == 0)
++                             return;
++                         }
++
+                        // Place PXO_NAME first in list
+                        if (stricmp(filename.c_str(), PXO_NAME) == 0) {
+                          dllnames.insert(dllnames.begin(), filename);
+diff --git a/Descent3/ogvmovie.cpp b/Descent3/ogvmovie.cpp
+new file mode 100644
+index 00000000..1621163a
+--- /dev/null
++++ b/Descent3/ogvmovie.cpp
+@@ -0,0 +1,328 @@
++/*
++ * Descent 3
++ * Copyright (C) 2024 Parallax Software
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "ogvmovie.h"
++
++#include <algorithm>
++#include <cstdio>
++#include <cstring>
++
++#include <SDL3/SDL_audio.h>
++#include <ogg/ogg.h>
++#include <theora/theoradec.h>
++#include <vorbis/codec.h>
++
++#include "log.h"
++#include "pstypes.h"
++
++struct OgvDecoder::State {
++  FILE *fp = nullptr;
++  ogg_sync_state oy{};
++  ogg_stream_state to{}, vo{};
++  th_info ti{};
++  th_comment tc{};
++  th_setup_info *ts = nullptr;
++  th_dec_ctx *td = nullptr;
++  vorbis_info vi{};
++  vorbis_comment vc{};
++  vorbis_dsp_state vd{};
++  vorbis_block vb{};
++  int theora_p = 0, vorbis_p = 0;
++  bool vorbis_ready = false;
++  bool eof = false;
++  SDL_AudioStream *audio = nullptr;
++  uint64_t audio_samples = 0;
++  std::vector<float> pcm;
++};
++
++OgvDecoder::OgvDecoder() = default;
++OgvDecoder::~OgvDecoder() { Close(); }
++
++void OgvDecoder::Close() {
++  if (!m)
++    return;
++  if (m->audio) {
++    SDL_DestroyAudioStream(m->audio);
++  }
++  if (m->td)
++    th_decode_free(m->td);
++  if (m->ts)
++    th_setup_free(m->ts);
++  if (m->theora_p)
++    ogg_stream_clear(&m->to);
++  th_comment_clear(&m->tc);
++  th_info_clear(&m->ti);
++  if (m->vorbis_ready) {
++    vorbis_block_clear(&m->vb);
++    vorbis_dsp_clear(&m->vd);
++  }
++  if (m->vorbis_p)
++    ogg_stream_clear(&m->vo);
++  vorbis_comment_clear(&m->vc);
++  vorbis_info_clear(&m->vi);
++  ogg_sync_clear(&m->oy);
++  if (m->fp)
++    fclose(m->fp);
++  m.reset();
++}
++
++// Reads the next page from the file and hands it to the streams.
++bool OgvDecoder::ReadPage() {
++  ogg_page og;
++  while (ogg_sync_pageout(&m->oy, &og) <= 0) {
++    char *buffer = ogg_sync_buffer(&m->oy, 4096);
++    size_t bytes = fread(buffer, 1, 4096, m->fp);
++    if (bytes == 0) {
++      m->eof = true;
++      return false;
++    }
++    ogg_sync_wrote(&m->oy, (long)bytes);
++  }
++  if (m->theora_p)
++    ogg_stream_pagein(&m->to, &og);
++  if (m->vorbis_p)
++    ogg_stream_pagein(&m->vo, &og);
++  return true;
++}
++
++bool OgvDecoder::Open(const std::filesystem::path &path, bool play_audio) {
++  Close();
++  m = std::make_unique<State>();
++  m_path = path;
++  m_play_audio = play_audio;
++  m_frame_time = 0.0;
++  m_frame_number = 0;
++
++  m->fp = fopen(PATH_TO_CSTR(path), "rb");
++  if (!m->fp) {
++    m.reset();
++    return false;
++  }
++  ogg_sync_init(&m->oy);
++  th_info_init(&m->ti);
++  th_comment_init(&m->tc);
++  vorbis_info_init(&m->vi);
++  vorbis_comment_init(&m->vc);
++
++  // Find the Theora and Vorbis streams among the beginning-of-stream pages
++  ogg_page og;
++  ogg_packet op;
++  bool headers_done = false;
++  while (!headers_done) {
++    char *buffer = ogg_sync_buffer(&m->oy, 4096);
++    size_t bytes = fread(buffer, 1, 4096, m->fp);
++    if (bytes == 0)
++      break;
++    ogg_sync_wrote(&m->oy, (long)bytes);
++    while (ogg_sync_pageout(&m->oy, &og) > 0) {
++      if (!ogg_page_bos(&og)) {
++        if (m->theora_p)
++          ogg_stream_pagein(&m->to, &og);
++        if (m->vorbis_p)
++          ogg_stream_pagein(&m->vo, &og);
++        headers_done = true;
++        break;
++      }
++      ogg_stream_state test;
++      ogg_stream_init(&test, ogg_page_serialno(&og));
++      ogg_stream_pagein(&test, &og);
++      ogg_stream_packetout(&test, &op);
++      if (!m->theora_p && th_decode_headerin(&m->ti, &m->tc, &m->ts, &op) >= 0) {
++        memcpy(&m->to, &test, sizeof(test));
++        m->theora_p = 1;
++      } else if (!m->vorbis_p && vorbis_synthesis_headerin(&m->vi, &m->vc, &op) >= 0) {
++        memcpy(&m->vo, &test, sizeof(test));
++        m->vorbis_p = 1;
++      } else {
++        ogg_stream_clear(&test);
++      }
++    }
++  }
++
++  if (!m->theora_p) {
++    LOG_ERROR << "MOVIE: no Theora video in " << path;
++    Close();
++    return false;
++  }
++
++  // The remaining header packets
++  while ((m->theora_p && m->theora_p < 3) || (m->vorbis_p && m->vorbis_p < 3)) {
++    int ret;
++    while (m->theora_p && m->theora_p < 3 && (ret = ogg_stream_packetout(&m->to, &op)) != 0) {
++      if (ret < 0 || th_decode_headerin(&m->ti, &m->tc, &m->ts, &op) <= 0) {
++        LOG_ERROR << "MOVIE: bad Theora headers in " << path;
++        Close();
++        return false;
++      }
++      m->theora_p++;
++    }
++    while (m->vorbis_p && m->vorbis_p < 3 && (ret = ogg_stream_packetout(&m->vo, &op)) != 0) {
++      if (ret < 0 || vorbis_synthesis_headerin(&m->vi, &m->vc, &op) != 0) {
++        LOG_ERROR << "MOVIE: bad Vorbis headers in " << path;
++        Close();
++        return false;
++      }
++      m->vorbis_p++;
++    }
++    if (ogg_sync_pageout(&m->oy, &og) > 0) {
++      if (m->theora_p)
++        ogg_stream_pagein(&m->to, &og);
++      if (m->vorbis_p)
++        ogg_stream_pagein(&m->vo, &og);
++    } else {
++      char *buffer = ogg_sync_buffer(&m->oy, 4096);
++      size_t bytes = fread(buffer, 1, 4096, m->fp);
++      if (bytes == 0) {
++        LOG_ERROR << "MOVIE: end of file while reading headers of " << path;
++        Close();
++        return false;
++      }
++      ogg_sync_wrote(&m->oy, (long)bytes);
++    }
++  }
++
++  m->td = th_decode_alloc(&m->ti, m->ts);
++  if (!m->td) {
++    Close();
++    return false;
++  }
++  m_width = (int)m->ti.pic_width;
++  m_height = (int)m->ti.pic_height;
++  m_pixels.assign((size_t)m_width * m_height, 0);
++  if (m->ti.fps_numerator > 0 && m->ti.fps_denominator > 0)
++    m_frame_duration = (double)m->ti.fps_denominator / (double)m->ti.fps_numerator;
++
++  if (m->vorbis_p) {
++    if (m_play_audio) {
++      vorbis_synthesis_init(&m->vd, &m->vi);
++      vorbis_block_init(&m->vd, &m->vb);
++      m->vorbis_ready = true;
++
++      SDL_AudioSpec spec{};
++      spec.format = SDL_AUDIO_F32;
++      spec.channels = m->vi.channels;
++      spec.freq = (int)m->vi.rate;
++      m->audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, nullptr, nullptr);
++      if (!m->audio) {
++        LOG_WARNING << "MOVIE: unable to open audio: " << SDL_GetError();
++      }
++    } else {
++      // not playing the audio, so stop collecting its pages
++      ogg_stream_clear(&m->vo);
++      m->vorbis_p = 0;
++    }
++  }
++
++  return true;
++}
++
++bool OgvDecoder::Rewind() { return Open(m_path, m_play_audio); }
++
++bool OgvDecoder::NextFrame() {
++  if (!m)
++    return false;
++  ogg_packet op;
++  for (;;) {
++    if (ogg_stream_packetout(&m->to, &op) > 0) {
++      if (op.granulepos >= 0) {
++        th_decode_ctl(m->td, TH_DECCTL_SET_GRANPOS, &op.granulepos, sizeof(op.granulepos));
++      }
++      ogg_int64_t granulepos = 0;
++      int ret = th_decode_packetin(m->td, &op, &granulepos);
++      if (ret == 0 || ret == TH_DUPFRAME) {
++        m_frame_time = th_granule_time(m->td, granulepos);
++        if (ret == 0)
++          ConvertFrame();
++        m_frame_number++;
++        return true;
++      }
++      continue;
++    }
++    if (!ReadPage())
++      return false;
++  }
++}
++
++void OgvDecoder::ConvertFrame() {
++  th_ycbcr_buffer ycbcr;
++  th_decode_ycbcr_out(m->td, ycbcr);
++
++  const int hdec = !(m->ti.pixel_fmt & 1);
++  const int vdec = !(m->ti.pixel_fmt & 2);
++  const int px = (int)m->ti.pic_x, py = (int)m->ti.pic_y;
++
++  uint16_t *out = m_pixels.data();
++  for (int y = 0; y < m_height; y++) {
++    const uint8_t *yrow = ycbcr[0].data + (ptrdiff_t)(y + py) * ycbcr[0].stride;
++    const uint8_t *cbrow = ycbcr[1].data + (ptrdiff_t)((y + py) >> vdec) * ycbcr[1].stride;
++    const uint8_t *crrow = ycbcr[2].data + (ptrdiff_t)((y + py) >> vdec) * ycbcr[2].stride;
++    for (int x = 0; x < m_width; x++) {
++      int c = yrow[x + px] - 16;
++      int d = cbrow[(x + px) >> hdec] - 128;
++      int e = crrow[(x + px) >> hdec] - 128;
++      int r = std::clamp((298 * c + 409 * e + 128) >> 8, 0, 255);
++      int g = std::clamp((298 * c - 100 * d - 208 * e + 128) >> 8, 0, 255);
++      int b = std::clamp((298 * c + 516 * d + 128) >> 8, 0, 255);
++      *out++ = (uint16_t)(0x8000 | ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3));
++    }
++  }
++}
++
++void OgvDecoder::QueueAudio(double until) {
++  if (!m || !m->vorbis_ready || !m->audio)
++    return;
++  const int channels = m->vi.channels;
++  while ((double)m->audio_samples / (double)m->vi.rate < until) {
++    float **pcm;
++    int samples = vorbis_synthesis_pcmout(&m->vd, &pcm);
++    if (samples > 0) {
++      m->pcm.resize((size_t)samples * channels);
++      for (int i = 0; i < samples; i++) {
++        for (int ch = 0; ch < channels; ch++) {
++          m->pcm[(size_t)i * channels + ch] = pcm[ch][i];
++        }
++      }
++      SDL_PutAudioStreamData(m->audio, m->pcm.data(), (int)(m->pcm.size() * sizeof(float)));
++      vorbis_synthesis_read(&m->vd, samples);
++      m->audio_samples += samples;
++      continue;
++    }
++    ogg_packet op;
++    if (ogg_stream_packetout(&m->vo, &op) > 0) {
++      if (vorbis_synthesis(&m->vb, &op) == 0)
++        vorbis_synthesis_blockin(&m->vd, &m->vb);
++      continue;
++    }
++    if (!ReadPage())
++      break;
++  }
++}
++
++void OgvDecoder::StartAudio() {
++  if (m && m->audio)
++    SDL_ResumeAudioStreamDevice(m->audio);
++}
++
++double OgvDecoder::AudioPending() const {
++  if (!m || !m->audio)
++    return 0.0;
++  int queued = SDL_GetAudioStreamQueued(m->audio);
++  if (queued <= 0)
++    return 0.0;
++  return (double)queued / (sizeof(float) * m->vi.channels * (double)m->vi.rate);
++}
+diff --git a/Descent3/ogvmovie.h b/Descent3/ogvmovie.h
+new file mode 100644
+index 00000000..c8edd123
+--- /dev/null
++++ b/Descent3/ogvmovie.h
+@@ -0,0 +1,77 @@
++/*
++ * Descent 3
++ * Copyright (C) 2024 Parallax Software
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++// Ogg Theora/Vorbis movie decoding. The Steam release of Descent 3 ships its
++// movies as .ogv files instead of Interplay .mve files.
++
++#ifndef OGVMOVIE_H_
++#define OGVMOVIE_H_
++
++#include <cstdint>
++#include <filesystem>
++#include <memory>
++#include <vector>
++
++class OgvDecoder {
++public:
++  OgvDecoder();
++  ~OgvDecoder();
++  OgvDecoder(const OgvDecoder &) = delete;
++  OgvDecoder &operator=(const OgvDecoder &) = delete;
++
++  // Opens a movie. With play_audio, its Vorbis track (if any) is sent to the
++  // default audio device, paused until StartAudio().
++  bool Open(const std::filesystem::path &path, bool play_audio);
++  void Close();
++  // Restarts the movie from its beginning.
++  bool Rewind();
++
++  // Decodes the next video frame into Pixels() (RGB 1-5-5-5, opaque).
++  // Returns false at the end of the stream.
++  bool NextFrame();
++
++  // Decodes and queues audio up to the given movie time, in seconds.
++  void QueueAudio(double until);
++  void StartAudio();
++  // Seconds of audio still waiting to be played.
++  double AudioPending() const;
++
++  int Width() const { return m_width; }
++  int Height() const { return m_height; }
++  const uint16_t *Pixels() const { return m_pixels.data(); }
++  double FrameTime() const { return m_frame_time; }
++  double FrameDuration() const { return m_frame_duration; }
++  uint32_t FrameNumber() const { return m_frame_number; }
++
++private:
++  struct State;
++  std::unique_ptr<State> m;
++  std::filesystem::path m_path;
++  bool m_play_audio = false;
++
++  int m_width = 0, m_height = 0;
++  std::vector<uint16_t> m_pixels;
++  double m_frame_time = 0.0;
++  double m_frame_duration = 1.0 / 30.0;
++  uint32_t m_frame_number = 0;
++
++  bool ReadPage();
++  void ConvertFrame();
++};
++
++#endif
+diff --git a/ddio/lnxmouse.cpp b/ddio/lnxmouse.cpp
+index 649427f0..4bcbdf64 100644
+--- a/ddio/lnxmouse.cpp
++++ b/ddio/lnxmouse.cpp
+@@ -96,6 +96,7 @@ static struct mses_state {
+   int fd;                   // file descriptor of mouse
+   int t, l, b, r;           // limit rectangle of absolute mouse coords
+   int x, y, cx, cy;         // current x,y,z in absolute mouse coords
++  float fx, fy;             // x, y with the fractions SDL reports (x, y are these truncated)
+   float dx, dy;             
+   int btn_mask;
+ } DDIO_mouse_state;
+@@ -170,6 +171,8 @@ void ddio_MouseReset() {
+ 
+   DDIO_mouse_state.x = DDIO_mouse_state.cx = Lnx_app_obj->m_W / 2;
+   DDIO_mouse_state.y = DDIO_mouse_state.cy = Lnx_app_obj->m_H / 2;
++  DDIO_mouse_state.fx = DDIO_mouse_state.x;
++  DDIO_mouse_state.fy = DDIO_mouse_state.y;
+   DDIO_mouse_state.dy = DDIO_mouse_state.dx = 0.0f;
+ }
+ 
+@@ -342,7 +345,16 @@ void sdlMouseWheelEvent(SDL_Event const *event) {
+   // !!! FIXME: (vertical mouse wheels are represented as mouse buttons 4 and 5, incorrectly, on all platforms).
+   // !!! FIXME: this will require improvements to the engine before this changes here, though.
+ 
+-  if (ev->y > 0) { /* Mouse scroll up */
++  // Trackpads and Magic Mice send a stream of tiny, fractional scroll events
++  // (plus momentum scrolling after a swipe), and the mouse wheel cycles
++  // weapons by default -- so treat only whole wheel "ticks" as clicks.
++#if SDL_VERSION_ATLEAST(3, 2, 12)
++  const int wheel_y = ev->integer_y;
++#else
++  const float wheel_y = ev->y;
++#endif
++
++  if (wheel_y > 0) { /* Mouse scroll up */
+     DDIO_mouse_state.btn_mask |= MOUSE_B5;
+     DIM_buttons.down_count[4]++;
+     DIM_buttons.time_down[4] = timer_GetTime();
+@@ -360,7 +372,7 @@ void sdlMouseWheelEvent(SDL_Event const *event) {
+     mevt.state = false;
+     MB_queue.send(mevt);
+     //		mprintf(0, "MOUSE Scrollwheel: Rolled Up\n");
+-  } else if (ev->y < 0) { /* Mouse scroll down */
++  } else if (wheel_y < 0) { /* Mouse scroll down */
+     DDIO_mouse_state.btn_mask |= MOUSE_B6;
+     DIM_buttons.down_count[5]++;
+     DIM_buttons.time_down[5] = timer_GetTime();
+@@ -382,26 +394,34 @@ void sdlMouseWheelEvent(SDL_Event const *event) {
+ }
+ 
+ void sdlMouseMotionEvent(SDL_Event const *event) {
++  // Move the cursor by this event's motion only. (dx/dy accumulate until the game
++  // reads them; adding those to the position re-added earlier motion, and adding
++  // fractional motion to an int position dropped it -- macOS reports small,
++  // fractional deltas, so the cursor crawled wherever the game polls every frame.)
++  float xrel, yrel;
+   if (event->type == SDL_EVENT_JOYSTICK_BALL_MOTION) {
+-    DDIO_mouse_state.dx = event->jball.xrel / 100.0f;
+-    DDIO_mouse_state.dy = event->jball.yrel / 100.0f;
+-    DDIO_mouse_state.x += DDIO_mouse_state.dx;
+-    DDIO_mouse_state.y += DDIO_mouse_state.dy;
++    xrel = event->jball.xrel / 100.0f;
++    yrel = event->jball.yrel / 100.0f;
+   } else {
+-    DDIO_mouse_state.dx += event->motion.xrel;
+-    DDIO_mouse_state.dy += event->motion.yrel;
+-    DDIO_mouse_state.x += DDIO_mouse_state.dx;
+-    DDIO_mouse_state.y += DDIO_mouse_state.dy;
++    xrel = event->motion.xrel;
++    yrel = event->motion.yrel;
+   }
+-
+-  if (DDIO_mouse_state.x < DDIO_mouse_state.l)
+-    DDIO_mouse_state.x = DDIO_mouse_state.l;
+-  if (DDIO_mouse_state.x >= DDIO_mouse_state.r)
+-    DDIO_mouse_state.x = DDIO_mouse_state.r - 1;
+-  if (DDIO_mouse_state.y < DDIO_mouse_state.t)
+-    DDIO_mouse_state.y = DDIO_mouse_state.t;
+-  if (DDIO_mouse_state.y >= DDIO_mouse_state.b)
+-    DDIO_mouse_state.y = DDIO_mouse_state.b - 1;
++  DDIO_mouse_state.dx += xrel;
++  DDIO_mouse_state.dy += yrel;
++  DDIO_mouse_state.fx += xrel;
++  DDIO_mouse_state.fy += yrel;
++
++  if (DDIO_mouse_state.fx < DDIO_mouse_state.l)
++    DDIO_mouse_state.fx = DDIO_mouse_state.l;
++  if (DDIO_mouse_state.fx > DDIO_mouse_state.r - 1)
++    DDIO_mouse_state.fx = DDIO_mouse_state.r - 1;
++  if (DDIO_mouse_state.fy < DDIO_mouse_state.t)
++    DDIO_mouse_state.fy = DDIO_mouse_state.t;
++  if (DDIO_mouse_state.fy > DDIO_mouse_state.b - 1)
++    DDIO_mouse_state.fy = DDIO_mouse_state.b - 1;
++
++  DDIO_mouse_state.x = (int)DDIO_mouse_state.fx;
++  DDIO_mouse_state.y = (int)DDIO_mouse_state.fy;
+ }
+ 
+ //	This function will handle all mouse events.
+diff --git a/fix/fix.h b/fix/fix.h
+index c0164c4a..bbbcb618 100644
+--- a/fix/fix.h
++++ b/fix/fix.h
+@@ -62,6 +62,7 @@
+ #define _FIX_H
+ 
+ #include <cmath>
++#include <cstddef>
+ #include <cstdint>
+ #include <type_traits>
+ 
+diff --git a/ui/UISystem.cpp b/ui/UISystem.cpp
+index c6ed7bf3..32b526ff 100644
+--- a/ui/UISystem.cpp
++++ b/ui/UISystem.cpp
+@@ -174,7 +174,11 @@
+ #include "renderer.h"
+ #include "Macros.h"
+ 
+-constexpr float kDefaultMouseScale = 20;
++// This was 20, tuned against ddio re-adding all motion since the last poll to the
++// cursor on every event -- which made cursor speed depend on events per frame, so
++// it crawled in fast-redrawing menus like the main menu. ddio now moves the cursor
++// by each event's motion once, so the UI (like TelCom) uses it unscaled.
++constexpr float kDefaultMouseScale = 1;
+ 
+ #define UI_MOUSE_HOTX 2
+ #define UI_MOUSE_HOTY 2
