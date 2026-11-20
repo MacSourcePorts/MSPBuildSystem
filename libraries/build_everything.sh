@@ -9,6 +9,7 @@
 # libs
 ./b2.sh
 ./bison.sh
+./byacc.sh
 ./brotli.sh
 ./ca-certificates.sh
 ./cjson.sh

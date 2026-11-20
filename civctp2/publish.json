@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "civctp2-*.dmg",
+        "sourcePortStub": "civctp2",
+        "buildType": 1
+    }
+]

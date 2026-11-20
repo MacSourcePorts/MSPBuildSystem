@@ -1,0 +1,862 @@
+diff --git a/ctp2_code/ai/diplomacy/diplomat.cpp b/ctp2_code/ai/diplomacy/diplomat.cpp
+index c16abac11..f2dc309d8 100644
+--- a/ctp2_code/ai/diplomacy/diplomat.cpp
++++ b/ctp2_code/ai/diplomacy/diplomat.cpp
+@@ -117,7 +117,7 @@
+ #include "RandGen.h"            // g_rand
+ #include "GameSettings.h"
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #include "../ctp/cifm.h"
+ #define fopen(a, b) ci_fopen(a, b)
+ #endif
+diff --git a/ctp2_code/ctp/c3.h b/ctp2_code/ctp/c3.h
+index 4a0096ffe..b071c6f36 100644
+--- a/ctp2_code/ctp/c3.h
++++ b/ctp2_code/ctp/c3.h
+@@ -123,7 +123,7 @@
+ #include "aui.h"
+ #endif
+ 
+-#if defined(__linux__)
++#if defined(__linux__) || defined(__APPLE__)
+ // try to handle Case insisentive stuff globaly here
+ #include "cifm.h"
+ #define fopen(a, b) ci_fopen(a, b)
+diff --git a/ctp2_code/ctp/civ3_main.cpp b/ctp2_code/ctp/civ3_main.cpp
+index 8221088d7..62909252e 100644
+--- a/ctp2_code/ctp/civ3_main.cpp
++++ b/ctp2_code/ctp/civ3_main.cpp
+@@ -177,6 +177,9 @@
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+ #endif
++#if defined(__APPLE__)
++#include <mach-o/dyld.h>    // _NSGetExecutablePath
++#endif
+ #if defined(USE_SDL)
+ #include <SDL2/SDL.h>
+ #include <SDL2/SDL_mixer.h>
+@@ -305,6 +308,12 @@ namespace Os
+ 		DWORD   filepathLength      = GetModuleFileName(NULL, filepath, MAX_PATH);
+ 
+ 		return std::basic_string<TCHAR>(filepath, filepathLength);
++#elif defined(__APPLE__)
++		char path[PATH_MAX] = { 0 };
++		uint32_t size = sizeof(path);
++		if (_NSGetExecutablePath(path, &size) != 0)
++			return std::basic_string<TCHAR>();
++		return std::basic_string<TCHAR>(path);
+ #elif defined(HAVE_UNISTD_H) && defined(LINUX)
+ 		char szLink[MAX_PATH] = { 0 };
+ 		char szTemp[MAX_PATH] = { 0 };
+@@ -394,6 +403,145 @@ std::basic_string<TCHAR> main_GetExeName()
+ 	return Os::GetExeName();
+ }
+ 
++#if defined(__APPLE__)
++//----------------------------------------------------------------------------
++// macOS: the game data lives in ~/Library/Application Support/civctp2,
++// laid out like the GOG/CD install folder:
++//
++//   ctp2_data/      (required, from the original game)
++//   Scenarios/      (required, from the original game)
++//   ctp2_program/   (optional; its ctp/music folder holds the music)
++//
++// The game runs from ctp2_program/ctp, where it keeps its saves, logs and
++// settings. The app bundle supplies the executable's own runtime files
++// (civpaths.txt etc.), the map plugins, and the Apolyton ctp2_data and
++// Scenarios changes, which take priority over the original files.
++//----------------------------------------------------------------------------
++#include <sys/stat.h>
++#include <string>
++
++namespace
++{
++	std::string macos_ResourcePath(char const * a_Name)
++	{
++		std::string path;
++		char * base = SDL_GetBasePath(); // .app/Contents/Resources/
++		if (base)
++		{
++			path = base;
++			SDL_free(base);
++		}
++		return path + a_Name;
++	}
++
++	bool macos_IsDir(std::string const & a_Path)
++	{
++		struct stat st;
++		return (stat(a_Path.c_str(), &st) == 0) && S_ISDIR(st.st_mode);
++	}
++
++	bool macos_IsFile(std::string const & a_Path)
++	{
++		struct stat st;
++		return (stat(a_Path.c_str(), &st) == 0) && S_ISREG(st.st_mode);
++	}
++
++	void macos_MakeDirs(std::string const & a_Path)
++	{
++		for (size_t i = 1; i <= a_Path.size(); ++i)
++		{
++			if (i == a_Path.size() || a_Path[i] == '/')
++			{
++				mkdir(a_Path.substr(0, i).c_str(), 0755);
++			}
++		}
++	}
++
++	bool macos_RunDitto(std::string const & a_From, std::string const & a_To)
++	{
++		std::string cmd = "/usr/bin/ditto '" + a_From + "' '" + a_To + "'";
++		return system(cmd.c_str()) == 0;
++	}
++}
++
++std::string macos_GetUserDir()
++{
++	char const * home = getenv("HOME");
++	return std::string(home ? home : "") + "/Library/Application Support/civctp2";
++}
++
++bool macos_SetupUserDir()
++{
++	std::string const root = macos_GetUserDir();
++
++	if (!macos_IsDir(root + "/ctp2_data/default") || !macos_IsDir(root + "/Scenarios"))
++	{
++		macos_MakeDirs(root);
++		std::string message =
++			"Call to Power II needs the data files from the original game.\n\n"
++			"Copy the ctp2_data and Scenarios folders (and, for music, the "
++			"ctp2_program folder) from your Call to Power II installation "
++			"(GOG or CD) into:\n\n" + root;
++		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Call to Power II",
++		                         message.c_str(), NULL);
++		system(("/usr/bin/open '" + root + "'").c_str());
++		return false;
++	}
++
++	// The working directory, as on the original install
++	std::string const work = root + "/ctp2_program/ctp";
++	macos_MakeDirs(work);
++	if (chdir(work.c_str()) != 0)
++	{
++		return false;
++	}
++
++	// Runtime files the game expects next to its executable
++	char const * files[] = { "civpaths.txt", "appstr.txt", "anet.inf", "bootserv.txt" };
++	for (size_t i = 0; i < sizeof(files) / sizeof(files[0]); ++i)
++	{
++		std::string const from = macos_ResourcePath("ctp2_code/ctp/") + files[i];
++		if (!macos_IsFile(files[i]) && macos_IsFile(from))
++		{
++			macos_RunDitto(from, files[i]);
++		}
++	}
++
++	// The Apolyton scenario changes only hold the changed files, so merge
++	// them into the original scenarios, once per app version.
++	std::string const scenarios = macos_ResourcePath("Scenarios");
++	std::string const stamp     = root + "/Scenarios/.msp_scenarios_version";
++	std::string version; // the bundled folder's date changes with each build
++	{
++		struct stat st;
++		if (stat(scenarios.c_str(), &st) == 0)
++		{
++			version = std::to_string(static_cast<long long>(st.st_mtime));
++		}
++	}
++	if (macos_IsDir(scenarios))
++	{
++		std::string installed;
++		if (FILE * f = fopen(stamp.c_str(), "r"))
++		{
++			char buf[64] = { 0 };
++			if (fgets(buf, sizeof(buf), f)) installed = buf;
++			fclose(f);
++		}
++		if (installed != version && macos_RunDitto(scenarios, root + "/Scenarios"))
++		{
++			if (FILE * f = fopen(stamp.c_str(), "w"))
++			{
++				fputs(version.c_str(), f);
++				fclose(f);
++			}
++		}
++	}
++
++	return true;
++}
++#endif // __APPLE__
++
+ int ui_Initialize(void)
+ {
+ 	AUI_ERRCODE auiErr = AUI_ERRCODE_OK;
+@@ -1648,6 +1796,11 @@ int WINAPI CivMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
+ 			SetCurrentDirectory(exepath);
+ 		}
+ 	}
++#elif defined(__APPLE__)
++	if (!macos_SetupUserDir())
++	{
++		return -1;
++	}
+ #elif defined(LINUX)
+ 	char result[PATH_MAX];
+ 	ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+diff --git a/ctp2_code/ctp/ctp2_utils/c3files.cpp b/ctp2_code/ctp/ctp2_utils/c3files.cpp
+index 648abd922..1d770ed9f 100644
+--- a/ctp2_code/ctp/ctp2_utils/c3files.cpp
++++ b/ctp2_code/ctp/ctp2_utils/c3files.cpp
+@@ -65,7 +65,8 @@
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+ #endif
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
++#if defined(__linux__)
+ #include <features.h>
+ #include <sys/ioctl.h>
+ #include <sys/mount.h>
+@@ -73,9 +74,10 @@
+ // MS_* dupes with sys/mount.h
+ #include <linux/fs.h>
+ #include <linux/iso_fs.h>
++#include <mntent.h>
++#endif // __linux__
+ #include <errno.h> //for extern int errno when mounting
+ #include <libgen.h>
+-#include <mntent.h>
+ #include <dirent.h>
+ #include <paths.h>
+ #include <pwd.h>
+@@ -119,7 +121,7 @@ FILE* c3files_fopen(C3DIR dirID, MBCHAR const * s1, MBCHAR const * s2, bool chec
+ 
+ FILE* c3files_freopen(const MBCHAR *s1, const MBCHAR *s2, FILE *file)
+ {
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ 	return freopen(CI_FixName(s1), s2, file);
+ #else
+ 	return freopen(s1, s2, file);
+diff --git a/ctp2_code/ctp/debugtools/debugcallstack.cpp b/ctp2_code/ctp/debugtools/debugcallstack.cpp
+index eea964972..e9581b023 100644
+--- a/ctp2_code/ctp/debugtools/debugcallstack.cpp
++++ b/ctp2_code/ctp/debugtools/debugcallstack.cpp
+@@ -63,7 +63,7 @@
+ #include "log_off.h"
+ #endif
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #include <execinfo.h>
+ #include <dlfcn.h>
+ #include "civ3_main.h"
+@@ -336,7 +336,7 @@ void Debug_FunctionNameClose (void)
+ 
+ const char *Debug_FunctionNameGet (size_t address)
+ {
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ 	Dl_info info;
+ 	if(dladdr((void*)address, &info) != 0)
+ 	{
+@@ -369,7 +369,7 @@ const char *Debug_FunctionNameAndOffsetGet (size_t address, size_t *offset)
+ {
+ 	*offset = 0;
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ 	Dl_info info;
+ 	if(dladdr((void*)address, &info) != 0)
+ 	{
+diff --git a/ctp2_code/ctp/debugtools/debugmemory.cpp b/ctp2_code/ctp/debugtools/debugmemory.cpp
+index 15c474e90..79b6a9993 100644
+--- a/ctp2_code/ctp/debugtools/debugmemory.cpp
++++ b/ctp2_code/ctp/debugtools/debugmemory.cpp
+@@ -53,7 +53,7 @@
+ #include <windows.h>
+ #include <string.h>
+ #include <stdlib.h> 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #include "../cifm.h"
+ #define fopen(a, b) ci_fopen(a, b)
+ #endif
+diff --git a/ctp2_code/ctp/debugtools/log.cpp b/ctp2_code/ctp/debugtools/log.cpp
+index f8a3bf902..2127f07fe 100644
+--- a/ctp2_code/ctp/debugtools/log.cpp
++++ b/ctp2_code/ctp/debugtools/log.cpp
+@@ -23,7 +23,7 @@
+ #include <SDL2/SDL.h>
+ #endif
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #include "../cifm.h"
+ #define fopen(a, b) ci_fopen(a, b)
+ #endif
+diff --git a/ctp2_code/ctp/display.cpp b/ctp2_code/ctp/display.cpp
+index 4eb90ee56..730304fdc 100644
+--- a/ctp2_code/ctp/display.cpp
++++ b/ctp2_code/ctp/display.cpp
+@@ -145,6 +145,14 @@ void display_EnumerateDisplayModes(void)
+         return;
+     }
+ 
++#if defined(__APPLE__)
++	// On Retina displays SDL also lists the panel's pixel resolutions
++	// (e.g. 3456x2168 for a 1728x1084 desktop). The game's UI doesn't scale,
++	// so those make everything tiny: only offer modes up to the desktop size.
++	SDL_DisplayMode desktopMode;
++	bool const haveDesktopMode = (SDL_GetDesktopDisplayMode(PRIMARY_DISPLAY, &desktopMode) == 0);
++#endif
++
+ 	SDL_DisplayMode displayMode;
+ 	for (int i = 0; i < numberOfDisplayModes; i++) {
+         const int rc = SDL_GetDisplayMode(PRIMARY_DISPLAY, i, &displayMode);
+@@ -152,6 +160,11 @@ void display_EnumerateDisplayModes(void)
+             c3errors_FatalDialog("CivApp", "Unable to get display-mode:\n%s\n", SDL_GetError());
+             return;
+         }
++#if defined(__APPLE__)
++        if (haveDesktopMode && (displayMode.w > desktopMode.w || displayMode.h > desktopMode.h)) {
++            continue;
++        }
++#endif
+         if (!display_IsLegalResolution(displayMode.w, displayMode.h) && (displayMode.h >= 600)) {
+             CTPDisplayMode *mode = new CTPDisplayMode;
+             if (!mode) {
+diff --git a/ctp2_code/gfx/gfx_utils/rimutils.h b/ctp2_code/gfx/gfx_utils/rimutils.h
+index de235cad4..bfbe50fbd 100644
+--- a/ctp2_code/gfx/gfx_utils/rimutils.h
++++ b/ctp2_code/gfx/gfx_utils/rimutils.h
+@@ -6,7 +6,7 @@
+ 
+ #define RFLAG_BIT_ENCODING 0x0001
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #pragma pack(push, 1)
+ #endif
+ struct RIMHeader {
+@@ -17,7 +17,7 @@ struct RIMHeader {
+     uint16_t pitch;
+     uint16_t flags;
+ };
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #pragma pack(pop)
+ #endif
+ 
+diff --git a/ctp2_code/gfx/gfx_utils/tiffutils.cpp b/ctp2_code/gfx/gfx_utils/tiffutils.cpp
+index 669f80be1..c4bf4b2a9 100644
+--- a/ctp2_code/gfx/gfx_utils/tiffutils.cpp
++++ b/ctp2_code/gfx/gfx_utils/tiffutils.cpp
+@@ -32,7 +32,7 @@
+ 
+ #include "tiffutils.h"
+ #include <tiffio.h>
+-#ifndef __linux__
++#if !defined(__linux__) && !defined(__APPLE__)
+ #define CI_FixName(a) a
+ #endif
+ 
+diff --git a/ctp2_code/gfx/spritesys/Sprite.cpp b/ctp2_code/gfx/spritesys/Sprite.cpp
+index 8fcac1205..2c1d7fcaa 100644
+--- a/ctp2_code/gfx/spritesys/Sprite.cpp
++++ b/ctp2_code/gfx/spritesys/Sprite.cpp
+@@ -32,6 +32,11 @@
+ #include "c3.h"
+ #include "Sprite.h"
+ 
++#if defined(__APPLE__)
++// glibc extension; only used right before exit(), which closes files anyway
++#define fcloseall() ((void)0)
++#endif
++
+ #include "pixelutils.h"
+ #include "tiffutils.h"
+ #include "targautils.h"
+diff --git a/ctp2_code/gfx/spritesys/SpriteFile.h b/ctp2_code/gfx/spritesys/SpriteFile.h
+index 09bffd2f8..84095fc45 100644
+--- a/ctp2_code/gfx/spritesys/SpriteFile.h
++++ b/ctp2_code/gfx/spritesys/SpriteFile.h
+@@ -92,7 +92,7 @@ enum SPRITEFILEERR
+ 
+ 
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #pragma pack(push, 1)
+ #endif
+ typedef struct
+@@ -101,7 +101,7 @@ typedef struct
+   uint32 offset_to_special_data;
+ 
+ } SPRITEFILE_2_0;
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #pragma pack(pop)
+ #endif
+ 
+diff --git a/ctp2_code/gfx/spritesys/spritefile.cpp b/ctp2_code/gfx/spritesys/spritefile.cpp
+index 186b702ea..fe4909f3c 100644
+--- a/ctp2_code/gfx/spritesys/spritefile.cpp
++++ b/ctp2_code/gfx/spritesys/spritefile.cpp
+@@ -2172,8 +2172,10 @@ long SpriteFile::GetFilePos(void)
+ 
+ #ifdef WIN32
+ 	return static_cast<long>(m_filePos);
+-#elif defined(LINUX)
++#elif defined(__GLIBC__)
+ 	return m_filePos.__pos;
++#else
++	return static_cast<long>(m_filePos);
+ #endif
+ }
+ 
+@@ -2184,10 +2186,12 @@ void SpriteFile::SetFilePos(long pos)
+ 
+ #ifdef WIN32
+ 	filePos = pos;
+-#elif defined(LINUX)
++#elif defined(__GLIBC__)
+ 	err = c3files_fgetpos(m_file, &filePos);
+ 	Assert(err == 0);
+ 	filePos.__pos = pos;
++#else
++	filePos = pos;
+ #endif
+ 
+ 	err = c3files_fsetpos(m_file, &filePos);
+diff --git a/ctp2_code/gfx/tilesys/tileset.cpp b/ctp2_code/gfx/tilesys/tileset.cpp
+index b787e5588..68dc283df 100644
+--- a/ctp2_code/gfx/tilesys/tileset.cpp
++++ b/ctp2_code/gfx/tilesys/tileset.cpp
+@@ -746,7 +746,7 @@ void TileSet::QuickLoad(void)
+             fpos_t	pos;
+ 			if (c3files_fgetpos(file, &pos)) goto Error;
+ 
+-#ifndef LINUX
++#if !defined(__GLIBC__)
+ 			fileSize = (uint32)pos;
+ #else
+ 			fileSize = pos.__pos;
+diff --git a/ctp2_code/gs/fileio/CivPaths.cpp b/ctp2_code/gs/fileio/CivPaths.cpp
+index ea0dc4813..fa78edfbc 100644
+--- a/ctp2_code/gs/fileio/CivPaths.cpp
++++ b/ctp2_code/gs/fileio/CivPaths.cpp
+@@ -38,6 +38,11 @@
+ #include "profileDB.h"        // g_theProfileDB
+ #include "LanguageRecord.h"
+ #include <clocale>
++#if defined(__APPLE__)
++#include <string>
++#include <SDL2/SDL_filesystem.h>
++#include <SDL2/SDL_stdinc.h>
++#endif
+ #if defined(__AUI_USE_SDL__)
+ #include "SDL_locale.h"
+ #endif
+@@ -533,6 +538,30 @@ MBCHAR *CivPaths::FindFile(C3DIR dir, const MBCHAR *filename, MBCHAR *path,
+ 		}
+ 	}
+ 
++#if defined(__APPLE__)
++	// The Apolyton data shipped in the app bundle takes priority over the
++	// original game's data, as if copied over it.
++	static std::string const bundleData = []()
++	{
++		std::string path;
++		char * base = SDL_GetBasePath(); // .app/Contents/Resources/
++		if (base)
++		{
++			path = std::string(base) + "ctp2_data";
++			SDL_free(base);
++		}
++		return path;
++	}();
++	if (!bundleData.empty() &&
++	    (checkLocalizedPath && MakeAssetPath(fullPath, bundleData.c_str(), ".", m_localizedPath, m_assetPaths[dir], filename) ||
++	                           MakeAssetPath(fullPath, bundleData.c_str(), ".", m_defaultPath,   m_assetPaths[dir], filename))
++	   )
++	{
++		strcpy(path, fullPath);
++		return path;
++	}
++#endif // __APPLE__
++
+ 	// When not found in the new data, try the original directories
+ 	if (checkLocalizedPath && MakeAssetPath(fullPath, m_hdPath, m_dataPath, m_localizedPath, m_assetPaths[dir], filename))
+ 	{
+diff --git a/ctp2_code/gs/fileio/prjfile.cpp b/ctp2_code/gs/fileio/prjfile.cpp
+index 0c4a27b71..0250b7ecb 100644
+--- a/ctp2_code/gs/fileio/prjfile.cpp
++++ b/ctp2_code/gs/fileio/prjfile.cpp
+@@ -27,7 +27,7 @@
+ #define MAX_ENTRIES_PER_TABLE 100
+ #define ZFSFLAG_DELETED 0x0001
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #pragma pack(push, 0)
+ #endif
+ struct ZFS_RENTRY {
+@@ -53,7 +53,7 @@ struct ZFS_FHEADER {
+     int32_t   encrypt_key;
+     int32_t   dtable_head;
+ };
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #pragma pack(pop, 0)
+ #endif
+ 
+diff --git a/ctp2_code/gs/gameobj/ID.h b/ctp2_code/gs/gameobj/ID.h
+index 7ede2c0e9..d8cb5d02e 100644
+--- a/ctp2_code/gs/gameobj/ID.h
++++ b/ctp2_code/gs/gameobj/ID.h
+@@ -66,9 +66,9 @@ class ID {
+     :   m_id    (val)
+     {  };
+ 
+-    ID (const ID & i)
+-    :   m_id    (i.m_id)
+-    {  };
++    // defaulted (same effect) so ID and Unit stay trivially copyable,
++    // which clang requires for passing them through "..." (SlicObject etc.)
++    ID (const ID & i) = default;
+ 
+ 	void DelPointers()
+     {
+diff --git a/ctp2_code/gs/world/wldgen.cpp b/ctp2_code/gs/world/wldgen.cpp
+index d8fd15ed8..d792f96da 100644
+--- a/ctp2_code/gs/world/wldgen.cpp
++++ b/ctp2_code/gs/world/wldgen.cpp
+@@ -88,6 +88,12 @@
+ #endif
+ #include "C3Rand.h"
+ #include "IMapGen.h"
++#if defined(__APPLE__)
++#include <algorithm>
++#include <string>
++#include <SDL2/SDL_filesystem.h>
++#include <SDL2/SDL_stdinc.h>
++#endif
+ 
+ extern MapPoint g_mp_size;
+ 
+@@ -2568,6 +2574,18 @@ IMapGenerator *World::LoadMapPlugin(sint32 pass)
+ 	char *p = strrchr(name_so, '.');
+ 	if(p) strcpy(p, ".so"); // Quickly change .dll to .so
+ 	//printf("DLL, open %s => %s\n", name, CI_FixName(name_so));
++#if defined(__APPLE__)
++	// The plugins are in the app bundle, not the working directory
++	plugin = NULL;
++	if (char * base = SDL_GetBasePath()) // .app/Contents/Resources/
++	{
++		std::string bundled = std::string(base) + "ctp2_code/ctp/" + name_so;
++		SDL_free(base);
++		std::replace(bundled.begin(), bundled.end(), '\\', '/');
++		plugin = dlopen(bundled.c_str(), RTLD_LAZY);
++	}
++	if (!plugin)
++#endif
+ 	plugin = dlopen(CI_FixName(name_so), RTLD_LAZY);
+ 	free(name_so);
+ #endif
+diff --git a/ctp2_code/libs/anet/h/eclock.h b/ctp2_code/libs/anet/h/eclock.h
+index 0b8411f01..e4c4c737b 100644
+--- a/ctp2_code/libs/anet/h/eclock.h
++++ b/ctp2_code/libs/anet/h/eclock.h
+@@ -54,8 +54,7 @@ clock_t eclock_sparc(void);
+ #ifndef CLK_TCK
+ /* CLOCKS_PER_SEC and CLK_TCK are not identical as some people claim */
+ /* on the internet */
+-extern long int __sysconf (int);
+-#define CLK_TCK ((__clock_t) __sysconf (2))	/* 2 is _SC_CLK_TCK */
++#define CLK_TCK ((clock_t) sysconf (_SC_CLK_TCK))
+ #endif
+ 
+ #define ECLOCKS_PER_SEC CLK_TCK
+diff --git a/ctp2_code/libs/anet/src/dp/hkeytab.c b/ctp2_code/libs/anet/src/dp/hkeytab.c
+index da64bc99c..a43097117 100644
+--- a/ctp2_code/libs/anet/src/dp/hkeytab.c
++++ b/ctp2_code/libs/anet/src/dp/hkeytab.c
+@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
+ #include <stdlib.h>
+ #include <string.h>
+-#if __MWERKS__
++#if __MWERKS__ || defined(__APPLE__)
+     #include <string.h>
+ #else
+     #include <malloc.h>
+diff --git a/ctp2_code/os/autoconf/os_defs.m4 b/ctp2_code/os/autoconf/os_defs.m4
+index dde0af7ee..7f6f73049 100644
+--- a/ctp2_code/os/autoconf/os_defs.m4
++++ b/ctp2_code/os/autoconf/os_defs.m4
+@@ -18,10 +18,17 @@ AC_DEFUN([AC_OS_DEFINES],[
+ 	 CTP2_NOWIN32_INC='-I$(ctp2_code)/os/nowin32'
+          ac_OpSystem="LINUX"
+          ;;
++      *-darwin*)
++         dnl macOS takes the same POSIX/SDL code paths as Linux
++         AC_DEFINE(MACOS,1,[Define to 1 if you are compiling on macOS])
++         AC_DEFINE(LINUX,1,[Define to 1 if you are compiling on Linux])
++	 CTP2_NOWIN32_INC='-I$(ctp2_code)/os/nowin32'
++         ac_OpSystem="MACOS"
++         ;;
+    esac
+ 
+    case "${host}" in
+-     aarch64-*)
++     aarch64-*-linux*)
+        AC_DEFINE(__arm__,1,[Define to 1 if you are compiling on ARM])
+        ;;
+    esac
+@@ -29,4 +36,5 @@ AC_DEFUN([AC_OS_DEFINES],[
+    AC_SUBST(CTP2_NOWIN32_INC)
+    AM_CONDITIONAL(WIN32, test x$ac_OpSystem = xWIN32)
+    AM_CONDITIONAL(LINUX, test x$ac_OpSystem = xLINUX)
++   AM_CONDITIONAL(MACOS, test x$ac_OpSystem = xMACOS)
+ ])
+diff --git a/ctp2_code/os/nowin32/nowin32.cpp b/ctp2_code/os/nowin32/nowin32.cpp
+index e88ea5ca0..6b76e8874 100644
+--- a/ctp2_code/os/nowin32/nowin32.cpp
++++ b/ctp2_code/os/nowin32/nowin32.cpp
+@@ -81,7 +81,24 @@ char* _fullpath(char* absolute, const char* relative, size_t bufsize)
+ 		}
+ #elif defined(BSD) || defined(__USE_BSD)
+ 		char rlpath[PATH_MAX] = {0};
+-		char *abs = realpath(CI_FixName(relative), rlpath);
++		const char *fixedName = CI_FixName(relative);
++		char *abs = realpath(fixedName, rlpath);
++		if(!abs)
++		{
++			// Like the GNU branch: realpath fails if the last element does
++			// not exist yet (e.g. a save folder about to be created), so
++			// resolve its directory and add the name back.
++			char *fixedNameDuplicate = strdup(fixedName);
++			char dirpath[PATH_MAX] = {0};
++			if(realpath(dirname(fixedNameDuplicate), dirpath))
++			{
++				free(fixedNameDuplicate);
++				fixedNameDuplicate = strdup(fixedName);
++				snprintf(rlpath, sizeof(rlpath), "%s" FILE_SEP "%s", dirpath, basename(fixedNameDuplicate));
++				abs = rlpath;
++			}
++			free(fixedNameDuplicate);
++		}
+ 		if(abs)
+ 		{
+ 			if(!absolute)
+diff --git a/ctp2_code/robot/aibackdoor/civarchive.h b/ctp2_code/robot/aibackdoor/civarchive.h
+index 96058a086..83a8360ef 100644
+--- a/ctp2_code/robot/aibackdoor/civarchive.h
++++ b/ctp2_code/robot/aibackdoor/civarchive.h
+@@ -49,7 +49,7 @@ class CivArchive;
+ #include "ctp2_inttypes.h"
+ 
+ #if defined(__AUI_USE_SDL__)
+-#include <SDL_endian.h>
++#include <SDL2/SDL_endian.h>
+ #endif
+ 
+ // Used for checking save game integrity
+diff --git a/ctp2_code/sound/soundmanager.cpp b/ctp2_code/sound/soundmanager.cpp
+index 44a29ca9d..f5225809a 100755
+--- a/ctp2_code/sound/soundmanager.cpp
++++ b/ctp2_code/sound/soundmanager.cpp
+@@ -57,7 +57,7 @@ extern PlayListDB	*g_thePlayListDB;
+ 
+ SoundManager		*g_soundManager     = NULL;
+ 
+-#ifndef __linux__
++#if !defined(__linux__) && !defined(__APPLE__)
+ #define CI_FixName(a) a
+ #endif
+ 
+diff --git a/ctp2_code/ui/aui_common/aui_bitmapfont.cpp b/ctp2_code/ui/aui_common/aui_bitmapfont.cpp
+index 7917268b7..1468de4c8 100644
+--- a/ctp2_code/ui/aui_common/aui_bitmapfont.cpp
++++ b/ctp2_code/ui/aui_common/aui_bitmapfont.cpp
+@@ -237,7 +237,7 @@ AUI_ERRCODE aui_BitmapFont::Load( void )
+ 	else if (g_civPaths->FindFile(C3DIR_FONTS, m_ttffile, fullPath, TRUE)) // try C3DIR_FONTS if GetBitmapFontResource fails (e.g. is not yet available)
+ 		strncpy( m_ttffile, fullPath, MAX_PATH );
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ 	sint32 error = TT_Open_Face(s_ttEngine, CI_FixName(m_ttffile), &m_ttFace);
+ #else
+ 	sint32 error = TT_Open_Face(s_ttEngine, m_ttffile, &m_ttFace);
+diff --git a/ctp2_code/ui/aui_common/aui_image.cpp b/ctp2_code/ui/aui_common/aui_image.cpp
+index a901fe1f1..a3e5ed935 100644
+--- a/ctp2_code/ui/aui_common/aui_image.cpp
++++ b/ctp2_code/ui/aui_common/aui_image.cpp
+@@ -84,7 +84,7 @@ AUI_ERRCODE aui_Image::SetFilename( const MBCHAR *filename )
+ 
+ 	if ( !filename ) return AUI_ERRCODE_INVALIDPARAM;
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ 	strncpy(m_filename, CI_FixName(filename), MAX_PATH);
+ #else
+ 	strncpy(m_filename, filename, MAX_PATH);
+diff --git a/ctp2_code/ui/aui_common/aui_sound.cpp b/ctp2_code/ui/aui_common/aui_sound.cpp
+index db9572b3f..647a97252 100644
+--- a/ctp2_code/ui/aui_common/aui_sound.cpp
++++ b/ctp2_code/ui/aui_common/aui_sound.cpp
+@@ -37,7 +37,7 @@ AUI_ERRCODE aui_Sound::SetFilename( const MBCHAR *filename)
+ 	if ( !filename )
+ 		return AUI_ERRCODE_INVALIDPARAM;
+ 
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ 	strncpy(m_filename, CI_FixName(filename), MAX_PATH);
+ #else
+ 	strncpy(m_filename, filename, MAX_PATH);
+diff --git a/ctp2_code/ui/aui_ctp2/c3blitter.cpp b/ctp2_code/ui/aui_ctp2/c3blitter.cpp
+index 4114bf625..9178332e1 100644
+--- a/ctp2_code/ui/aui_ctp2/c3blitter.cpp
++++ b/ctp2_code/ui/aui_ctp2/c3blitter.cpp
+@@ -128,7 +128,7 @@ AUI_ERRCODE C3Blitter::Blt16To16Fast(
+ 	uint32 flags )
+ {
+ 	AUI_ERRCODE     retcode         = AUI_ERRCODE_OK;
+-#ifdef __arm__
++#if defined(__arm__) || defined(__aarch64__)
+ 	Assert(0);
+ #else
+ 	const sint32    destPitch       = destSurf->Pitch() / 2;
+@@ -281,7 +281,7 @@ AUI_ERRCODE C3Blitter::Blt16To16FastMMX(
+ 	uint32 flags )
+ {
+ 	AUI_ERRCODE     retcode         = AUI_ERRCODE_OK;
+-#ifdef __arm__
++#if defined(__arm__) || defined(__aarch64__)
+ 	Assert(0);
+ #else
+ 	const sint32    destPitch       = destSurf->Pitch() / 2;
+@@ -464,7 +464,7 @@ AUI_ERRCODE C3Blitter::Blt16To16FastFPU(
+ 	uint32 flags )
+ {
+ 	AUI_ERRCODE     retcode         = AUI_ERRCODE_OK;
+-#ifdef __arm__
++#if defined(__arm__) || defined(__aarch64__)
+ 	Assert(0);
+ #else
+ 	const sint32    destPitch       = destSurf->Pitch() / 2;
+@@ -612,7 +612,7 @@ AUI_ERRCODE C3Blitter::Blt16To16FastFPU(
+ 
+ bool C3Blitter::CheckMMXTechnology(void)
+ {
+-#if defined(__linux__)
++#if defined(__linux__) || defined(__APPLE__)
+ 	return false;
+ #else
+     bool retval = true;
+diff --git a/ctp2_code/ui/aui_ctp2/c3imageformats.cpp b/ctp2_code/ui/aui_ctp2/c3imageformats.cpp
+index 5bf93b37c..7aa25bcb6 100644
+--- a/ctp2_code/ui/aui_ctp2/c3imageformats.cpp
++++ b/ctp2_code/ui/aui_ctp2/c3imageformats.cpp
+@@ -56,7 +56,7 @@
+ #include "rimutils.h"
+ #include "targautils.h"
+ #include "tiffutils.h"
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #include "cifm.h"
+ #else
+ #define CI_FixName(a) a
+diff --git a/ctp2_code/ui/aui_sdl/aui_sdlmovie.cpp b/ctp2_code/ui/aui_sdl/aui_sdlmovie.cpp
+index d1d44ec46..c3892ea07 100644
+--- a/ctp2_code/ui/aui_sdl/aui_sdlmovie.cpp
++++ b/ctp2_code/ui/aui_sdl/aui_sdlmovie.cpp
+@@ -1751,7 +1751,9 @@ static int read_thread(void *arg)
+ 	}
+ 	is->ic = ic;
+ 
++#if LIBAVFORMAT_VERSION_MAJOR < 62 // removed in FFmpeg 8, which handles it itself
+ 	av_format_inject_global_side_data(ic);
++#endif
+ 
+ 	if (ic->pb)
+ 		ic->pb->eof_reached = 0;
+diff --git a/ctp2_code/ui/netshell/netshell_game.cpp b/ctp2_code/ui/netshell/netshell_game.cpp
+index 037bdcf85..39a24f417 100644
+--- a/ctp2_code/ui/netshell/netshell_game.cpp
++++ b/ctp2_code/ui/netshell/netshell_game.cpp
+@@ -41,8 +41,8 @@ void LaunchGame( void )
+ 
+ 	switch ( w->GetMode() )
+ 	{
+-	case w->CONTINUE_CREATE:
+-	case w->CONTINUE_JOIN:
++	case AllinoneWindow::CONTINUE_CREATE:
++	case AllinoneWindow::CONTINUE_JOIN:
+ 
+ 		{
+ 			g_network.SetLaunchFromNetFunc(TRUE);
+@@ -56,7 +56,7 @@ void LaunchGame( void )
+ 
+ 		break;
+ 
+-	case w->CREATE:
++	case AllinoneWindow::CREATE:
+ 
+ 		g_network.SetLaunchFromNetFunc(FALSE);
+ 
+@@ -78,7 +78,7 @@ void LaunchGame( void )
+ 		g_civApp->PostStartGameAction();
+ 		break;
+ 
+-	case w->JOIN:
++	case AllinoneWindow::JOIN:
+ 		g_network.SetLaunchFromNetFunc(FALSE);
+ 		g_civApp->PostStartGameAction();
+ 		break;
+diff --git a/ctp2_code/ui/netshell/ns_customlistbox.cpp b/ctp2_code/ui/netshell/ns_customlistbox.cpp
+index 22e6545c8..77d57ab60 100644
+--- a/ctp2_code/ui/netshell/ns_customlistbox.cpp
++++ b/ctp2_code/ui/netshell/ns_customlistbox.cpp
+@@ -591,8 +591,8 @@ void ns_GPlayerListBox::Insert( NETFunc::Player *player )
+ 
+ 	switch ( g_allinoneWindow->GetMode() )
+ 	{
+-		case g_allinoneWindow->CONTINUE_CREATE:
+-		case g_allinoneWindow->CONTINUE_JOIN:
++		case AllinoneWindow::CONTINUE_CREATE:
++		case AllinoneWindow::CONTINUE_JOIN:
+ 			if(!g_allinoneWindow->GetScenarioInfo() ||
+ 				!g_allinoneWindow->GetScenarioInfo()->isScenario) {
+ 				item->GetTribeButton()->Enable( FALSE );
+@@ -868,8 +868,8 @@ void ns_AIPlayerListBox::Insert( nf_AIPlayer *player )
+ 
+ 	switch ( g_allinoneWindow->GetMode() )
+ 	{
+-		case g_allinoneWindow->CONTINUE_CREATE:
+-		case g_allinoneWindow->CONTINUE_JOIN:
++		case AllinoneWindow::CONTINUE_CREATE:
++		case AllinoneWindow::CONTINUE_JOIN:
+ 			item->GetTribeButton()->Enable( FALSE );
+ 			break;
+ 		default:
+diff --git a/ctp2_code/ui/netshell/ns_customlistbox.h b/ctp2_code/ui/netshell/ns_customlistbox.h
+index 19c44c310..812ee85f7 100644
+--- a/ctp2_code/ui/netshell/ns_customlistbox.h
++++ b/ctp2_code/ui/netshell/ns_customlistbox.h
+@@ -16,7 +16,7 @@
+ #include "ns_gamesetup.h"
+ #include "ns_aiplayer.h"
+ #include "ns_aiplayersetup.h"
+-#ifdef __linux__
++#if defined(__linux__) || defined(__APPLE__)
+ #include "cifm.h"
+ #define fopen(a, b) ci_fopen(a, b)
+ #endif
