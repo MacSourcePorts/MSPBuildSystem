@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "KeeperFX-*.dmg",
+        "sourcePortStub": "keeperfx",
+        "buildType": 1
+    }
+]

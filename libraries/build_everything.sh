@@ -14,6 +14,7 @@
 ./ca-certificates.sh
 ./cjson.sh
 ./cpp-httplib.sh
+./enet6.sh
 ./cppunit.sh
 ./nasm.sh
 ./dav1d.sh
@@ -40,12 +41,14 @@
 ./jpeg-turbo.sh
 ./lame.sh
 ./lua.sh
+./luajit.sh
 ./lz4.sh
 ./lzo.sh
 ./mad.sh
 ./mbedtls.sh
 ./md4c.sh
 ./miniupnpc.sh
+./natpmp.sh
 ./modplug.sh
 ./moltenvk.sh
 ./mpg123.sh
@@ -63,7 +66,10 @@
 ./samplerate.sh
 ./sdl2.sh
 ./sdl3.sh
+./sdl3_image.sh
+./sdl3_mixer.sh
 ./snappy.sh
+./spng.sh
 ./sodium.sh
 ./speexdsp.sh
 ./spirv-tools.sh
@@ -88,8 +94,10 @@
 ./yaml-cpp.sh
 ./zimg.sh
 ./zlib.sh
+./minizip.sh
 ./aribb24.sh
 ./openssl3.sh
+./curl.sh
 ./flac.sh
 ./gettext.sh
 ./flex.sh

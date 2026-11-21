@@ -1,0 +1,649 @@
+diff --git a/build/cmake/modules/BuildTargets.cmake b/build/cmake/modules/BuildTargets.cmake
+index 66a72d269..20a167928 100644
+--- a/build/cmake/modules/BuildTargets.cmake
++++ b/build/cmake/modules/BuildTargets.cmake
+@@ -10,7 +10,8 @@ list(FILTER KEEPERFX_SOURCES_CXX EXCLUDE REGEX "/src/ftests/")
+ # Desktop platform filtering (matches the hand Makefiles).
+ if(WIN32)
+     list(FILTER KEEPERFX_SOURCES_CXX EXCLUDE REGEX "/PlatformLinux\\.cpp$")
+-elseif(UNIX AND NOT APPLE)
++elseif(UNIX)
++    # macOS shares the Linux (POSIX) platform layer
+     list(FILTER KEEPERFX_SOURCES_CXX EXCLUDE REGEX "/PlatformWindows\\.cpp$")
+     list(FILTER KEEPERFX_SOURCES_CXX EXCLUDE REGEX "/WindowCompositorWin\\.cpp$")
+ endif()
+diff --git a/build/cmake/modules/Dependencies.cmake b/build/cmake/modules/Dependencies.cmake
+index 1e58846f8..8fa6ce582 100644
+--- a/build/cmake/modules/Dependencies.cmake
++++ b/build/cmake/modules/Dependencies.cmake
+@@ -196,10 +196,52 @@ else()
+     pkg_check_modules(FFMPEG     REQUIRED IMPORTED_TARGET libavformat libavcodec libswresample libavutil)
+     pkg_check_modules(OPENAL     REQUIRED IMPORTED_TARGET openal)
+     pkg_check_modules(LUAJIT     REQUIRED IMPORTED_TARGET luajit)
+-    pkg_check_modules(SPNG       REQUIRED IMPORTED_TARGET spng)
++    pkg_check_modules(SPNG       IMPORTED_TARGET spng)
++    if(NOT SPNG_FOUND)
++        # libspng's own CMake build names it libspng.pc (its meson build: spng.pc)
++        pkg_check_modules(SPNG   REQUIRED IMPORTED_TARGET libspng)
++    endif()
+     pkg_check_modules(MINIZIP    REQUIRED IMPORTED_TARGET minizip)
+     pkg_check_modules(ZLIB       REQUIRED IMPORTED_TARGET zlib)
+ 
++  if(APPLE)
++    # macOS: ENet6, libcurl, miniupnpc and libnatpmp come from the system
++    # prefix (/usr/local) like the rest; the tiny astronomy and centijson
++    # libraries are compiled from source here (the kfx-deps prebuilts are
++    # Linux/Windows only).
++    pkg_check_modules(CURL REQUIRED IMPORTED_TARGET libcurl)
++    find_library(KFX_ENET6_LIB enet6 REQUIRED)
++    find_path(KFX_ENET6_INC enet6/enet.h REQUIRED)
++    find_library(KFX_MINIUPNPC_LIB miniupnpc REQUIRED)
++    find_library(KFX_NATPMP_LIB natpmp REQUIRED)
++    find_path(KFX_NATPMP_INC natpmp.h REQUIRED)
++
++    add_library(enet6_static INTERFACE)
++    target_link_libraries(enet6_static INTERFACE "${KFX_ENET6_LIB}")
++    target_include_directories(enet6_static INTERFACE "${KFX_ENET6_INC}")
++    add_library(curl_static INTERFACE)
++    target_link_libraries(curl_static INTERFACE PkgConfig::CURL)
++    add_library(miniupnpc INTERFACE)
++    target_link_libraries(miniupnpc INTERFACE "${KFX_MINIUPNPC_LIB}")
++    add_library(natpmp INTERFACE)
++    target_link_libraries(natpmp INTERFACE "${KFX_NATPMP_LIB}")
++    target_include_directories(natpmp INTERFACE "${KFX_NATPMP_INC}")
++
++    include(FetchContent)
++    FetchContent_Declare(kfx_astronomy
++        URL "https://github.com/cosinekitty/astronomy/archive/refs/tags/v2.1.19.tar.gz"
++        SOURCE_SUBDIR no-cmake-build)
++    FetchContent_Declare(kfx_centijson
++        URL "https://github.com/mity/centijson/archive/refs/tags/v0.0.1.tar.gz"
++        SOURCE_SUBDIR no-cmake-build)
++    # (SOURCE_SUBDIR has no CMakeLists.txt: download only, built below)
++    FetchContent_MakeAvailable(kfx_astronomy kfx_centijson)
++    add_library(astronomy_static STATIC "${kfx_astronomy_SOURCE_DIR}/source/c/astronomy.c")
++    target_include_directories(astronomy_static PUBLIC "${kfx_astronomy_SOURCE_DIR}/source/c")
++    file(GLOB _kfx_centijson_src "${kfx_centijson_SOURCE_DIR}/src/*.c")
++    add_library(centijson_static STATIC ${_kfx_centijson_src})
++    target_include_directories(centijson_static PUBLIC "${kfx_centijson_SOURCE_DIR}/src")
++  else()
+     # Not reliably packaged; use the prebuilt lin64 static libs (as linux.mk does).
+     kfx_fetch(astronomy "${KFX_DEPS_BASE}/20250418/astronomy-lin64.tar.gz")
+     kfx_fetch(centijson "${KFX_DEPS_BASE}/20250418/centijson-lin64.tar.gz")
+@@ -211,6 +253,7 @@ else()
+     kfx_imported(enet6_static     "${D}/enet6/libenet6.a"         "${D}/enet6/include")
+     kfx_imported(curl_static      "${D}/libcurl/lib/libcurl.a"    "${D}/libcurl/include")
+     target_link_libraries(curl_static INTERFACE ssl crypto zstd)
++  endif()
+ 
+     add_library(centitoml OBJECT "${KFX_CENTITOML_SRC}/toml_api.c")
+     target_link_libraries(centitoml PUBLIC centijson_static)
+@@ -265,6 +308,13 @@ function(kfx_link_dependencies TARGET)
+             astronomy_static centijson_static enet6_static curl_static
+             centitoml
+             miniupnpc natpmp dl)
++        if(APPLE)
++            # iconv is part of glibc on Linux
++            target_link_libraries(${TARGET} PRIVATE iconv "-framework CoreFoundation")
++            # /usr/local/include also has Lua 5.x's lua.h, so make sure
++            # LuaJIT's headers are found ahead of it
++            target_include_directories(${TARGET} BEFORE PRIVATE ${LUAJIT_INCLUDE_DIRS})
++        endif()
+     endif()
+     target_link_libraries(${TARGET} PRIVATE OpenGL::GL glad)
+ endfunction()
+diff --git a/build/cmake/modules/Helpers.cmake b/build/cmake/modules/Helpers.cmake
+index 3084bab06..2722b0fa7 100644
+--- a/build/cmake/modules/Helpers.cmake
++++ b/build/cmake/modules/Helpers.cmake
+@@ -41,6 +41,13 @@ function(apply_keeperfx_warnings TARGET)
+             -Werror -Wno-format-truncation
+             -march=x86-64 -fno-omit-frame-pointer -fmessage-length=0 -O3
+             $<$<COMPILE_LANGUAGE:C>:-Wimplicit>)
++    elseif(APPLE)
++        # no -march (universal arm64/x86_64 build) and no -Werror (Apple clang
++        # warns about things GCC doesn't)
++        target_compile_options(${TARGET} PRIVATE
++            -Wall -Wextra -Wno-unused-parameter -Wno-unknown-pragmas
++            -Wno-sign-compare -g -O3
++            $<$<COMPILE_LANGUAGE:C>:-Wno-absolute-value>)
+     else()
+         target_compile_options(${TARGET} PRIVATE
+             -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unknown-pragmas
+diff --git a/build/cmake/modules/Platforms.cmake b/build/cmake/modules/Platforms.cmake
+index f1edef0aa..f0a826def 100644
+--- a/build/cmake/modules/Platforms.cmake
++++ b/build/cmake/modules/Platforms.cmake
+@@ -4,6 +4,8 @@ if(WIN32)
+     kfx_status("PLATFORM" "Windows / MinGW-w64 (i686)")
+ elseif(UNIX AND NOT APPLE)
+     kfx_status("PLATFORM" "Linux (x86_64)")
++elseif(APPLE)
++    kfx_status("PLATFORM" "macOS (${CMAKE_OSX_ARCHITECTURES})")
+ else()
+     message(FATAL_ERROR "Unsupported platform (only Windows/MinGW and Linux are supported)")
+ endif()
+diff --git a/src/bflib_crash.c b/src/bflib_crash.c
+index b8a06fd63..2473102e8 100644
+--- a/src/bflib_crash.c
++++ b/src/bflib_crash.c
+@@ -20,6 +20,12 @@
+ #if !defined(_GNU_SOURCE)
+ #define _GNU_SOURCE
+ #endif
++#if defined(__APPLE__)
++// macOS only declares the ucontext routines with _XOPEN_SOURCE, and
++// _DARWIN_C_SOURCE keeps everything else (dladdr etc.) visible
++#define _XOPEN_SOURCE 700
++#define _DARWIN_C_SOURCE
++#endif
+ 
+ #include "pre_inc.h"
+ #include "kfx/renderer/RendererManager.h"
+@@ -483,6 +489,16 @@ static void log_posix_context(void *context)
+     LbErrorLog("Context PC=%p SP=%p.\n",
+         (void *)uctx->uc_mcontext.pc,
+         (void *)uctx->uc_mcontext.sp);
++#elif defined(__APPLE__) && defined(__aarch64__)
++    ucontext_t *uctx = (ucontext_t *)context;
++    LbErrorLog("Context PC=%p SP=%p.\n",
++        (void *)uctx->uc_mcontext->__ss.__pc,
++        (void *)uctx->uc_mcontext->__ss.__sp);
++#elif defined(__APPLE__) && defined(__x86_64__)
++    ucontext_t *uctx = (ucontext_t *)context;
++    LbErrorLog("Context RIP=%p RSP=%p.\n",
++        (void *)uctx->uc_mcontext->__ss.__rip,
++        (void *)uctx->uc_mcontext->__ss.__rsp);
+ #else
+     (void)context;
+ #endif
+diff --git a/src/globals.h b/src/globals.h
+index 19bf2ccdb..6a91ac8cd 100644
+--- a/src/globals.h
++++ b/src/globals.h
+@@ -31,7 +31,7 @@
+ #include <time.h>
+ #include <assert.h>
+ 
+-#if defined(unix) && !defined(GO32)
++#if (defined(unix) || defined(__APPLE__)) && !defined(GO32)
+ #include <unistd.h>
+ #include <signal.h>
+ #include <sys/ioctl.h>
+diff --git a/src/kfx/platform/MacAppSupport.cpp b/src/kfx/platform/MacAppSupport.cpp
+new file mode 100644
+index 000000000..9c8c7c4b0
+--- /dev/null
++++ b/src/kfx/platform/MacAppSupport.cpp
+@@ -0,0 +1,249 @@
++/******************************************************************************/
++// macOS app bundle support (Mac Source Ports).
++//
++// KeeperFX expects one folder holding everything: its own data, the files
++// from the original Dungeon Keeper, and the player's saves, screenshots,
++// settings and log. In a Mac app its own data is inside the (read-only,
++// signed) app bundle, in Contents/Resources/keeperfx, so this sets up
++// ~/Library/Application Support/KeeperFX as that folder:
++//
++// - each folder of the bundled data gets a real folder there, filled with
++//   symlinks to the bundled files. They're recreated at every launch, so they
++//   follow the app when it's moved or updated, and the player can add their
++//   own files (campaigns, maps, mods) next to them.
++// - keeperfx.cfg is copied, so it can be edited.
++// - the original Dungeon Keeper files (data/*.dat etc., sound/*.sbk) and the
++//   GOG release's music (keeper02.ogg ...) are copied in from a "Dungeon
++//   Keeper" folder there, where the player puts their copy of the game.
++//
++// Then the game runs as if it had been started from that folder.
++/******************************************************************************/
++#if defined(__APPLE__)
++
++#include "kfx/platform/MacAppSupport.h"
++#include <SDL3/SDL.h>
++#include <filesystem>
++#include <string>
++#include <vector>
++#include <map>
++#include <algorithm>
++#include <cctype>
++#include <cstdlib>
++#include <cstdio>
++#include <unistd.h>
++
++namespace fs = std::filesystem;
++
++namespace {
++
++const char *kAppSupportName = "KeeperFX";
++const char *kOriginalGameFolder = "Dungeon Keeper";
++
++// docs/files_required_from_original_dk.txt
++const char *kRequiredFiles[] = {
++    "data/bluepal.dat", "data/bluepall.dat", "data/dogpal.pal", "data/hitpall.dat",
++    "data/lightng.pal", "data/main.pal", "data/mapfadeg.dat", "data/redpal.col",
++    "data/redpall.dat", "data/slab0-0.dat", "data/slab0-1.dat", "data/vampal.pal",
++    "data/whitepal.col",
++    "sound/atmos1.sbk", "sound/atmos2.sbk", "sound/bullfrog.sbk",
++};
++
++std::string lower(std::string s)
++{
++    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return (char)std::tolower(c); });
++    return s;
++}
++
++// Is this one of our symlinks into an app bundle's data?
++bool is_bundle_link(const fs::path &p)
++{
++    std::error_code ec;
++    if (!fs::is_symlink(fs::symlink_status(p, ec)))
++        return false;
++    fs::path target = fs::read_symlink(p, ec);
++    return !ec && target.string().find(".app/Contents/Resources/") != std::string::npos;
++}
++
++void link_entry(const fs::path &src, const fs::path &dst)
++{
++    std::error_code ec;
++    // a real file or folder of the player's own wins over the bundled one
++    if (fs::exists(fs::symlink_status(dst, ec)))
++        return;
++    fs::create_symlink(src, dst, ec);
++    if (ec)
++        fprintf(stderr, "KeeperFX: can't link %s: %s\n", dst.c_str(), ec.message().c_str());
++}
++
++// Mirror the bundled data into the Application Support folder
++void link_bundled_data(const fs::path &bundle, const fs::path &base)
++{
++    std::error_code ec;
++    // first remove the links made by the last launch (maybe from an older
++    // copy of the app, which may have had other files)
++    for (auto &top : fs::directory_iterator(base, ec)) {
++        if (is_bundle_link(top.path())) {
++            fs::remove(top.path(), ec);
++            continue;
++        }
++        if (top.is_directory(ec) && !top.is_symlink(ec)) {
++            for (auto &child : fs::directory_iterator(top.path(), ec)) {
++                if (is_bundle_link(child.path()))
++                    fs::remove(child.path(), ec);
++            }
++        }
++    }
++
++    for (auto &top : fs::directory_iterator(bundle, ec)) {
++        const fs::path name = top.path().filename();
++        const fs::path dst = base / name;
++        if (top.is_directory(ec)) {
++            fs::create_directories(dst, ec);
++            for (auto &child : fs::directory_iterator(top.path(), ec))
++                link_entry(child.path(), dst / child.path().filename());
++        } else if (name == "keeperfx.cfg") {
++            if (!fs::exists(dst, ec))
++                fs::copy_file(top.path(), dst, ec);
++        } else {
++            link_entry(top.path(), dst);
++        }
++    }
++}
++
++// All files under a folder, by lower-case path relative to it
++std::map<std::string, fs::path> index_files(const fs::path &root)
++{
++    std::map<std::string, fs::path> files;
++    std::error_code ec;
++    auto it = fs::recursive_directory_iterator(root, fs::directory_options::skip_permission_denied, ec);
++    for (; !ec && it != fs::recursive_directory_iterator(); it.increment(ec)) {
++        if (it->is_regular_file(ec))
++            files.emplace(lower(fs::relative(it->path(), root, ec).string()), it->path());
++    }
++    return files;
++}
++
++// Find a file by name: at the same relative path, or anywhere if not there
++// (the player may have put the DATA and SOUND folders one level down)
++const fs::path *find_file(const std::map<std::string, fs::path> &files, const std::string &rel)
++{
++    auto it = files.find(rel);
++    if (it != files.end())
++        return &it->second;
++    for (auto &f : files) {
++        const std::string &key = f.first;
++        if (key.size() > rel.size() && key.compare(key.size() - rel.size(), rel.size(), rel) == 0
++            && key[key.size() - rel.size() - 1] == '/')
++            return &f.second;
++    }
++    return nullptr;
++}
++
++// Copy what's needed from the player's copy of Dungeon Keeper; returns the
++// required files still missing
++std::vector<std::string> import_original_files(const fs::path &base)
++{
++    std::vector<std::string> missing;
++    std::error_code ec;
++    const fs::path original = base / kOriginalGameFolder;
++    std::map<std::string, fs::path> files;
++    if (fs::is_directory(original, ec))
++        files = index_files(original);
++
++    for (const char *req : kRequiredFiles) {
++        const fs::path dst = base / req;
++        if (fs::exists(dst, ec))
++            continue;
++        const fs::path *src = files.empty() ? nullptr : find_file(files, req);
++        if (src == nullptr || !fs::copy_file(*src, dst, ec))
++            missing.push_back(req);
++    }
++
++    // The GOG release's music (keeper02.ogg - keeper07.ogg) goes in music/,
++    // if there isn't any music there yet
++    const fs::path music = base / "music";
++    bool have_music = false;
++    for (auto &f : fs::directory_iterator(music, ec)) {
++        if (lower(f.path().extension().string()) == ".ogg") {
++            have_music = true;
++            break;
++        }
++    }
++    if (!have_music) {
++        for (auto &f : files) {
++            const std::string name = lower(f.second.filename().string());
++            if (name.rfind("keeper", 0) == 0 && f.second.extension() == ".ogg"
++                && f.first.find('/') == std::string::npos) {
++                fs::create_directories(music, ec);
++                fs::copy_file(f.second, music / name, ec);
++            }
++        }
++    }
++    return missing;
++}
++
++void show_missing_files(const fs::path &base, const std::vector<std::string> &missing)
++{
++    const fs::path original = base / kOriginalGameFolder;
++    std::error_code ec;
++    fs::create_directories(original, ec);
++
++    std::string list;
++    for (size_t i = 0; i < missing.size() && i < 6; i++)
++        list += "    " + missing[i] + "\n";
++    if (missing.size() > 6)
++        list += "    ... and " + std::to_string(missing.size() - 6) + " more\n";
++
++    std::string msg =
++        "KeeperFX needs some files from the original Dungeon Keeper (CD, GOG or EA release).\n\n"
++        "Copy your Dungeon Keeper folder's contents (the folder with DATA and SOUND in it) into:\n\n"
++        "    ~/Library/Application Support/" + std::string(kAppSupportName) + "/" + kOriginalGameFolder + "\n\n"
++        "and start KeeperFX again. That folder will now open in the Finder.\n\n"
++        "Missing:\n" + list;
++    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "KeeperFX", msg.c_str(), nullptr);
++    std::string url = "file://" + original.string();
++    for (size_t i = 0; (i = url.find(' ', i)) != std::string::npos; i += 3)
++        url.replace(i, 1, "%20");
++    SDL_OpenURL(url.c_str());
++}
++
++std::string g_argv0;
++
++} // namespace
++
++extern "C" int kfx_macos_prepare(int *argc, char ***argv)
++{
++    (void)argc;
++    const char *base_path = SDL_GetBasePath(); // Contents/Resources/ in an app bundle
++    if (base_path == nullptr)
++        return 0;
++    const fs::path bundle = fs::path(base_path) / "keeperfx";
++    std::error_code ec;
++    if (!fs::is_directory(bundle, ec))
++        return 0; // not the app bundle: run from the executable's folder, as on Linux
++
++    const char *home = getenv("HOME");
++    if (home == nullptr)
++        return 0;
++    const fs::path base = fs::path(home) / "Library" / "Application Support" / kAppSupportName;
++    fs::create_directories(base, ec);
++    if (ec) {
++        fprintf(stderr, "KeeperFX: can't create %s: %s\n", base.c_str(), ec.message().c_str());
++        return 0;
++    }
++
++    link_bundled_data(bundle, base);
++    std::vector<std::string> missing = import_original_files(base);
++    if (!missing.empty()) {
++        show_missing_files(base, missing);
++        return 1;
++    }
++
++    // KeeperFX takes its folder from argv[0]; also make it the current folder
++    chdir(base.c_str());
++    g_argv0 = (base / "keeperfx").string();
++    (*argv)[0] = g_argv0.data();
++    return 0;
++}
++
++#endif
+diff --git a/src/kfx/platform/MacAppSupport.h b/src/kfx/platform/MacAppSupport.h
+new file mode 100644
+index 000000000..0b906620f
+--- /dev/null
++++ b/src/kfx/platform/MacAppSupport.h
+@@ -0,0 +1,14 @@
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++// macOS app bundle: set up ~/Library/Application Support/KeeperFX as the game
++// folder and point argv[0] at it. Returns nonzero if the game can't start
++// (the player has been told why).
++int kfx_macos_prepare(int *argc, char ***argv);
++
++#ifdef __cplusplus
++}
++#endif
+diff --git a/src/kfx/platform/PlatformLinux.cpp b/src/kfx/platform/PlatformLinux.cpp
+index 19edf03b9..31a3d314e 100644
+--- a/src/kfx/platform/PlatformLinux.cpp
++++ b/src/kfx/platform/PlatformLinux.cpp
+@@ -4,6 +4,9 @@
+ #include "platform.h" // kfxmain
+ #include "bflib_fileio.h"
+ #include "config.h" // keeper_runtime_directory (GetUserPrefDir() SDL-less fallback)
++#if defined(__APPLE__)
++#include "kfx/platform/MacAppSupport.h"
++#endif
+ #include <SDL3/SDL.h>
+ #include <cstdlib>
+ #include <cctype>
+@@ -30,7 +33,11 @@ static std::string directory_from_filespec(const char* filespec)
+     return ".";
+ }
+ 
++#if defined(__APPLE__)
++const char* PlatformLinux::GetOSVersion() const { return "macOS"; }
++#else
+ const char* PlatformLinux::GetOSVersion() const { return "Linux"; }
++#endif
+ const void* PlatformLinux::GetImageBase() const { return nullptr; }
+ const char* PlatformLinux::GetWineVersion() const { return nullptr; } // running native
+ const char* PlatformLinux::GetWineHost() const { return nullptr; }    // running native
+@@ -40,6 +47,11 @@ const char* PlatformLinux::GetUserPrefDir()
+     static char pref_path[512] = {};
+     if (pref_path[0] != '\0')
+         return pref_path;
++#if defined(__APPLE__)
++    // the game folder is already in ~/Library/Application Support
++    snprintf(pref_path, sizeof(pref_path), "%s", keeper_runtime_directory);
++    return pref_path;
++#endif
+     char* sdl_path = SDL_GetPrefPath("keeperfx", "keeperfx");
+     if (sdl_path)
+     {
+@@ -118,5 +130,9 @@ void PlatformLinux::ShutdownSteam() {}
+ 
+ extern "C" int main(int argc, char *argv[])
+ {
++#if defined(__APPLE__)
++    if (kfx_macos_prepare(&argc, &argv) != 0)
++        return 1;
++#endif
+     return kfxmain(argc, argv);
+ }
+diff --git a/src/kfx/renderer/RenderThreadManager.cpp b/src/kfx/renderer/RenderThreadManager.cpp
+index 3445859b6..9032882f8 100644
+--- a/src/kfx/renderer/RenderThreadManager.cpp
++++ b/src/kfx/renderer/RenderThreadManager.cpp
+@@ -2,10 +2,37 @@
+ #include "kfx/renderer/RenderThreadManager.h"
+ #include "kfx/renderer/RendererThread.h"
+ #include "kfx/profiling/KfxProfiling.h"
++#if defined(__APPLE__)
++#include <CoreFoundation/CoreFoundation.h>
++#include <pthread.h>
++#include <chrono>
++#endif
+ #include "post_inc.h"
+ 
+ thread_local bool g_on_render_thread = false;
+ 
++// Wait on the condition variable. On macOS, SDL's GL swap on the render
++// thread sometimes has the main thread do part of the work (dispatch_sync to
++// the main queue, e.g. after the window changed), so the main thread has to
++// keep its run loop going while it waits, or both wait for each other forever.
++template <typename Pred>
++static void wait_for_render_thread(std::unique_lock<std::mutex> &lock, std::condition_variable &cv, Pred pred)
++{
++#if defined(__APPLE__)
++    if (pthread_main_np())
++    {
++        while (!cv.wait_for(lock, std::chrono::milliseconds(1), pred))
++        {
++            lock.unlock();
++            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true);
++            lock.lock();
++        }
++        return;
++    }
++#endif
++    cv.wait(lock, pred);
++}
++
+ RenderThreadManager::~RenderThreadManager()
+ {
+     if (m_active)
+@@ -22,20 +49,21 @@ void RenderThreadManager::Start(Fn init_fn, Fn work_fn, Fn present_fn, Fn cleanu
+     m_quit        = false;
+     m_work_ready  = false;
+     m_work_done   = true;
++    m_finished    = false;
+ 
+     m_thread = std::thread(
+         &RenderThreadManager::ThreadProc, this,
+         std::move(init_fn), std::move(work_fn), std::move(present_fn), std::move(cleanup_fn));
+ 
+     std::unique_lock<std::mutex> lock(m_mutex);
+-    m_cv.wait(lock, [this]{ return m_initialized; });
++    wait_for_render_thread(lock, m_cv, [this]{ return m_initialized; });
+ }
+ 
+ void RenderThreadManager::WaitForCompletion()
+ {
+     KFX_ZONE_COLOR("RenderThreadManager::WaitForCompletion", KFX_COLOR_SIMULATION);
+     std::unique_lock<std::mutex> lock(m_mutex);
+-    m_cv.wait(lock, [this]{ return m_work_done; });
++    wait_for_render_thread(lock, m_cv, [this]{ return m_work_done; });
+ }
+ 
+ bool RenderThreadManager::IsWorkDone() const
+@@ -61,6 +89,13 @@ void RenderThreadManager::Stop()
+         m_quit = true;
+     }
+     m_cv.notify_one();
++#if defined(__APPLE__)
++    {
++        // the render thread may still need the main thread to finish a swap
++        std::unique_lock<std::mutex> lock(m_mutex);
++        wait_for_render_thread(lock, m_cv, [this]{ return m_finished; });
++    }
++#endif
+     m_thread.join();
+     m_active = false;
+ }
+@@ -100,4 +135,10 @@ void RenderThreadManager::ThreadProc(Fn init_fn, Fn work_fn, Fn present_fn, Fn c
+     }
+ 
+     cleanup_fn();
++
++    {
++        std::lock_guard<std::mutex> lk(m_mutex);
++        m_finished = true;
++    }
++    m_cv.notify_one();
+ }
+diff --git a/src/kfx/renderer/RenderThreadManager.h b/src/kfx/renderer/RenderThreadManager.h
+index bc6d19371..0e18170a2 100644
+--- a/src/kfx/renderer/RenderThreadManager.h
++++ b/src/kfx/renderer/RenderThreadManager.h
+@@ -45,6 +45,7 @@ private:
+     bool m_quit        = false;
+     bool m_initialized = false;
+     bool m_active      = false;
++    bool m_finished    = false; // ThreadProc has returned (macOS: Stop() waits for it)
+ };
+ 
+ #endif // RENDERER_RENDERTHREADMANAGER_H
+diff --git a/src/kfx/renderer/RendererOpenGL.cpp b/src/kfx/renderer/RendererOpenGL.cpp
+index d2405c8ef..76b26e2ca 100644
+--- a/src/kfx/renderer/RendererOpenGL.cpp
++++ b/src/kfx/renderer/RendererOpenGL.cpp
+@@ -518,7 +518,17 @@ void RendererOpenGL::render_thread_present()
+     {
+         // blocks on vsync
+         KFX_ZONE_COLOR("RendererOpenGL::SwapBuffers", KFX_COLOR_RENDER_GPU);
++#if defined(__APPLE__)
++        // Cocoa's swap shows whatever framebuffer is bound, so swapping with
++        // the offscreen screen target still bound leaves the window black
++        GLint bound_fbo = 0;
++        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bound_fbo);
++        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         m_gl_context->SwapBuffers();
++        glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)bound_fbo);
++#else
++        m_gl_context->SwapBuffers();
++#endif
+     }
+     KFX_GPU_COLLECT();
+     KFX_FRAMEMARK();
+diff --git a/src/replay_rewind.c b/src/replay_rewind.c
+index 0e9cf90c5..04cb81682 100644
+--- a/src/replay_rewind.c
++++ b/src/replay_rewind.c
+@@ -134,6 +134,10 @@ static size_t stage_cap;
+ #if defined(_WIN32)
+ REWIND_SECTION(".rwd$a") static char rwd_start[1];
+ REWIND_SECTION(".rwd$z") static char rwd_end[1];
++#elif defined(__APPLE__)
++// the Mach-O linker's equivalent of GNU ld's __start_/__stop_ symbols
++extern char rwd_start[] __asm("section$start$__DATA$kfx_rwd");
++extern char rwd_end[] __asm("section$end$__DATA$kfx_rwd");
+ #else
+ extern char __start_kfx_rwd[];
+ extern char __stop_kfx_rwd[];
+diff --git a/src/replay_rewind.h b/src/replay_rewind.h
+index 50b7f0d79..c20fdeaa3 100644
+--- a/src/replay_rewind.h
++++ b/src/replay_rewind.h
+@@ -37,6 +37,9 @@ extern "C" {
+ #elif defined(_WIN32)
+ #define REWIND_SECTION(name) __attribute__((section(name)))
+ #define kfx_rewindable REWIND_SECTION(".rwd$u")
++#elif defined(__APPLE__)
++// Mach-O section names need a segment
++#define kfx_rewindable __attribute__((section("__DATA,kfx_rwd")))
+ #else
+ #define kfx_rewindable __attribute__((section("kfx_rwd")))
+ #endif
