@@ -13,10 +13,15 @@ cd source/${SOURCE_FOLDER}
 
 rm -rf build-arm64 build-x86_64 build-universal2
 
+# Apple's ar and strip: GNU binutils' in /usr/local/bin (if present) don't
+# handle Mach-O properly, and may not even run. (-x is what the Makefile adds
+# for macOS, which setting TARGET_STRIP here overrides; without it strip would
+# remove the library's exported symbols too.)
 for ARCH in arm64 x86_64; do
 	make clean
-	make -j$NCPU PREFIX=/usr/local CC="clang" TARGET_FLAGS="-arch ${ARCH}"
-	make install PREFIX=/usr/local DESTDIR=$PWD/build-${ARCH}
+	make -j$NCPU PREFIX=/usr/local CC="clang" TARGET_FLAGS="-arch ${ARCH}" \
+		TARGET_AR="/usr/bin/ar rcus" TARGET_STRIP="/usr/bin/strip -x" || exit 1
+	make install PREFIX=/usr/local DESTDIR=$PWD/build-${ARCH} || exit 1
 done
 
 cp -a build-arm64/usr/local/. build-universal2
