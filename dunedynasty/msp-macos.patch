@@ -1,0 +1,142 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1a2873cb..5a60ec5a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -83,7 +83,8 @@ if(WIN32)
+ elseif(APPLE)
+ 	find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox)
+ 	find_library(AUDIOUNIT_LIBRARY AudioUnit)
+-	list(APPEND OPTIONAL_LIBRARIES ${AUDIOTOOLBOX_LIBRARY} ${AUDIOUNIT_LIBRARY})
++	find_library(COREFOUNDATION_LIBRARY CoreFoundation)
++	list(APPEND OPTIONAL_LIBRARIES ${AUDIOTOOLBOX_LIBRARY} ${AUDIOUNIT_LIBRARY} ${COREFOUNDATION_LIBRARY})
+ elseif(WITH_ALSA_MIDI)
+     pkg_check_modules(ALSA alsa)
+     if(ALSA_FOUND)
+diff --git a/src/config_a5.c b/src/config_a5.c
+index 35966df8..495b9664 100644
+--- a/src/config_a5.c
++++ b/src/config_a5.c
+@@ -590,6 +590,21 @@ ConfigA5_InitDataDirectoriesAndLoadConfigFile(void)
+ 	/* 1. Try current executable directory/data/DUNE.PAK. */
+ 	fp = File_Open_CaseInsensitive(SEARCHDIR_GLOBAL_DATA_DIR, "DUNE.PAK", "rb");
+ 
++#ifdef __APPLE__
++	/* 1b. Try ~/Library/Application Support/Dune2/data/DUNE.PAK, the Dune II data shared with other
++	 * Dune II ports. Only the original files come from there; the game's own stay in the bundle. */
++	const char *home = getenv("HOME");
++	char shared_data_dir[PATH_MAX] = "";
++	if (home != NULL)
++		snprintf(shared_data_dir, sizeof(shared_data_dir), "%s/Library/Application Support/Dune2/data", home);
++	if (fp == NULL && shared_data_dir[0] != '\0') {
++		snprintf(g_dune2_data_dir, sizeof(g_dune2_data_dir), "%s", shared_data_dir);
++		fp = File_Open_CaseInsensitive(SEARCHDIR_GLOBAL_DATA_DIR, "DUNE.PAK", "rb");
++		if (fp == NULL)
++			g_dune2_data_dir[0] = '\0';
++	}
++#endif
++
+ 	/* 2. Try ~/.local/share/dunedynasty/data/DUNE.PAK. */
+ 	if (fp == NULL) {
+ 		snprintf(g_dune_data_dir, sizeof(g_dune_data_dir), "%s", user_data_cstr);
+@@ -635,6 +650,21 @@ ConfigA5_InitDataDirectoriesAndLoadConfigFile(void)
+ 	}
+ 
+ 	if (data_not_found) {
++#ifdef __APPLE__
++		/* create the shared folder, so it's easy to find where the data files go */
++		if (shared_data_dir[0] != '\0') {
++			al_make_directory(shared_data_dir);
++			Error(
++				"ERROR: Dune II data files not found.\n"
++				"\n"
++				"Copy the Dune II 1.07 data files (DUNE.PAK etc.) into:\n"
++				"\n"
++				"%s\n",
++				shared_data_dir
++			);
++			exit(1);
++		}
++#endif
+ 		Error(
+ 			"--------------------------\n"
+ 			"ERROR: Dune II data files not found.\n"
+diff --git a/src/crashlog/errorlog_std.c b/src/crashlog/errorlog_std.c
+index 1b2674ef..1d27ff5d 100644
+--- a/src/crashlog/errorlog_std.c
++++ b/src/crashlog/errorlog_std.c
+@@ -8,6 +8,9 @@
+ #include <string.h>
+ #include <stdarg.h>
+ #include "errorlog.h"
++#ifdef __APPLE__
++#include <CoreFoundation/CoreFoundation.h>
++#endif
+ #include "types.h"
+ #include "../os/strings.h"
+ 
+@@ -25,6 +28,20 @@ Error(const char *format, ...)
+ 	va_start(ap, format);
+ 	vfprintf(stderr, format, ap);
+ 	va_end(ap);
++
++#ifdef __APPLE__
++	/* an app started from the Finder has no terminal: show the error too, as Windows does */
++	char message[2048];
++	va_start(ap, format);
++	vsnprintf(message, sizeof(message), format, ap);
++	va_end(ap);
++	CFStringRef text = CFStringCreateWithCString(NULL, message, kCFStringEncodingUTF8);
++	if (text != NULL) {
++		CFUserNotificationDisplayAlert(0, kCFUserNotificationStopAlertLevel, NULL, NULL, NULL,
++			CFSTR("Dune Dynasty"), text, NULL, NULL, NULL, NULL);
++		CFRelease(text);
++	}
++#endif
+ }
+ 
+ void
+diff --git a/src/file.c b/src/file.c
+index ddfe4f69..22bf2689 100644
+--- a/src/file.c
++++ b/src/file.c
+@@ -38,6 +38,9 @@ static File s_file[FILE_MAX];
+ static FileInfo s_hash_file[HASH_SIZE];
+ 
+ char g_dune_data_dir[PATH_MAX];
++/* Where the original Dune II files are when they aren't in g_dune_data_dir/data (empty otherwise).
++ * The game's own files (campaign, gfx, music) are still read from g_dune_data_dir. */
++char g_dune2_data_dir[PATH_MAX];
+ char g_personal_data_dir[PATH_MAX];
+ 
+ extern const FileInfo g_table_fileInfo[FILEINFO_MAX];
+@@ -168,10 +171,16 @@ File_MakeCompleteFilename(char *buf, size_t len, enum SearchDirectory dir, const
+ 	int i = 0;
+ 
+ 	if (dir == SEARCHDIR_GLOBAL_DATA_DIR) {
+-		i = snprintf(buf, len, "%s/%s/", g_dune_data_dir, DUNE2_DATA_PREFIX);
++		if (g_dune2_data_dir[0] != '\0')
++			i = snprintf(buf, len, "%s/", g_dune2_data_dir);
++		else
++			i = snprintf(buf, len, "%s/%s/", g_dune_data_dir, DUNE2_DATA_PREFIX);
+ 	} else if (dir == SEARCHDIR_CAMPAIGN_DIR) {
+ 		if (strchr(filename, '/') == NULL) { /* Dune II */
+-			i = snprintf(buf, len, "%s/%s/", g_dune_data_dir, DUNE2_DATA_PREFIX);
++			if (g_dune2_data_dir[0] != '\0')
++				i = snprintf(buf, len, "%s/", g_dune2_data_dir);
++			else
++				i = snprintf(buf, len, "%s/%s/", g_dune_data_dir, DUNE2_DATA_PREFIX);
+ 		} else {
+ 			i = snprintf(buf, len, "%s/%s/", g_dune_data_dir, DUNE2_CAMPAIGN_PREFIX);
+ 		}
+diff --git a/src/file.h b/src/file.h
+index df10e5dc..3c0d6d6d 100644
+--- a/src/file.h
++++ b/src/file.h
+@@ -41,6 +41,7 @@ typedef struct FileInfo {
+ } FileInfo;
+ 
+ extern char g_dune_data_dir[PATH_MAX];
++extern char g_dune2_data_dir[PATH_MAX];
+ extern char g_personal_data_dir[PATH_MAX];
+ 
+ extern void FileHash_Init(void);

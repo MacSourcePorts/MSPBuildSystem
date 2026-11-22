@@ -15,6 +15,7 @@
 ./cjson.sh
 ./cpp-httplib.sh
 ./enet6.sh
+./enet.sh
 ./cppunit.sh
 ./nasm.sh
 ./dav1d.sh
@@ -69,6 +70,7 @@
 ./sdl3_image.sh
 ./sdl3_mixer.sh
 ./sdl3_ttf.sh
+./allegro5.sh
 ./snappy.sh
 ./spng.sh
 ./sodium.sh

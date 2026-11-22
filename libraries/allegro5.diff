@@ -1,0 +1,98 @@
+diff --git a/src/macosx/osxgl.m b/src/macosx/osxgl.m
+index 0a9147c..5d65ff2 100644
+--- a/src/macosx/osxgl.m
++++ b/src/macosx/osxgl.m
+@@ -292,6 +292,41 @@ void _al_osx_mouse_was_installed(BOOL install) {
+    });
+ }
+ 
++/* MacSourcePorts: on a Mac whose display has a camera notch, a fullscreen
++ * window covers the strip beside the notch too, so the top of the picture is
++ * hidden behind it. Keep FULLSCREEN_WINDOW displays to the area below (the
++ * screen's safe area) and black out the strip, as macOS does for its own
++ * fullscreen windows.
++ */
++static NSWindow *notch_cover_window = nil;
++
++static CGFloat screen_top_inset(NSScreen *screen)
++{
++#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
++   if (@available(macOS 12.0, *)) {
++      return [screen safeAreaInsets].top;
++   }
++#endif
++   (void)screen;
++   return 0;
++}
++
++static NSRect fullscreen_window_frame(NSScreen *screen)
++{
++   NSRect rc = [screen frame];
++   rc.size.height -= screen_top_inset(screen);
++   return rc;
++}
++
++static void remove_notch_cover(void)
++{
++   if (notch_cover_window) {
++      [notch_cover_window close];
++      [notch_cover_window release];
++      notch_cover_window = nil;
++   }
++}
++
+ @implementation ALOpenGLView
+ 
+ -(void) prepareOpenGL
+@@ -671,8 +706,24 @@ -(void) enterFullScreenWindowMode
+    /* HACK? For some reason, we need to disable the chrome. If we don't, the fullscreen window
+       will be created with space left over for it. Are we creating a fullscreen window in the wrong way? */
+    [dpy->win setStyleMask: [dpy->win styleMask] & ~NSWindowStyleMaskTitled];
+-   [dpy->view enterFullScreenMode: [dpy->win screen] withOptions: dict];
++   NSScreen *screen = [dpy->win screen];
++   [dpy->view enterFullScreenMode: screen withOptions: dict];
+    [dict release];
++   CGFloat inset = screen_top_inset(screen);
++   if (inset > 0) {
++      NSWindow *fs = [dpy->view window];
++      NSRect sc = [screen frame];
++      NSRect strip = NSMakeRect(sc.origin.x, NSMaxY(sc) - inset, sc.size.width, inset);
++      [fs setFrame: fullscreen_window_frame(screen) display: YES];
++      remove_notch_cover();
++      notch_cover_window = [[NSWindow alloc] initWithContentRect: strip
++         styleMask: NSWindowStyleMaskBorderless backing: NSBackingStoreBuffered defer: NO];
++      [notch_cover_window setReleasedWhenClosed: NO];
++      [notch_cover_window setBackgroundColor: [NSColor blackColor]];
++      [notch_cover_window setIgnoresMouseEvents: YES];
++      [notch_cover_window setLevel: [fs level]];
++      [notch_cover_window orderFront: nil];
++   }
+ #endif
+ }
+ 
+@@ -728,6 +779,7 @@ -(void) exitFullScreenWindowMode
+     * (my theory)
+     */
+    [dpy->win orderOut: dpy->view];
++   remove_notch_cover();
+    [self exitFullScreenModeWithOptions: nil];
+    /* Restore the title bar disabled in enterFullScreenWindowMode. */
+    if (!(dpy_ptr->flags & ALLEGRO_FRAMELESS)) {
+@@ -1702,7 +1754,7 @@ static void init_halt_events(ALLEGRO_DISPLAY_OSX_WIN *dpy)
+       [fmt release];
+       [view release];
+       if (display->flags & ALLEGRO_FULLSCREEN_WINDOW) {
+-           NSRect sc = [[dpy->win screen] frame];
++           NSRect sc = fullscreen_window_frame([dpy->win screen]);
+            dpy->parent.w = sc.size.width;
+            dpy->parent.h = sc.size.height;
+         }
+@@ -2532,7 +2584,7 @@ static bool set_display_flag(ALLEGRO_DISPLAY *display, int flag, bool onoff)
+          case ALLEGRO_FULLSCREEN_WINDOW:
+             if (onoff) {
+                [view enterFullScreenWindowMode];
+-               NSRect sc = [[win screen] frame];
++               NSRect sc = fullscreen_window_frame([win screen]);
+ #if MAC_OS_X_VERSION_MIN_REQUIRED >= 1070
+                sc = [win convertRectToBacking: sc];
+ #endif

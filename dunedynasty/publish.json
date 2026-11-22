@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Dune Dynasty-*.dmg",
+        "sourcePortStub": "dunedynasty",
+        "buildType": 1
+    }
+]

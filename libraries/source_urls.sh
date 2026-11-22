@@ -1,4 +1,5 @@
 export ABSEIL_URL="https://github.com/abseil/abseil-cpp/archive/refs/tags/20260107.1.tar.gz"
+export ALLEGRO5_URL="https://github.com/liballeg/allegro5/releases/download/5.2.11.3/allegro-5.2.11.3.tar.gz"
 export AOM_URL="https://aomedia.googlesource.com/aom.git"
 export ARIBB24_URL="https://code.videolan.org/jeeb/aribb24/-/archive/v1.0.4/aribb24-v1.0.4.tar.bz2"
 export ASS_URL="https://github.com/libass/libass/releases/download/0.17.4/libass-0.17.4.tar.xz"
@@ -27,6 +28,7 @@ export DEFLATE_URL="https://github.com/ebiggers/libdeflate/archive/refs/tags/v1.
 export DEVIL_URL="https://downloads.sourceforge.net/project/openil/DevIL/1.8.0/DevIL-1.8.0.tar.gz"
 export DWARF_URL="https://github.com/elboza/dwarf-ng/archive/refs/tags/dwarf-0.4.0.tar.gz"
 export ENET6_URL="https://github.com/SirLynix/enet6/archive/refs/tags/v6.1.4.tar.gz"
+export ENET_URL="https://github.com/lsalzman/enet/archive/refs/tags/v1.3.18.tar.gz"
 export EPOXY_URL="https://download.gnome.org/sources/libepoxy/1.5/libepoxy-1.5.10.tar.xz"
 export EVENT_URL="https://github.com/libevent/libevent/archive/refs/tags/release-2.1.12-stable.tar.gz"
 export EXPAT_URL="https://github.com/libexpat/libexpat/releases/download/R_2_7_5/expat-2.7.5.tar.lz"
