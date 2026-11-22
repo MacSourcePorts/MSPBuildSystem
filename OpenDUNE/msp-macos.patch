@@ -1,0 +1,272 @@
+diff --git a/README.txt b/README.txt
+index e3ee5c74..77640272 100644
+--- a/README.txt
++++ b/README.txt
+@@ -69,11 +69,11 @@ Start 'opendune'.
+ 
+ OS X/macOS : data files are searched additionaly in the Contents/Resources/data
+ subdirectory of the application bundle, and in
+-~/Library/Application Support/OpenDUNE/data
++~/Library/Application Support/Dune2/data
+ 
+ Additional options may be specified using an opendune.ini file located
+ in the data/ directory, in the current directory or in %APPDATA%\OpenDUNE
+-(on Windows) or ~/Library/Application Support/OpenDUNE (on Mac OS X) or
++(on Windows) or ~/Library/Application Support/Dune2 (on Mac OS X) or
+ ~/.config/opendune (on Linux/FreeBSD) or B_USER_SETTINGS_DIRECTORY/opendune
+ (on Haiku). All options must be in an [opendune] section.
+ 
+diff --git a/src/file.c b/src/file.c
+index 60e11ec4..368cfed5 100644
+--- a/src/file.c
++++ b/src/file.c
+@@ -553,13 +553,13 @@ bool File_Init(void)
+ 			snprintf(g_personal_data_dir, sizeof(g_personal_data_dir), "%s/opendune/savegames", buf);
+ 		}
+ #else /* _WIN32 / TOS / DOS / __HAIKU__ */
+-		/* ~/.config/opendune (Linux)  ~/Library/Application Support/OpenDUNE (Mac OS X) */
++		/* ~/.config/opendune (Linux)  ~/Library/Application Support/Dune2 (Mac OS X) */
+ 		homedir = getenv("HOME");
+ 		if (homedir == NULL) {
+ 			snprintf(g_personal_data_dir, sizeof(g_personal_data_dir), ".");
+ 		} else {
+ #if defined(__APPLE__)
+-			snprintf(g_personal_data_dir, sizeof(g_personal_data_dir), "%s/Library/Application Support/OpenDUNE", homedir);
++			snprintf(g_personal_data_dir, sizeof(g_personal_data_dir), "%s/Library/Application Support/Dune2", homedir);
+ #else /* __APPLE__ */
+ 			snprintf(g_personal_data_dir, sizeof(g_personal_data_dir), "%s/.config/opendune", homedir);
+ #endif /* __APPLE__ */
+@@ -600,14 +600,21 @@ bool File_Init(void)
+ 			CFRelease(bundleURL);
+ 		}
+ 	}
+-	if (stat(g_dune_data_dir, &st) < 0) {
+-		/* try ~/Library/Application Support/OpenDUNE/data */
++	/* use the bundle's data directory only if it holds the game data */
++	snprintf(buf, sizeof(buf), "%s/DUNE.PAK", g_dune_data_dir);
++	if (stat(buf, &st) < 0) {
++		snprintf(buf, sizeof(buf), "%s/dune.pak", g_dune_data_dir);
++	}
++	if (stat(buf, &st) < 0) {
++		/* try ~/Library/Application Support/Dune2/data */
+ 		homedir = getenv("HOME");
+ 		if (homedir != NULL) {
+-			snprintf(g_dune_data_dir, sizeof(g_dune_data_dir), "%s/Library/Application Support/OpenDUNE/data", homedir);
++			snprintf(g_dune_data_dir, sizeof(g_dune_data_dir), "%s/Library/Application Support/Dune2/data", homedir);
+ 			Debug("datadir set to : %s\n", g_dune_data_dir);
++			/* create it, so it's easy to find where the data files go */
++			File_MakeDirectory(g_dune_data_dir);
+ 		}
+-    }
++	}
+ #endif /* OSX */
+ 	if (IniFile_GetString("datadir", NULL, buf, sizeof(buf)) != NULL) {
+ 		/* datadir is defined in opendune.ini */
+diff --git a/src/inifile.c b/src/inifile.c
+index f61fc0a3..56208035 100644
+--- a/src/inifile.c
++++ b/src/inifile.c
+@@ -42,7 +42,7 @@ bool Load_IniFile(void)
+ 	long fileSize;
+ 	/* look for opendune.ini in the following locations :
+ 	   1) %APPDATA%/OpenDUNE (win32)
+-	      ~/Library/Application Support/OpenDUNE (Mac OS X)
++	      ~/Library/Application Support/Dune2 (Mac OS X)
+ 	      ~/.config/opendune (Linux)
+ 	      B_USER_SETTINGS_DIRECTORY (Haiku)
+ 	   2) B_SYSTEM_SETTINGS_DIRECTORY (Haiku)
+@@ -78,7 +78,7 @@ bool Load_IniFile(void)
+ 	homeDir = getenv("HOME");
+ 	if (homeDir != NULL) {
+ #if defined(__APPLE__)
+-		snprintf(path, sizeof(path), "%s/Library/Application Support/OpenDUNE/opendune.ini", homeDir);
++		snprintf(path, sizeof(path), "%s/Library/Application Support/Dune2/opendune.ini", homeDir);
+ #else /* __APPLE__ */
+ 		snprintf(path, sizeof(path), "%s/.config/opendune/opendune.ini", homeDir);
+ #endif /* __APPLE__ */
+diff --git a/src/opendune.c b/src/opendune.c
+index 3afb9684..967caba9 100644
+--- a/src/opendune.c
++++ b/src/opendune.c
+@@ -1151,7 +1151,12 @@ static bool OpenDune_Init(int screen_magnification, VideoScaleFilter filter, int
+ 			"--------------------------\n"
+ 			"ERROR LOADING DATA FILE\n"
+ 			"\n"
++#if defined(__APPLE__)
++			"Did you copy the Dune2 1.07eu data files (DUNE.PAK etc.) into\n"
++			"~/Library/Application Support/Dune2/data ?\n"
++#else
+ 			"Did you copy the Dune2 1.07eu data files into the data directory ?\n"
++#endif
+ 			"\n"
+ 		);
+ 
+diff --git a/src/video/video_sdl2.c b/src/video/video_sdl2.c
+index 7352b53a..777200a3 100644
+--- a/src/video/video_sdl2.c
++++ b/src/video/video_sdl2.c
+@@ -295,7 +295,8 @@ bool Video_Init(int screen_magnification, VideoScaleFilter filter)
+ #ifndef WITHOUT_SDLIMAGE
+ 	SDL_Surface * icon;
+ #endif /* WITHOUT_SDLIMAGE */
+-	uint32 window_flags = 0;
++	/* the picture is scaled to fit the window (see SDL_RenderSetLogicalSize) */
++	uint32 window_flags = SDL_WINDOW_RESIZABLE;
+ 	uint32 renderer_flags;
+ 
+ 	if (s_video_initialized) return true;
+@@ -317,7 +318,7 @@ bool Video_Init(int screen_magnification, VideoScaleFilter filter)
+ 	}
+ 
+ 	if (IniFile_GetInteger("fullscreen", 0) != 0) {
+-		window_flags |= SDL_WINDOW_FULLSCREEN;
++		window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+ 		s_full_screen = true;
+ 	}
+ 
+@@ -337,6 +338,7 @@ bool Video_Init(int screen_magnification, VideoScaleFilter filter)
+ 	}
+ 
+ 	SDL_SetWindowTitle(s_window, window_caption);
++	SDL_SetWindowMinimumSize(s_window, SCREEN_WIDTH, SCREEN_HEIGHT);
+ 
+ #ifndef WITHOUT_SDLIMAGE
+ 	icon = IMG_Load(DUNE_ICON_DIR "opendune.png");
+@@ -437,42 +439,44 @@ static void Video_DrawScreen_Nearest_Neighbor(void)
+ 	int x, y;
+ 	uint32 * p;
+ 	SDL_Rect rect;
+-	SDL_Rect * prect = NULL;
++	int left = 0, top = 0, right = SCREEN_WIDTH, bottom = SCREEN_HEIGHT;
+ 
+ 	gfx_screen8 += (s_screenOffset << 2);
+-	if (SDL_LockTexture(s_texture, NULL, (void **)&pixels, &pitch) != 0) {
++	if (!s_screen_needrepaint && area && (area->left > 0 || area->top > 0 || area->right < SCREEN_WIDTH || area->bottom < SCREEN_HEIGHT)
++	    && area->right > area->left && area->bottom > area->top) {
++		left = area->left;
++		top = area->top;
++		right = area->right;
++		bottom = area->bottom;
++		Debug("Dirty area : (%d,%d)-(%d,%d)\n", left, top, right, bottom);
++	}
++	/* Lock only the area we redraw: the pixels SDL_LockTexture() hands back
++	 * are write-only and don't hold the texture's previous contents (with the
++	 * Metal renderer they're a fresh buffer each time), so every locked pixel
++	 * must be written. Outside the locked area the texture keeps its pixels. */
++	rect.x = left;
++	rect.y = top;
++	rect.w = right - left;
++	rect.h = bottom - top;
++	if (SDL_LockTexture(s_texture, &rect, (void **)&pixels, &pitch) != 0) {
+ 		Error("Could not set lock texture: %s\n", SDL_GetError());
+ 		return;
+ 	}
+-	if (!s_screen_needrepaint && area && (area->left > 0 || area->top > 0 || area->right < SCREEN_WIDTH || area->bottom < SCREEN_HEIGHT)) {
+-		rect.x = area->left;
+-		rect.y = area->top;
+-		rect.w = area->right - area->left;
+-		rect.h = area->bottom - area->top;
+-		prect = &rect;
+-		pixels += pitch * area->top;
+-		gfx_screen8 += SCREEN_WIDTH * area->top + area->left;
+-		for (y = area->top; y < area->bottom; y++) {
+-			p = (uint32 *)pixels;
+-			p += area->left;
+-			for (x = area->left; x < area->right; x++) {
+-				*p++ = s_palette[*gfx_screen8++];
+-			}
+-			gfx_screen8 += (SCREEN_WIDTH - rect.w);
+-			pixels += pitch;
+-		}
+-		Debug("Dirty area : (%d,%d)-(%d,%d)\n", area->left, area->top, area->right, area->bottom);
+-	} else {
+-		for (y = 0; y < SCREEN_HEIGHT; y++) {
+-			p = (uint32 *)pixels;
+-			for (x = 0; x < SCREEN_WIDTH; x++) {
+-				*p++ = s_palette[*gfx_screen8++];
+-			}
+-			pixels += pitch;
++	gfx_screen8 += SCREEN_WIDTH * top + left;
++	for (y = top; y < bottom; y++) {
++		p = (uint32 *)pixels;
++		for (x = left; x < right; x++) {
++			*p++ = s_palette[*gfx_screen8++];
+ 		}
++		gfx_screen8 += SCREEN_WIDTH - (right - left);
++		pixels += pitch;
+ 	}
+ 	SDL_UnlockTexture(s_texture);
+-	if (SDL_RenderCopy(s_renderer, s_texture, prect, prect)) {
++	/* Always redraw the whole window: the back buffer's contents are
++	 * undefined after SDL_RenderPresent(), so drawing only the dirty area
++	 * leaves garbage around it (issue #406, PR #408) */
++	SDL_RenderClear(s_renderer);
++	if (SDL_RenderCopy(s_renderer, s_texture, NULL, NULL)) {
+ 		Error("SDL_RenderCopy failed : %s\n", SDL_GetError());
+ 	}
+ }
+@@ -486,8 +490,7 @@ static void Video_DrawScreen_Scale2x(void)
+ 	int pitch;
+ 	uint32 * p;
+ 	static uint32 truecolorbuffer[SCREEN_WIDTH * SCREEN_HEIGHT] __attribute__((aligned(16)));
+-	SDL_Rect rect, rectlock;
+-	SDL_Rect * prect = NULL;
++	SDL_Rect rectlock;
+ 	SDL_Rect * prectlock = NULL;
+ 
+ 	data += (s_screenOffset << 2);
+@@ -495,15 +498,11 @@ static void Video_DrawScreen_Scale2x(void)
+ 	/* first do 8bit => 32bit pixel conversion */
+ 	if (!s_screen_needrepaint && area && (area->left > 0 || area->top > 0 || area->right < SCREEN_WIDTH || area->bottom < SCREEN_HEIGHT)) {
+ 		int x, y;
+-		rect.x = area->left * s_screen_magnification;
+-		rect.y = area->top * s_screen_magnification;
+-		rect.w = (area->right - area->left) * s_screen_magnification;
+-		rect.h = (area->bottom - area->top) * s_screen_magnification;
+-		prect = &rect;
++		/* full-width rows, all written by scale_part() */
+ 		rectlock.x = 0;
+-		rectlock.y = rect.y;
++		rectlock.y = area->top * s_screen_magnification;
+ 		rectlock.w = SCREEN_WIDTH * s_screen_magnification;
+-		rectlock.h = rect.h;
++		rectlock.h = (area->bottom - area->top) * s_screen_magnification;
+ 		prectlock = &rectlock;
+ 		top = area->top;
+ 		bottom = area->bottom;
+@@ -538,7 +537,8 @@ static void Video_DrawScreen_Scale2x(void)
+ 	           truecolorbuffer, SCREEN_WIDTH * 4, 4,
+ 	           SCREEN_WIDTH, SCREEN_HEIGHT, top, bottom);
+ 	SDL_UnlockTexture(s_texture);
+-	if (SDL_RenderCopy(s_renderer, s_texture, prect, prect)) {
++	SDL_RenderClear(s_renderer);
++	if (SDL_RenderCopy(s_renderer, s_texture, NULL, NULL)) {
+ 		Error("SDL_RenderCopy failed : %s\n", SDL_GetError());
+ 	}
+ }
+@@ -574,6 +574,7 @@ static void Video_DrawScreen_Hqx(void)
+ 		break;
+ 	}
+ 	SDL_UnlockTexture(s_texture);
++	SDL_RenderClear(s_renderer);
+ 	if (SDL_RenderCopy(s_renderer, s_texture, NULL, NULL)) {
+ 		Error("SDL_RenderCopy failed : %s\n", SDL_GetError());
+ 	}
+@@ -654,7 +655,7 @@ void Video_Tick(void)
+ 				if ((sym == SDLK_RETURN && (event.key.keysym.mod & KMOD_ALT)) || sym == SDLK_F11) {
+ 					/* ALT-ENTER was pressed */
+ 					if (keyup) continue;	/* ignore key-up */
+-					if (SDL_SetWindowFullscreen(s_window, s_full_screen ? 0 : SDL_WINDOW_FULLSCREEN) < 0) {
++					if (SDL_SetWindowFullscreen(s_window, s_full_screen ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP) < 0) {
+ 						Warning("Failed to toggle full screen : %s\n", SDL_GetError());
+ 					}
+ 					s_full_screen = !s_full_screen;
+@@ -694,7 +695,7 @@ void Video_Tick(void)
+ 			} break;
+ 
+ 			case SDL_WINDOWEVENT:
+-				if (event.window.event == SDL_WINDOWEVENT_EXPOSED) {
++				if (event.window.event == SDL_WINDOWEVENT_EXPOSED || event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+ 					/* Clear area outside the 4:3 logical screen, if any */
+ 					SDL_RenderClear(s_renderer);
+ 

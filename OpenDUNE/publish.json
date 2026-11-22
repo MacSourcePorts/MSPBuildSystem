@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenDUNE-*.dmg",
+        "sourcePortStub": "opendune",
+        "buildType": 1
+    }
+]
