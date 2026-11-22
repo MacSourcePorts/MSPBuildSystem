@@ -60,6 +60,14 @@
         ]
     },
     {
+        "sourcePortStub": "corsixth",
+        "repo": "CorsixTH/CorsixTH",
+        "tagRegex": "^v\\d+(\\.\\d+)+$",
+        "builds": [
+            { "buildType": 1, "assetGlob": "CorsixTH-*.dmg", "ourBuild": true }
+        ]
+    },
+    {
         "sourcePortStub": "cromagrally",
         "repo": "jorio/CroMagRally",
         "builds": [

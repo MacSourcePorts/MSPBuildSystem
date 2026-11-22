@@ -23,6 +23,11 @@ Like publish_release.py, it only ever UPDATES existing entries — and only
 entries WITHOUT "MSPBuild": true, so it can never clobber one of our own
 builds. Add a port/buildType by hand once, then list it in thirdparty.json.
 
+The one exception is a build with "ourBuild": true: our own build that we
+post on upstream's release rather than ours (CorsixTH -- see
+upload_upstream_release.py). For those it updates the "MSPBuild": true
+entry instead, and only that one, once upstream publishes the release.
+
 thirdparty.json entry format:
 
     {
@@ -38,6 +43,8 @@ thirdparty.json entry format:
         "builds": [
             { "buildType": 3, "assetGlob": "OpenMW-*-macOS-arm64.dmg" },
             { "buildType": 4, "assetGlob": "OpenMW-*-macOS-x86_64.dmg" }
+                                                   (a build can add "ourBuild": true --
+                                                    see above)
         ]
     }
 
@@ -163,12 +170,14 @@ def asset_matches(name: str, build: dict) -> bool:
     return fnmatch.fnmatch(name, build["assetGlob"])
 
 
-def find_thirdparty_entry(port, build_type: int):
+def find_thirdparty_entry(port, build_type: int, our_build: bool = False):
+    """The builds[] entry to update: the non-MSPBuild one for buildType, or
+    for an "ourBuild" build, the MSPBuild one."""
     if port is None:
         return None
     return next(
         (b for b in port.get("builds", [])
-         if b.get("buildType") == build_type and b.get("MSPBuild") is not True),
+         if b.get("buildType") == build_type and (b.get("MSPBuild") is True) == our_build),
         None,
     )
 
@@ -200,9 +209,11 @@ def check_port(entry: dict, ports: list):
     updates, problems = [], []
     for b in entry["builds"]:
         build_type = b["buildType"]
-        target = find_thirdparty_entry(port, build_type)
+        our_build = b.get("ourBuild") is True
+        target = find_thirdparty_entry(port, build_type, our_build)
         if target is None:
-            problems.append(f"{stub} buildType {build_type}: no non-MSPBuild builds[] entry to update")
+            kind = "MSPBuild" if our_build else "non-MSPBuild"
+            problems.append(f"{stub} buildType {build_type}: no {kind} builds[] entry to update")
             continue
         matches = [a for a in uploaded if asset_matches(a["name"], b)]
         if len(matches) != 1:
