@@ -16,3 +16,4 @@ common/publish_config.json
 .last_built_tag.json
 /common/__pycache__
 /keeperfx/data-cache
+/d2tm/soundfont-cache

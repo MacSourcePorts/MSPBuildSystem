@@ -1,0 +1,228 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8e83de39..1f7d8671 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -100,8 +100,11 @@ endif()
+ 
+ add_subdirectory(src)
+ 
+-enable_testing()
+-add_subdirectory(tests)
++option(D2TM_TESTS "Build the unit tests (needs Catch2)" ON)
++if(D2TM_TESTS)
++    enable_testing()
++    add_subdirectory(tests)
++endif()
+ 
+ # --- Executable ---------------------------------------------------------------
+ 
+diff --git a/src/context/AudioContext.cpp b/src/context/AudioContext.cpp
+index 846655ba..81cb160c 100644
+--- a/src/context/AudioContext.cpp
++++ b/src/context/AudioContext.cpp
+@@ -16,6 +16,7 @@
+ #include "AudioContext.hpp"
+ 
+ #include "context/MusicJukeBox.hpp"
++#include "game/PreferencesPath.hpp"
+ #include "game/cGameSettings.h"
+ #include "utils/cSoundPlayer.h"
+ #include "utils/Log.h"
+@@ -44,7 +45,7 @@ const char* musicTypeName(eMusicType type)
+ AudioContext::AudioContext(std::unique_ptr<cSoundPlayer> soundPlayer, cGameSettings* settings) :
+     m_soundPlayer(std::move(soundPlayer)),
+     m_settings(settings),
+-    m_jukeBox(std::make_unique<MusicJukeBox>()),
++    m_jukeBox(std::make_unique<MusicJukeBox>(PreferencesPath::writableDirectory() / "audio")),
+     m_newMusic{audioID::invalid, std::nullopt},
+     m_newMusicCountdown(0)
+ {
+diff --git a/src/game/PreferencesPath.cpp b/src/game/PreferencesPath.cpp
+index bbc889cd..05ef69ba 100644
+--- a/src/game/PreferencesPath.cpp
++++ b/src/game/PreferencesPath.cpp
+@@ -46,4 +46,36 @@ std::optional<std::filesystem::path> file(const char *fileName)
+     return *dir / fileName;
+ }
+ 
++bool runningFromAppBundle()
++{
++#ifdef __APPLE__
++    // SDL_GetBasePath is Contents/Resources/ for an app bundle, the executable's directory otherwise
++    const char *basePath = SDL_GetBasePath();
++    return basePath != nullptr && std::string_view(basePath).ends_with(".app/Contents/Resources/");
++#else
++    return false;
++#endif
++}
++
++void enterAppBundleResources()
++{
++    if (!runningFromAppBundle()) return;
++    std::error_code ec;
++    std::filesystem::current_path(SDL_GetBasePath(), ec);
++
++    // the music is MIDI, which FluidSynth needs a soundfont for: use the bundled one unless the player set their own
++    const std::string soundfont = std::string(SDL_GetBasePath()) + "GeneralUser-GS.sf2";
++    if (SDL_getenv("SDL_SOUNDFONTS") == nullptr && std::filesystem::exists(soundfont, ec)) {
++        SDL_SetEnvironmentVariable(SDL_GetEnvironment(), "SDL_SOUNDFONTS", soundfont.c_str(), false);
++    }
++}
++
++std::filesystem::path writableDirectory()
++{
++    if (runningFromAppBundle()) {
++        if (const auto dir = directory()) return *dir;
++    }
++    return ".";
++}
++
+ }
+diff --git a/src/game/PreferencesPath.hpp b/src/game/PreferencesPath.hpp
+index cb674eb9..6fdf28e3 100644
+--- a/src/game/PreferencesPath.hpp
++++ b/src/game/PreferencesPath.hpp
+@@ -29,4 +29,18 @@ std::optional<std::filesystem::path> directory();
+ // directory() / fileName, or nullopt when there is no directory.
+ std::optional<std::filesystem::path> file(const char *fileName);
+ 
++// True when running from a macOS .app bundle. The game data then lives in the bundle's
++// read-only Contents/Resources (made the working directory by enterAppBundleResources), and
++// everything the game writes goes to directory() instead.
++bool runningFromAppBundle();
++
++// When running from a macOS .app bundle, make Contents/Resources the working directory, and use the
++// bundled soundfont for the MIDI music unless SDL_SOUNDFONTS names another.
++void enterAppBundleResources();
++
++// Where the game writes files it would otherwise write into the working directory (log,
++// saved skirmish maps, custom music folders): directory() when running from an app bundle,
++// the working directory otherwise.
++std::filesystem::path writableDirectory();
++
+ }
+diff --git a/src/game/cSDLSystem.cpp b/src/game/cSDLSystem.cpp
+index f209bbbc..4ad473cd 100644
+--- a/src/game/cSDLSystem.cpp
++++ b/src/game/cSDLSystem.cpp
+@@ -287,7 +287,10 @@ cSDLSystem::cSDLSystem(int desiredWidth, int desiredHeight, const std::string &t
+     // pixel dimensions, no transition surprises.
+     SDL_SetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, "0");
+ 
+-    window = SDL_CreateWindow(title.c_str(), renderResolution.width, renderResolution.height, 0);
++    // Resizable: the game keeps its render resolution and the logical presentation scales it to
++    // whatever size the window is dragged or maximised to (the mouse goes through
++    // SDL_RenderCoordinatesFromWindow, so it follows)
++    window = SDL_CreateWindow(title.c_str(), renderResolution.width, renderResolution.height, SDL_WINDOW_RESIZABLE);
+     if (window == nullptr) {
+         Logger::error(COMP_SDL2, "Screen init", "Failed initialized screen with resolution {}x{}", renderResolution.width, renderResolution.height);
+         SDL_Quit();
+@@ -309,6 +312,7 @@ cSDLSystem::cSDLSystem(int desiredWidth, int desiredHeight, const std::string &t
+     }
+ 
+     SDL_SetRenderVSync(renderer, 1);
++    SDL_SetWindowMinimumSize(window, MIN_RENDER_WIDTH / 2, MIN_RENDER_HEIGHT / 2);
+ 
+     // SDL_RENDER_SCALE_QUALITY was removed in SDL3. The correct way to control
+     // the logical presentation's internal texture scale is via the renderer's
+diff --git a/src/gameobjects/map/cPreviewMaps.cpp b/src/gameobjects/map/cPreviewMaps.cpp
+index 5f7381d1..62239a4b 100644
+--- a/src/gameobjects/map/cPreviewMaps.cpp
++++ b/src/gameobjects/map/cPreviewMaps.cpp
+@@ -21,11 +21,13 @@
+ #include "utils/common.h"
+ #include "utils/Log.h"
+ #include "utils/cIniFile.h"
++#include "game/PreferencesPath.hpp"
+ #include <filesystem>
+ #include <fstream>
+ #include <cctype>
+ #include <optional>
+ #include <string>
++#include <vector>
+ 
+ namespace fs = std::filesystem;
+ 
+@@ -296,13 +298,19 @@ void cPreviewMaps::loadSkirmishMaps()
+ {
+     initPreviews(); // clear all of them
+ 
+-    const std::filesystem::path pathfile{"skirmish"};
+-    for (auto const &file: std::filesystem::directory_iterator{pathfile}) {
+-        auto fullname = file.path().string();
+-        // std::cout << "Found file: " << fullname << std::endl;
+-        if (file.path().extension() == ".ini") {
+-            loadSkirmish(fullname);
+-            Logger::info(COMP_MAP, "cPreviewMaps", "Loading skirmish map: {}", fullname);
++    // the bundled maps, then (app bundle) the ones the player saved, which live elsewhere
++    std::vector<std::filesystem::path> folders{"skirmish"};
++    if (PreferencesPath::runningFromAppBundle()) {
++        folders.push_back(PreferencesPath::writableDirectory() / "skirmish");
++    }
++    for (const auto &pathfile : folders) {
++        std::error_code ec;
++        for (std::filesystem::directory_iterator it(pathfile, ec), end; !ec && it != end; it.increment(ec)) {
++            auto fullname = it->path().string();
++            if (it->path().extension() == ".ini") {
++                loadSkirmish(fullname);
++                Logger::info(COMP_MAP, "cPreviewMaps", "Loading skirmish map: {}", fullname);
++            }
+         }
+     }
+ }
+@@ -341,9 +349,12 @@ static std::optional<char> terrainToMapChar(int terrain)
+ 
+ bool cPreviewMaps::saveSkirmishMap(const s_PreviewMap &map, bool backup)
+ {
+-    const std::string fileName = backup
+-        ? "skirmish/backup.ini"
+-        : "skirmish/" + normalizeStringForFileName(map.name) + ".ini";
++    const std::filesystem::path skirmishDir = PreferencesPath::writableDirectory() / "skirmish";
++    std::error_code dirError;
++    std::filesystem::create_directories(skirmishDir, dirError);
++    const std::string fileName = (skirmishDir / (backup
++        ? std::string("backup.ini")
++        : normalizeStringForFileName(map.name) + ".ini")).string();
+ 
+     const size_t requiredTerrainCells = static_cast<size_t>(map.width) * static_cast<size_t>(map.height);
+     if (map.width < 3 || map.height < 3 || map.terrainType.size() < requiredTerrainCells) {
+diff --git a/src/main.cpp b/src/main.cpp
+index 0f87bbca..e60d768d 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -58,7 +58,9 @@ int main(int argc, char **argv)
+ #ifdef _WIN32
+     attachParentConsole();
+ #endif
+-    std::unique_ptr<cLog> m_log = std::make_unique<cLog>("nlog.txt");
++    // in a macOS app bundle the game data is in Contents/Resources, the log goes to the user data directory
++    PreferencesPath::enterAppBundleResources();
++    std::unique_ptr<cLog> m_log = std::make_unique<cLog>((PreferencesPath::writableDirectory() / "nlog.txt").string());
+     Logger::init(m_log.get());
+     // m_log is destroyed when main returns, make sure the crash handlers never write through a dangling pointer
+     struct LoggerReset {
+@@ -73,8 +75,10 @@ int main(int argc, char **argv)
+ 
+     std::unique_ptr<InitialGameSettings> settings = loadSettingsFromIni("settings.ini");
+     
+-    // -prefs: start from the options saved at the end of the previous run, the other arguments still override them
+-    if (std::any_of(argv + 1, argv + argc, [](const char *arg) { return std::string_view(arg) == "-prefs"; })) {
++    // -prefs: start from the options saved at the end of the previous run, the other arguments still override them.
++    // An app bundle always does, as there is no command line to pass it on.
++    if (PreferencesPath::runningFromAppBundle() ||
++        std::any_of(argv + 1, argv + argc, [](const char *arg) { return std::string_view(arg) == "-prefs"; })) {
+         std::string prefsError;
+         const auto prefsFile = PreferencesPath::file(PREFERENCES_FILE);
+         if (!prefsFile) {
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 02c58492..437e14b7 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -82,6 +82,7 @@ set(TEST_SOURCES
+     ${CMAKE_SOURCE_DIR}/src/game/GameStateMachine.cpp
+     ${CMAKE_SOURCE_DIR}/src/include/eGameState.cpp
+     ${CMAKE_SOURCE_DIR}/src/game/Preferences.cpp
++    ${CMAKE_SOURCE_DIR}/src/game/PreferencesPath.cpp
+     ${CMAKE_SOURCE_DIR}/src/utils/Log.cpp
+     ${CMAKE_SOURCE_DIR}/src/utils/SfxTrackAllocator.cpp
+     ${CMAKE_SOURCE_DIR}/src/context/MusicJukeBox.cpp

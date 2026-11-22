@@ -68,6 +68,7 @@
 ./sdl3.sh
 ./sdl3_image.sh
 ./sdl3_mixer.sh
+./sdl3_ttf.sh
 ./snappy.sh
 ./spng.sh
 ./sodium.sh
