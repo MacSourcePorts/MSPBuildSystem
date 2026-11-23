@@ -90,6 +90,22 @@ for rules in resources/*.ini.org; do
 done
 cp resources/doc/versionhistory.txt resources/doc/controls.txt "${RESOURCES}/"
 
+# Give files with accented names (the skirmish map 4PL_SinéadPlains.ini) plain
+# ASCII ones. The signature records each name byte for byte, and copying the
+# app over a network share can rewrite "é" from one character to "e" plus an
+# accent, which macOS then reports as a damaged app. The game shows the map
+# title from inside the file and finds maps by scanning the folder, so the
+# file name doesn't matter to it.
+python3 -I - "${RESOURCES}" <<'EOF'
+import os, sys, unicodedata
+for folder, dirs, files in os.walk(sys.argv[1], topdown=False):
+    for name in files + dirs:
+        ascii = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+        if ascii != name:
+            print(f"Renaming {name} to {ascii}")
+            os.rename(os.path.join(folder, name), os.path.join(folder, ascii))
+EOF
+
 # The music is MIDI, played by FluidSynth, which needs a General MIDI
 # soundfont: GeneralUser GS (free to bundle, see its LICENSE.txt), pinned to a
 # commit and cached in MSPBuildSystem/d2tm/soundfont-cache. The
