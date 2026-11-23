@@ -118,15 +118,6 @@ mkdir -p "${FRAMEWORKS_FOLDER_PATH}"
 cp -L /usr/local/lib/libfluidsynth.3.dylib "${FRAMEWORKS_FOLDER_PATH}/"
 chmod u+w "${FRAMEWORKS_FOLDER_PATH}/libfluidsynth.3.dylib"
 "../../MSPBuildSystem/common/copy_dependencies.sh" "${FRAMEWORKS_FOLDER_PATH}/libfluidsynth.3.dylib" "${FRAMEWORKS_FOLDER_PATH}"
-# some of them (glib) carry an rpath of /usr/local/lib from their own builds,
-# which would load their dependencies from there instead of from the bundle
-for lib in "${FRAMEWORKS_FOLDER_PATH}"/*.dylib; do
-	[ -L "$lib" ] && continue
-	if otool -l "$lib" | grep -A2 LC_RPATH | grep -q 'path /usr/local/lib '; then
-		chmod u+w "$lib"
-		install_name_tool -delete_rpath /usr/local/lib "$lib"
-	fi
-done
 cd ..
 
 # sign and notarize
