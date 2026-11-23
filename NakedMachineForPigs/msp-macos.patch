@@ -162,7 +162,7 @@ index 6976a9a..18c0bda 100644
  			// offset resolution
 diff --git a/HPL2/dependencies/AngelScript/sources/as_callfunc_arm64.cpp b/HPL2/dependencies/AngelScript/sources/as_callfunc_arm64.cpp
 new file mode 100644
-index 0000000..f357de5
+index 0000000..4b3d802
 --- /dev/null
 +++ b/HPL2/dependencies/AngelScript/sources/as_callfunc_arm64.cpp
 @@ -0,0 +1,372 @@
@@ -445,17 +445,17 @@ index 0000000..f357de5
 +	{
 +		asCDataType &dt = descr->parameterTypes[a];
 +
-+		if( dt.IsReference() || dt.IsObjectHandle() )
++		if( dt.GetTokenType() == ttQuestion )
 +		{
-+			packer.AddInt(ReadExtended(sp, sizeof(void*), false), sizeof(void*));
-+			sp += AS_PTR_SIZE;
-+		}
-+		else if( dt.GetTokenType() == ttQuestion )
-+		{
-+			// A variable type is passed as a pointer and a type id
++			// A variable type (?&) is passed as a pointer and a type id
 +			packer.AddInt(ReadExtended(sp, sizeof(void*), false), sizeof(void*));
 +			packer.AddInt(ReadExtended(sp + AS_PTR_SIZE, sizeof(int), true), sizeof(int));
 +			sp += AS_PTR_SIZE + 1;
++		}
++		else if( dt.IsReference() || dt.IsObjectHandle() )
++		{
++			packer.AddInt(ReadExtended(sp, sizeof(void*), false), sizeof(void*));
++			sp += AS_PTR_SIZE;
 +		}
 +		else if( dt.IsFloatType() )
 +		{
@@ -592,6 +592,32 @@ index eb28464..e5bee30 100644
  	#ifndef AS_MAX_PORTABILITY
  		#define AS_MAX_PORTABILITY
  	#endif
+diff --git a/HPL2/dependencies/AngelScript/sources/as_scriptengine.cpp b/HPL2/dependencies/AngelScript/sources/as_scriptengine.cpp
+index 81ae62c..df3e2e5 100644
+--- a/HPL2/dependencies/AngelScript/sources/as_scriptengine.cpp
++++ b/HPL2/dependencies/AngelScript/sources/as_scriptengine.cpp
+@@ -3424,6 +3424,10 @@ bool asCScriptEngine::CallObjectMethodRetBool(void *obj, int func)
+ 				asDWORD baseOffset;
+ 			} f;
+ 		} p;
++#ifdef AS_ARM64
++		// The ARM C++ ABI adjustment is pointer sized, not 32 bits
++		memset(&p, 0, sizeof(p));
++#endif
+ 		p.f.func = (void (*)())(i->func);
+ 		p.f.baseOffset = i->baseOffset;
+ 		bool (asCSimpleDummy::*f)() = (bool (asCSimpleDummy::*)())(p.mthd);
+@@ -3492,6 +3496,10 @@ int asCScriptEngine::CallObjectMethodRetInt(void *obj, int func)
+ 				asDWORD baseOffset;
+ 			} f;
+ 		} p;
++#ifdef AS_ARM64
++		// The ARM C++ ABI adjustment is pointer sized, not 32 bits
++		memset(&p, 0, sizeof(p));
++#endif
+ 		p.f.func = (void (*)())(i->func);
+ 		p.f.baseOffset = i->baseOffset;
+ 		int (asCSimpleDummy::*f)() = (int (asCSimpleDummy::*)())(p.mthd);
 diff --git a/HPL2/dependencies/Newton/core/dgTypes.h b/HPL2/dependencies/Newton/core/dgTypes.h
 index dea15b9..430cc58 100644
 --- a/HPL2/dependencies/Newton/core/dgTypes.h

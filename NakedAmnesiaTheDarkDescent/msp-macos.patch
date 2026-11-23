@@ -1,0 +1,1089 @@
+diff --git a/HPL2/core/CMakeLists.txt b/HPL2/core/CMakeLists.txt
+index 4ffbb20..e21f307 100644
+--- a/HPL2/core/CMakeLists.txt
++++ b/HPL2/core/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 2.8.11)
++cmake_minimum_required (VERSION 3.16)
+ project(HPL2)
+ 
+ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+@@ -6,42 +6,19 @@ include(BoilerPlate)
+ 
+ set(HPL2_VERSION_MAJOR 2)
+ set(HPL2_VERSION_MINOR 0)
+-if(IS_APPLE_64)
+-    set(BIN_LIBROOT "${PLATFORM_PREFIX}64")
+-else()
+-    set(BIN_LIBROOT ${PLATFORM_PREFIX})
+-endif()
+ 
+-set(DEP_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/lib/${BIN_LIBROOT}")
++# The prebuilt libraries this used are long gone (only Windows ones are in
++# the repository). AngelScript, Newton and the OpenAL wrapper are built
++# from the bundled sources; everything else comes from the system
++# (e.g. /usr/local). The bundled headers in dependencies/include are 2010
++# vintage, so they come after the system ones.
++set(DEP_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/sources")
+ set(DEP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/include")
+-find_path(PREBUILT_PLATFORM_ROOT .
+-    PATHS "${DEP_LIB_DIR}"
+-    NO_DEFAULT_PATH
+-)
+-set(DEP_LIB_DIR ${DEP_LIB_DIR} PARENT_SCOPE)
+-set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} PARENT_SCOPE)
+-mark_as_advanced(
+-    PREBUILT_PLATFORM_ROOT
+-)
+ 
+ include(UtilityFunctions)
+ 
+-IF(APPLE)
+-    SET(PRIVATE_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../dependencies CACHE PATH "")
+-    if(IS_APPLE_64)
+-        SET(PRIVATE_LIB_SUFFIX "lib/macosx64")
+-    else()
+-        SET(PRIVATE_LIB_SUFFIX "lib/macosx")
+-    endif()
+-ELSEIF(LINUX)
+-    SET(PRIVATE_LIB_SUFFIX "lib/linux")
+-    SET(PRIVATE_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../dependencies CACHE PATH "")
+-ENDIF()
+-
+ OPTION(USE_SDL2 "Use SDL2 instead of SDL1.2" ON)
+ 
+-add_subdirectory(../dependencies/OALWrapper OALWrapper)
+-
+ SET(HPL2_DEFINES
+     PUBLIC $<$<BOOL:${USE_SDL2}>:USE_SDL2>
+ )
+@@ -50,11 +27,37 @@ add_definitions(
+     -DUSE_OALWRAPPER
+ )
+ 
++find_package(SDL2 REQUIRED)
++find_package(GLEW REQUIRED)
++find_package(OpenGL REQUIRED)
++find_package(DevIL REQUIRED)
++find_package(OpenAL REQUIRED)
++find_library(OGG_LIBRARY ogg)
++find_library(VORBIS_LIBRARY vorbis)
++find_library(VORBISFILE_LIBRARY vorbisfile)
++find_library(THEORA_LIBRARY theora)
++# the OpenAL wrapper loads WAV files with freealut
++find_library(ALUT_LIBRARY alut)
++mark_as_advanced(ALUT_LIBRARY OGG_LIBRARY VORBIS_LIBRARY VORBISFILE_LIBRARY THEORA_LIBRARY)
++
++
++# Only take the headers the system doesn't provide from dependencies/include:
++# the rest there (SDL2, GLEW, OpenAL, ogg, ...) are 2010 copies that would
++# shadow the system ones, as clang searches /usr/local/include last.
++set(DEP_HEADERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/dep_include)
++file(COPY ${DEP_INCLUDE_DIR}/Newton.h DESTINATION ${DEP_HEADERS_DIR})
++# the OpenAL wrapper headers are included both as OpenAL/ and OALWrapper/
++file(COPY ${DEP_INCLUDE_DIR}/OpenAL DESTINATION ${DEP_HEADERS_DIR})
++file(COPY ${DEP_INCLUDE_DIR}/OpenAL/ DESTINATION ${DEP_HEADERS_DIR}/OALWrapper)
++
++add_subdirectory(${DEP_SOURCE_DIR}/AngelScript AngelScript)
++add_subdirectory(${DEP_SOURCE_DIR}/Newton Newton)
++
+ set(HPL2_INCLUDES
+     PUBLIC include
+-    #Important that this is before dependencies so the correct OpenAL headers are used
+-    PRIVATE ${OALWRAPPER_INCLUDE_DIR}
+-    PUBLIC ../dependencies/include
++    PUBLIC ${DEP_SOURCE_DIR}/AngelScript/include
++    PUBLIC ${DEP_HEADERS_DIR}
++    PRIVATE ${OPENAL_INCLUDE_DIR}/..
+ )
+ 
+ IF(LINUX)
+@@ -151,7 +154,11 @@ file(GLOB impl_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+     sources/impl/MeshLoaderColladaHelpers.cpp
+     sources/impl/MeshLoaderColladaLoader.cpp
+     sources/impl/MeshLoaderMSH.cpp
+-    sources/impl/MeshLoaderFBX.cpp
++    # the FBX loader needs Autodesk's FBX SDK 2012, which isn't available
++    # (and its registration is commented out)
++
++    # the OpenAL wrapper
++    ../dependencies/sources/OpenAL/*.cpp
+ )
+ 
+ IF(APPLE)
+@@ -195,7 +202,7 @@ function(GenerateBuildID outvar idname includedir sourcedir)
+             ${sourcedir}/BuildID_${idname}_${BUILDID_SUFFIX}.cpp
+             ${includedir}/BuildID_${idname}.h
+         COMMAND
+-            ${BUILDID_BIN}
++            perl ${BUILDID_BIN}
+         ARGS
+             ${idname} ${includedir} ${sourcedir}
+     )
+@@ -235,18 +242,6 @@ source_group("Win32" REGULAR_EXPRESSION "\\/impl\\/.+Win32.+")
+ source_group("Platform" REGULAR_EXPRESSION "\\/impl\\/Platform.+")
+ 
+ 
+-# setup libs
+-
+-FindPrebuiltLibrary(NEWTON_LIBRARY Newton)
+-FindPrebuiltLibrary(ANGELSCRIPT_LIBRARY angelscript)
+-FindPrebuiltLibrary(FBX_LIBRARY fbxsdk-2012.2-static)
+-FindPrebuiltLibrary(GLEW_LIBRARY GLEW)
+-FindPrebuiltLibrary(THEORA_LIBRARY theora)
+-FindPrebuiltLibrary(DEVIL_LIBRARY IL)
+-
+-find_package(OpenGL)
+-mark_as_advanced(NEWTON_LIBRARY ANGELSCRIPT_LIBRARY FBX_LIBRARY GLEW_LIBRARY THEORA_LIBRARY DEVIL_LIBRARY)
+-
+ # setup HPL2 compile target
+ 
+ add_library(HPL2 STATIC
+@@ -281,70 +276,20 @@ elseif(APPLE)
+ endif()
+ 
+ target_link_libraries(HPL2
+-    OALWrapper # also pulls in ogg,vorbis,SDL
+-    ${NEWTON_LIBRARY}
+-    ${ANGELSCRIPT_LIBRARY}
+-    ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
+-    ${GLEW_LIBRARY}
++    Newton
++    AngelScript
++    SDL2::SDL2
++    GLEW::GLEW
++    OpenGL::GL
++    ${IL_LIBRARIES}
+     ${THEORA_LIBRARY}
+-    ${DEVIL_LIBRARY}
+-    z
+-    ${FBX_LIBRARY}
++    ${VORBISFILE_LIBRARY}
++    ${VORBIS_LIBRARY}
++    ${OGG_LIBRARY}
++    ${ALUT_LIBRARY}
++    ${OPENAL_LIBRARY}
++    z # the system zlib
+     ${PLATFORM_LIBS}
+ )
+ 
+ 
+-if(APPLE)   
+-    # helper function to copy the needed frameworks in at build time
+-    SET(HPL2_FRAMEWORKS ${HPL2_FRAMEWORKS} CACHE STRING "HPL2 copy frameworks")
+-    SET(HPL2_LIBRARIES libSDL2.dylib libIL.1.dylib) 
+-    SET(HPL2_LIBRARIES ${HPL2_LIBRARIES}  CACHE STRING "HPL2 copy libs")
+-    mark_as_advanced(HPL2_FRAMEWORKS HPL2_LIBRARIES)
+-
+-    FUNCTION(PostBuildMacBundle APP_TARGET framework_list lib_list)
+-        INCLUDE(BundleUtilities)
+-        GET_TARGET_PROPERTY(_BIN_NAME ${APP_TARGET} LOCATION)
+-        GET_DOTAPP_DIR(${_BIN_NAME} _BUNDLE_DIR)
+-
+-        set(_SCRIPT_FILE ${CMAKE_CURRENT_BINARY_DIR}/${APP_TARGET}_prep.cmake)
+-        file(WRITE ${_SCRIPT_FILE}
+-            "# Generated Script file\n"
+-            "include(BundleUtilities)\n"
+-            "get_bundle_and_executable(\"\${BUNDLE_APP}\" bundle executable valid)\n"
+-            "if(valid)\n"
+-            "  set(framework_path \"\${bundle}/Contents/Frameworks\")\n"
+-            "  foreach(framework ${framework_list})\n"
+-            "    file(MAKE_DIRECTORY \"\${framework_path}/\${framework}.framework/Versions/A/\")\n"
+-            "    copy_resolved_framework_into_bundle(\${DEP_LIB_DIR}/\${framework}.framework/Versions/A/\${framework} \${framework_path}/\${framework}.framework/Versions/A/\${framework})\n"
+-            "  endforeach()\n"
+-            "  foreach(lib ${lib_list})\n"
+-            "    copy_resolved_item_into_bundle(\${DEP_LIB_DIR}/\${lib} \${framework_path}/\${lib})\n"
+-            "  endforeach()\n"
+-            "else()\n"
+-            "  message(ERROR \"App Not found? \${BUNDLE_APP}\")\n"
+-            "endif()\n"
+-            "#fixup_bundle(\"\${BUNDLE_APP}\" \"\" \"\${DEP_LIB_DIR}\")\n"
+-        )
+-
+-        ADD_CUSTOM_COMMAND(TARGET ${APP_TARGET}
+-            POST_BUILD
+-            COMMAND ${CMAKE_COMMAND} -DBUNDLE_APP="${_BUNDLE_DIR}" -DDEP_LIB_DIR="${DEP_LIB_DIR}" -P "${_SCRIPT_FILE}"
+-        )
+-    ENDFUNCTION()
+-ENDIF()
+-
+-FUNCTION(AddTestTarget target_name)
+-    add_executable(${target_name} EXCLUDE_FROM_ALL
+-        ${ARGN}
+-    )
+-    target_link_libraries(${target_name} HPL2)
+-    set_target_properties(${target_name} PROPERTIES
+-        XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "${DEP_LIB_DIR}"
+-        INSTALL_RPATH "${DEP_LIB_DIR}"
+-    )
+-ENDFUNCTION()
+-
+-add_subdirectory(../tests tests)
+-add_subdirectory(../tools tools)
+-
+-
+diff --git a/HPL2/core/cmake/BoilerPlate.cmake b/HPL2/core/cmake/BoilerPlate.cmake
+index abbf12c..e8109ca 100644
+--- a/HPL2/core/cmake/BoilerPlate.cmake
++++ b/HPL2/core/cmake/BoilerPlate.cmake
+@@ -26,7 +26,7 @@ endif()
+ set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fno-strict-aliasing")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
+ 
+-if(APPLE)
++if(APPLE AND NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.6")
+ endif()
+ 
+diff --git a/HPL2/core/sources/impl/LowLevelResourcesSDL.cpp b/HPL2/core/sources/impl/LowLevelResourcesSDL.cpp
+index d27d030..01dcb50 100644
+--- a/HPL2/core/sources/impl/LowLevelResourcesSDL.cpp
++++ b/HPL2/core/sources/impl/LowLevelResourcesSDL.cpp
+@@ -19,7 +19,6 @@
+ 
+ #include "impl/LowLevelResourcesSDL.h"
+ #include "impl/MeshLoaderMSH.h"
+-#include "impl/MeshLoaderFBX.h"
+ #include "impl/MeshLoaderCollada.h"
+ #include "impl/VideoStreamTheora.h"
+ #include "impl/XmlDocumentTiny.h"
+diff --git a/HPL2/core/sources/impl/PhysicsBodyNewton.cpp b/HPL2/core/sources/impl/PhysicsBodyNewton.cpp
+index cc1c81d..720ebfe 100644
+--- a/HPL2/core/sources/impl/PhysicsBodyNewton.cpp
++++ b/HPL2/core/sources/impl/PhysicsBodyNewton.cpp
+@@ -106,7 +106,8 @@ namespace hpl {
+ 		if(cPhysicsBodyNewton::mbUseCallback==false) return;
+ 
+ 		cPhysicsBodyNewton *pRigidBody = static_cast<cPhysicsBodyNewton*>(apEntity);
+-		NewtonBodySetMatrix(pRigidBody->mpNewtonBody, &apEntity->GetLocalMatrix().GetTranspose().m[0][0]);
++		cMatrixf mtx = apEntity->GetLocalMatrix().GetTranspose();
++		NewtonBodySetMatrix(pRigidBody->mpNewtonBody, &mtx.m[0][0]);
+ 	}
+ 
+ 	//-----------------------------------------------------------------------
+diff --git a/HPL2/core/sources/impl/PhysicsWorldNewton.cpp b/HPL2/core/sources/impl/PhysicsWorldNewton.cpp
+index 4c200f4..3dcd4a0 100644
+--- a/HPL2/core/sources/impl/PhysicsWorldNewton.cpp
++++ b/HPL2/core/sources/impl/PhysicsWorldNewton.cpp
+@@ -714,8 +714,9 @@ namespace hpl {
+ 		gDebugColor = aColor;
+ 
+ 		cCollideShapeNewton *pNewtonShape = static_cast<cCollideShapeNewton*>(apShape);
++		cMatrixf mtx = a_mtxTransform.GetTranspose();
+ 		NewtonCollisionForEachPolygonDo (	pNewtonShape->GetNewtonCollision(), 
+-											&(a_mtxTransform.GetTranspose().m[0][0]), 
++											&(mtx.m[0][0]), 
+ 											RenderDebugPolygon,
+ 											NULL);
+ 	}
+diff --git a/HPL2/core/sources/impl/PlatformMacOSX.mm b/HPL2/core/sources/impl/PlatformMacOSX.mm
+index e0d37fc..6febffd 100644
+--- a/HPL2/core/sources/impl/PlatformMacOSX.mm
++++ b/HPL2/core/sources/impl/PlatformMacOSX.mm
+@@ -92,15 +92,59 @@ tString FindGameResources()
+ 		return path;
+ 	}
+ 
++	// The game data (the contents of the Windows/Linux game folder, with
++	// resources.cfg at the top) is looked for, in order:
++	//  - in the app bundle's Resources folder
++	//  - in ~/Library/Application Support/Amnesia The Dark Descent
++	//  - in the folder the app is in
++	//  - in the current directory (running the bare executable)
++	// Saves and settings go in ~/Library/Application Support/Frictional Games/Amnesia,
++	// like the original Mac release.
++	static bool OSXIsDataDir(NSString *path)
++	{
++		NSString *cfg = [path stringByAppendingPathComponent:@"resources.cfg"];
++		return [[NSFileManager defaultManager] fileExistsAtPath:cfg];
++	}
++
+ 	tString cPlatform::GetDataDir()
+ 	{
+ 		tString sTemp;
+ 		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+ 
+ 		NSBundle *bundle = [NSBundle mainBundle];
+-		NSString *dataPath = getGamePathForBundle(bundle);
++		NSMutableArray *candidates = [NSMutableArray array];
++		if ([bundle resourcePath])
++			[candidates addObject:[bundle resourcePath]];
++		NSArray *dirs = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
++		if ([dirs count] > 0)
++			[candidates addObject:[[dirs objectAtIndex:0] stringByAppendingPathComponent:@"Amnesia The Dark Descent"]];
++		[candidates addObject:[[bundle bundlePath] stringByDeletingLastPathComponent]];
++		[candidates addObject:[[NSFileManager defaultManager] currentDirectoryPath]];
++
++		NSString *dataPath = nil;
++		for (NSString *path in candidates) {
++			if (OSXIsDataDir(path)) {
++				dataPath = path;
++				break;
++			}
++		}
++
++		if (dataPath == nil) {
++			NSString *appSupport = [candidates objectAtIndex:([bundle resourcePath] ? 1 : 0)];
++			NSString *message = [NSString stringWithFormat:@"Copy the contents of the game's folder from the Windows or Linux version of Amnesia: The Dark Descent (the folder with resources.cfg, maps, sounds and so on) to:\n\n%@", appSupport];
++			NSLog(@"%@", message);
++			if (NSApp == nil)
++				[NSApplication sharedApplication];
++			NSAlert *alert = [[[NSAlert alloc] init] autorelease];
++			[alert setMessageText:@"Game data not found"];
++			[alert setInformativeText:message];
++			[alert setAlertStyle:NSAlertStyleCritical];
++			[alert runModal];
++			[pool drain];
++			exit(1);
++		}
+ 
+-		sTemp = [dataPath UTF8String];
++		sTemp = [dataPath fileSystemRepresentation];
+ 
+ 		[pool drain];
+ 		return sTemp;
+diff --git a/HPL2/dependencies/sources/AngelScript/CMakeLists.txt b/HPL2/dependencies/sources/AngelScript/CMakeLists.txt
+new file mode 100644
+index 0000000..25754cb
+--- /dev/null
++++ b/HPL2/dependencies/sources/AngelScript/CMakeLists.txt
+@@ -0,0 +1,10 @@
++cmake_minimum_required (VERSION 3.16)
++project (AngelScript)
++
++# The native calling conventions are chosen by as_config.h; the files for
++# other CPUs compile to nothing. (The .asm/.S/.s ones are for MSVC and
++# 32-bit ARM, not needed here.)
++file(GLOB angelscript_sources ${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp)
++
++add_library(AngelScript STATIC ${angelscript_sources})
++target_include_directories(AngelScript PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+diff --git a/HPL2/dependencies/sources/AngelScript/sources/as_callfunc.cpp b/HPL2/dependencies/sources/AngelScript/sources/as_callfunc.cpp
+index f1c1901..b647297 100644
+--- a/HPL2/dependencies/sources/AngelScript/sources/as_callfunc.cpp
++++ b/HPL2/dependencies/sources/AngelScript/sources/as_callfunc.cpp
+@@ -91,6 +91,15 @@ int DetectCallingConvention(bool isMethod, const asSFuncPtr &ptr, int callConv,
+ 			if( (size_t(internal->baseOffset) & 1) )
+ 				internal->callConv = ICC_VIRTUAL_THISCALL;
+ #endif
++#if defined(AS_ARM64) && defined(__GNUC__)
++			// The ARM C++ ABI stores the this-adjustment shifted left by one,
++			// with the least significant bit flagging a virtual method (whose
++			// pointer is then the vtable offset in bytes). baseOffset keeps
++			// that form, as CallObjectMethod rebuilds method pointers from it;
++			// CallSystemFunction shifts it back.
++			if( (size_t(internal->baseOffset) & 1) )
++				internal->callConv = ICC_VIRTUAL_THISCALL;
++#endif
+ 
+ #ifdef HAVE_VIRTUAL_BASE_OFFSET
+ 			// We don't support virtual inheritance
+diff --git a/HPL2/dependencies/sources/AngelScript/sources/as_callfunc_arm64.cpp b/HPL2/dependencies/sources/AngelScript/sources/as_callfunc_arm64.cpp
+new file mode 100644
+index 0000000..f178d3e
+--- /dev/null
++++ b/HPL2/dependencies/sources/AngelScript/sources/as_callfunc_arm64.cpp
+@@ -0,0 +1,488 @@
++/*
++   AngelCode Scripting Library
++   Copyright (c) 2003-2012 Andreas Jonsson
++
++   This software is provided 'as-is', without any express or implied
++   warranty. In no event will the authors be held liable for any
++   damages arising from the use of this software.
++
++   Permission is granted to anyone to use this software for any
++   purpose, including commercial applications, and to alter it and
++   redistribute it freely, subject to the following restrictions:
++
++   1. The origin of this software must not be misrepresented; you
++      must not claim that you wrote the original software. If you use
++      this software in a product, an acknowledgment in the product
++      documentation would be appreciated but is not required.
++
++   2. Altered source versions must be plainly marked as such, and
++      must not be misrepresented as being the original software.
++
++   3. This notice may not be removed or altered from any source
++      distribution.
++*/
++
++//
++// as_callfunc_arm64.cpp
++//
++// Native calling conventions for 64-bit ARM on Apple platforms (Apple
++// silicon Macs). Added for the macOS arm64 build; not part of upstream
++// AngelScript 2.19 (ported from the one written for AngelScript 2.24 in
++// NakedMachineForPigs).
++//
++// Apple's arm64 ABI is AAPCS64 with these differences that matter here:
++//  - arguments passed on the stack are packed at their natural size and
++//    alignment rather than in 8 byte slots
++//  - the caller sign/zero extends integer arguments narrower than 32 bits
++// As in AAPCS64, a return value that doesn't fit in registers is written
++// to memory pointed to by x8 (not passed as a hidden first argument), and
++// objects with a non-trivial copy constructor or destructor are passed by
++// a pointer to a copy owned by the caller.
++//
++
++#include "as_config.h"
++
++#ifndef AS_MAX_PORTABILITY
++#ifdef AS_ARM64
++
++#include "as_callfunc.h"
++#include "as_scriptengine.h"
++#include "as_texts.h"
++#include "as_context.h"
++
++BEGIN_AS_NAMESPACE
++
++#define ARM64_MAX_GP_REGS    8
++#define ARM64_MAX_FP_REGS    8
++#define ARM64_MAX_STACK      1024
++
++struct asSARM64Regs
++{
++	asQWORD gp[ARM64_MAX_GP_REGS + 1]; // x0-x7, then x8 (indirect result)
++	asQWORD fp[ARM64_MAX_FP_REGS];     // d0-d7
++};
++
++struct asSARM64Ret
++{
++	asQWORD x1;
++	asQWORD d[4];                      // d0-d3
++};
++
++// Loads the argument registers, copies the stack arguments, and calls the
++// function. Returns x0; x1 and d0-d3 are stored in *ret.
++extern "C" asQWORD asARM64_CallFunction(const asSARM64Regs *regs, const void *stackArgs, asQWORD stackSize, asFUNCTION_t func, asSARM64Ret *ret);
++
++__asm__(
++	".text\n"
++	".p2align 2\n"
++#ifdef __APPLE__
++	".globl _asARM64_CallFunction\n"
++	".private_extern _asARM64_CallFunction\n"
++	"_asARM64_CallFunction:\n"
++#else
++	".globl asARM64_CallFunction\n"
++	".hidden asARM64_CallFunction\n"
++	".type asARM64_CallFunction, %function\n"
++	"asARM64_CallFunction:\n"
++#endif
++	"  stp x29, x30, [sp, #-48]!\n"
++	"  mov x29, sp\n"
++	"  stp x19, x20, [sp, #16]\n"
++	"  str x21, [sp, #32]\n"
++	"  mov x19, x4\n"               // x19 = ret
++	"  mov x20, x3\n"               // x20 = func
++	"  mov x21, x0\n"               // x21 = regs
++	// reserve the (16 byte aligned) stack area and copy the stack arguments
++	"  sub sp, sp, x2\n"
++	"  mov x9, #0\n"
++	"1:\n"
++	"  cmp x9, x2\n"
++	"  b.hs 2f\n"
++	"  ldr x10, [x1, x9]\n"
++	"  str x10, [sp, x9]\n"
++	"  add x9, x9, #8\n"
++	"  b 1b\n"
++	"2:\n"
++	"  ldp d0, d1, [x21, #72]\n"
++	"  ldp d2, d3, [x21, #88]\n"
++	"  ldp d4, d5, [x21, #104]\n"
++	"  ldp d6, d7, [x21, #120]\n"
++	"  ldp x0, x1, [x21, #0]\n"
++	"  ldp x2, x3, [x21, #16]\n"
++	"  ldp x4, x5, [x21, #32]\n"
++	"  ldp x6, x7, [x21, #48]\n"
++	"  ldr x8, [x21, #64]\n"
++	"  blr x20\n"
++	"  str x1, [x19, #0]\n"
++	"  stp d0, d1, [x19, #8]\n"
++	"  stp d2, d3, [x19, #24]\n"
++	"  mov sp, x29\n"
++	"  ldr x21, [sp, #32]\n"
++	"  ldp x19, x20, [sp, #16]\n"
++	"  ldp x29, x30, [sp], #48\n"
++	"  ret\n"
++);
++
++class asCARM64ArgPacker
++{
++public:
++	asCARM64ArgPacker() : numGP(0), numFP(0), stackSize(0), overflow(false)
++	{
++		memset(&regs, 0, sizeof(regs));
++		memset(stack, 0, sizeof(stack));
++	}
++
++	// An integer class value of 'size' bytes (already extended to 64 bits)
++	void AddInt(asQWORD value, int size)
++	{
++		if( numGP < ARM64_MAX_GP_REGS )
++			regs.gp[numGP++] = value;
++		else
++			AddToStack(&value, size);
++	}
++
++	// A float (size 4) or double (size 8), as raw bits
++	void AddFloat(asQWORD bits, int size)
++	{
++		if( numFP < ARM64_MAX_FP_REGS )
++			regs.fp[numFP++] = bits;
++		else
++			AddToStack(&bits, size);
++	}
++
++	// A small composite of integer members, passed in up to 2 registers
++	void AddIntComposite(const void *data, int size)
++	{
++		int numRegs = (size + 7) / 8;
++		asQWORD v[2] = {0, 0};
++		memcpy(v, data, size);
++		if( numGP + numRegs <= ARM64_MAX_GP_REGS )
++		{
++			for( int n = 0; n < numRegs; n++ )
++				regs.gp[numGP++] = v[n];
++		}
++		else
++		{
++			// Once a composite doesn't fit, no more integer registers are used
++			numGP = ARM64_MAX_GP_REGS;
++			AlignStack(size > 8 ? 8 : 8);
++			AddRawToStack(v, numRegs * 8);
++		}
++	}
++
++	// A homogeneous aggregate of floats, one float per register
++	void AddFloatComposite(const float *data, int count)
++	{
++		if( numFP + count <= ARM64_MAX_FP_REGS )
++		{
++			for( int n = 0; n < count; n++ )
++			{
++				asQWORD bits = 0;
++				memcpy(&bits, &data[n], sizeof(float));
++				regs.fp[numFP++] = bits;
++			}
++		}
++		else
++		{
++			numFP = ARM64_MAX_FP_REGS;
++			AlignStack(4);
++			AddRawToStack(data, count * sizeof(float));
++		}
++	}
++
++	void SetIndirectResult(void *ptr) { regs.gp[ARM64_MAX_GP_REGS] = (asPWORD)ptr; }
++
++	asQWORD Call(asFUNCTION_t func, asSARM64Ret *ret)
++	{
++		asQWORD size = (stackSize + 15) & ~asQWORD(15);
++		return asARM64_CallFunction(&regs, stack, size, func, ret);
++	}
++
++	bool overflow;
++
++protected:
++	void AlignStack(int align)
++	{
++		stackSize = (stackSize + align - 1) & ~(align - 1);
++	}
++
++	void AddRawToStack(const void *data, int size)
++	{
++		if( stackSize + size > ARM64_MAX_STACK )
++		{
++			overflow = true;
++			return;
++		}
++		memcpy(stack + stackSize, data, size);
++		stackSize += size;
++	}
++
++	void AddToStack(const void *value, int size)
++	{
++		// Apple arm64: stack arguments use their natural size and alignment
++		AlignStack(size);
++		AddRawToStack(value, size); // little endian, so the low bytes come first
++	}
++
++	asSARM64Regs regs;
++	int          numGP;
++	int          numFP;
++	int          stackSize;
++	asBYTE       stack[ARM64_MAX_STACK];
++};
++
++
++// Reads a primitive of 'size' bytes and extends it to 64 bits
++static asQWORD ReadExtended(const asDWORD *src, int size, bool isSigned)
++{
++	switch( size )
++	{
++	case 1: return isSigned ? asQWORD(asINT64(*(const signed char*)src)) : asQWORD(*(const asBYTE*)src);
++	case 2: return isSigned ? asQWORD(asINT64(*(const short*)src)) : asQWORD(*(const asWORD*)src);
++	case 4: return isSigned ? asQWORD(asINT64(*(const int*)src)) : asQWORD(*(const asDWORD*)src);
++	default:
++		{
++			asQWORD v;
++			memcpy(&v, src, sizeof(v));
++			return v;
++		}
++	}
++}
++
++int CallSystemFunction(int id, asCContext *context, void *objectPointer)
++{
++	asCScriptEngine            *engine   = context->engine;
++	asCScriptFunction          *descr    = engine->scriptFunctions[id];
++	asSSystemFunctionInterface *sysFunc  = descr->sysFuncIntf;
++	int                         callConv = sysFunc->callConv;
++	asFUNCTION_t                func     = (asFUNCTION_t)sysFunc->func;
++	int                         popSize  = sysFunc->paramSize;
++	asDWORD                    *args     = context->regs.stackPointer;
++	void                       *retPointer = 0;
++	void                       *obj      = 0;
++
++	if( callConv == ICC_GENERIC_FUNC || callConv == ICC_GENERIC_METHOD )
++		return context->CallGeneric(id, objectPointer);
++
++	context->regs.objectType = descr->returnType.GetObjectType();
++	if( descr->returnType.IsObject() && !descr->returnType.IsReference() && !descr->returnType.IsObjectHandle() )
++	{
++		// Allocate the memory for the returned object
++		retPointer = engine->CallAlloc(descr->returnType.GetObjectType());
++	}
++
++	if( callConv >= ICC_THISCALL )
++	{
++		if( objectPointer )
++			obj = objectPointer;
++		else
++		{
++			// The object pointer is the first value on the context stack
++			popSize += AS_PTR_SIZE;
++			obj = (void*)*(asPWORD*)args;
++			args += AS_PTR_SIZE;
++			if( !obj )
++			{
++				context->SetInternalException(TXT_NULL_POINTER_ACCESS);
++				if( retPointer )
++					engine->CallFree(retPointer);
++				return 0;
++			}
++
++			// Add the base offset for multiple inheritance (shifted one bit
++			// left by the ARM C++ ABI, see DetectCallingConvention)
++			obj = (void*)(asPWORD(obj) + (sysFunc->baseOffset >> 1));
++		}
++	}
++
++	asCARM64ArgPacker packer;
++
++	// A return in memory is made via x8, so the calling convention is
++	// otherwise the same as when returning in registers
++	if( sysFunc->hostReturnInMemory )
++		packer.SetIndirectResult(retPointer);
++
++	if( obj && callConv == ICC_VIRTUAL_THISCALL )
++	{
++		// With the ARM C++ ABI the function pointer holds the vtable offset in bytes
++		asFUNCTION_t *vftable = *((asFUNCTION_t**)obj);
++		func = vftable[asPWORD(func) >> 3];
++	}
++
++	if( callConv == ICC_THISCALL || callConv == ICC_VIRTUAL_THISCALL || callConv == ICC_CDECL_OBJFIRST )
++		packer.AddInt((asPWORD)obj, sizeof(void*));
++
++	asDWORD *sp = args;
++	asUINT argumentCount = descr->parameterTypes.GetLength();
++	for( asUINT a = 0; a < argumentCount; ++a )
++	{
++		asCDataType &dt = descr->parameterTypes[a];
++
++		if( dt.GetTokenType() == ttQuestion )
++		{
++			// A variable type (?&) is passed as a pointer and a type id
++			packer.AddInt(ReadExtended(sp, sizeof(void*), false), sizeof(void*));
++			packer.AddInt(ReadExtended(sp + AS_PTR_SIZE, sizeof(int), true), sizeof(int));
++			sp += AS_PTR_SIZE + 1;
++		}
++		else if( dt.IsReference() || dt.IsObjectHandle() )
++		{
++			packer.AddInt(ReadExtended(sp, sizeof(void*), false), sizeof(void*));
++			sp += AS_PTR_SIZE;
++		}
++		else if( dt.IsObject() )
++		{
++			// An object passed by value: the script engine has allocated a
++			// copy and pushed its address. PrepareSystemFunction only allows
++			// complex objects (SPLIT_OBJS_BY_MEMBER_TYPES), which the ABI
++			// passes as a pointer to a copy owned by the caller -- freed below.
++			packer.AddInt(ReadExtended(sp, sizeof(void*), false), sizeof(void*));
++			sp += AS_PTR_SIZE;
++		}
++		else if( dt.IsFloatType() )
++		{
++			packer.AddFloat(ReadExtended(sp, sizeof(float), false), sizeof(float));
++			sp++;
++		}
++		else if( dt.IsDoubleType() )
++		{
++			packer.AddFloat(ReadExtended(sp, sizeof(double), false), sizeof(double));
++			sp += 2;
++		}
++		else
++		{
++			// Integers, bools and enums. Values narrower than 32 bits must be extended by the caller.
++			int size = dt.GetSizeInMemoryBytes();
++			bool isSigned = dt.IsIntegerType();
++			packer.AddInt(ReadExtended(sp, size, isSigned), size);
++			sp += dt.GetSizeOnStackDWords();
++		}
++	}
++
++	if( callConv == ICC_CDECL_OBJLAST )
++		packer.AddInt((asPWORD)obj, sizeof(void*));
++
++	if( packer.overflow )
++	{
++		context->SetInternalException(TXT_INVALID_CALLING_CONVENTION);
++		if( retPointer )
++			engine->CallFree(retPointer);
++		return 0;
++	}
++
++	asSARM64Ret ret;
++	context->isCallingSystemFunction = true;
++	asQWORD retQW = packer.Call(func, &ret);
++	context->isCallingSystemFunction = false;
++	asQWORD retQW2 = ret.x1;
++
++	if( sysFunc->takesObjByVal )
++	{
++		// Free the copies of the objects passed by value
++		sp = args;
++		for( asUINT n = 0; n < argumentCount; n++ )
++		{
++			asCDataType &dt = descr->parameterTypes[n];
++			if( dt.IsObject() && !dt.IsReference() && !dt.IsObjectHandle() )
++			{
++				void *copy = (void*)*(asPWORD*)sp;
++				asSTypeBehaviour *beh = &dt.GetObjectType()->beh;
++				if( beh->destruct )
++					engine->CallObjectMethod(copy, beh->destruct);
++				engine->CallFree(copy);
++				sp += AS_PTR_SIZE;
++			}
++			else if( dt.GetTokenType() == ttQuestion )
++				sp += AS_PTR_SIZE + 1;
++			else
++				sp += dt.GetSizeOnStackDWords();
++		}
++	}
++
++	// Store the returned value
++	if( descr->returnType.IsObject() && !descr->returnType.IsReference() )
++	{
++		if( descr->returnType.IsObjectHandle() )
++		{
++			context->regs.objectRegister = (void*)(asPWORD)retQW;
++
++			if( sysFunc->returnAutoHandle && context->regs.objectRegister )
++				engine->CallObjectMethod(context->regs.objectRegister, descr->returnType.GetObjectType()->beh.addref);
++		}
++		else
++		{
++			if( !sysFunc->hostReturnInMemory )
++			{
++				// Returned in registers: x0/x1, or d0 for an asOBJ_APP_FLOAT type
++				if( sysFunc->hostReturnFloat )
++				{
++					if( sysFunc->hostReturnSize == 1 )
++						*(asDWORD*)retPointer = (asDWORD)ret.d[0];
++					else
++						*(asQWORD*)retPointer = ret.d[0];
++				}
++				else if( sysFunc->hostReturnSize == 1 )
++					*(asDWORD*)retPointer = (asDWORD)retQW;
++				else if( sysFunc->hostReturnSize == 2 )
++					*(asQWORD*)retPointer = retQW;
++				else if( sysFunc->hostReturnSize == 3 )
++				{
++					*(asQWORD*)retPointer = retQW;
++					*(((asDWORD*)retPointer) + 2) = (asDWORD)retQW2;
++				}
++				else
++				{
++					*(asQWORD*)retPointer = retQW;
++					*(((asQWORD*)retPointer) + 1) = retQW2;
++				}
++			}
++
++			// Store the object in the register
++			context->regs.objectRegister = retPointer;
++		}
++	}
++	else
++	{
++		// Store the value in the value register
++		if( sysFunc->hostReturnFloat )
++		{
++			if( sysFunc->hostReturnSize == 1 )
++				*(asDWORD*)&context->regs.valueRegister = (asDWORD)ret.d[0];
++			else
++				context->regs.valueRegister = ret.d[0];
++		}
++		else if( sysFunc->hostReturnSize == 1 )
++			*(asDWORD*)&context->regs.valueRegister = (asDWORD)retQW;
++		else
++			context->regs.valueRegister = retQW;
++	}
++
++	if( sysFunc->hasAutoHandles )
++	{
++		// Release the handles the function received with auto handles
++		int spos = 0;
++		for( asUINT n = 0; n < argumentCount; n++ )
++		{
++			asCDataType &dt = descr->parameterTypes[n];
++			if( sysFunc->paramAutoHandles[n] && *(asPWORD*)&args[spos] != 0 )
++			{
++				engine->CallObjectMethod((void*)*(asPWORD*)&args[spos], dt.GetObjectType()->beh.release);
++				*(asPWORD*)&args[spos] = 0;
++			}
++
++			if( dt.IsObject() && !dt.IsObjectHandle() && !dt.IsReference() )
++				spos += AS_PTR_SIZE;
++			else if( dt.GetTokenType() == ttQuestion )
++				spos += AS_PTR_SIZE + 1;
++			else
++				spos += dt.GetSizeOnStackDWords();
++		}
++	}
++
++	return popSize;
++}
++
++END_AS_NAMESPACE
++
++#endif // AS_ARM64
++#endif // AS_MAX_PORTABILITY
+diff --git a/HPL2/dependencies/sources/AngelScript/sources/as_config.h b/HPL2/dependencies/sources/AngelScript/sources/as_config.h
+index 3e07e61..1e08524 100644
+--- a/HPL2/dependencies/sources/AngelScript/sources/as_config.h
++++ b/HPL2/dependencies/sources/AngelScript/sources/as_config.h
+@@ -487,7 +487,7 @@
+ // GNU C (and MinGW on Windows)
+ #if (defined(__GNUC__) && !defined(__SNC__)) || defined(EPPC) // JWC -- use this instead for Wii
+ 	#define GNU_STYLE_VIRTUAL_METHOD
+-#if !defined( __amd64__ )
++#if !defined( __amd64__ ) && !defined( __aarch64__ )
+ 	#define MULTI_BASE_OFFSET(x) (*((asDWORD*)(&x)+1))
+ #else
+ 	#define MULTI_BASE_OFFSET(x) (*((asQWORD*)(&x)+1))
+@@ -505,7 +505,7 @@
+ 	#ifdef __APPLE__
+ 
+ 		// Is this a Mac or an IPhone?
+-		#ifdef TARGET_OS_IPHONE
++		#if TARGET_OS_IPHONE
+ 			#define AS_IPHONE
+ 		#else
+ 			#define AS_MAC
+@@ -525,7 +525,7 @@
+ 		#if defined(i386) && !defined(__LP64__)
+ 			// Support native calling conventions on Mac OS X + Intel 32bit CPU
+ 			#define AS_X86
+-		#elif defined(__LP64__) && !defined(__ppc__) && !defined(__PPC__)
++		#elif defined(__LP64__) && !defined(__ppc__) && !defined(__PPC__) && !defined(__aarch64__)
+ 			#define AS_NO_THREADS
+ 			#define AS_X64_GCC
+ 			#define HAS_128_BIT_PRIMITIVES
+@@ -541,6 +541,17 @@
+ 			#define STDCALL_RETURN_SIMPLE_IN_MEMORY
+ 		#elif (defined(__ppc__) || defined(__PPC__)) && defined(__LP64__)
+ 			#define AS_PPC_64
++		#elif defined(__aarch64__) || defined(__arm64__)
++			// Apple silicon -- see as_callfunc_arm64.cpp
++			#define AS_ARM64
++			#define HAS_128_BIT_PRIMITIVES
++			#define SPLIT_OBJS_BY_MEMBER_TYPES
++			#define COMPLEX_OBJS_PASSED_BY_REF
++			#undef COMPLEX_MASK
++			#define COMPLEX_MASK (asOBJ_APP_CLASS_DESTRUCTOR)
++			#undef GNU_STYLE_VIRTUAL_METHOD
++			#undef STDCALL
++			#define STDCALL
+ 		#elif (defined(_ARM_) || defined(__arm__))
+ 			// The IPhone use an ARM processor
+ 			#define AS_ARM
+@@ -773,7 +784,7 @@
+ 
+ // If there are no current support for native calling
+ // conventions, then compile with AS_MAX_PORTABILITY
+-#if (!defined(AS_X86) && !defined(AS_SH4) && !defined(AS_MIPS) && !defined(AS_PPC) && !defined(AS_PPC_64) && !defined(AS_XENON) && !defined(AS_X64_GCC) && !defined(AS_X64_MSVC) && !defined(AS_ARM))
++#if (!defined(AS_X86) && !defined(AS_SH4) && !defined(AS_MIPS) && !defined(AS_PPC) && !defined(AS_PPC_64) && !defined(AS_XENON) && !defined(AS_X64_GCC) && !defined(AS_X64_MSVC) && !defined(AS_ARM) && !defined(AS_ARM64))
+ 	#ifndef AS_MAX_PORTABILITY
+ 		#define AS_MAX_PORTABILITY
+ 	#endif
+diff --git a/HPL2/dependencies/sources/AngelScript/sources/as_scriptengine.cpp b/HPL2/dependencies/sources/AngelScript/sources/as_scriptengine.cpp
+index 326e422..171b8fd 100644
+--- a/HPL2/dependencies/sources/AngelScript/sources/as_scriptengine.cpp
++++ b/HPL2/dependencies/sources/AngelScript/sources/as_scriptengine.cpp
+@@ -2970,6 +2970,10 @@ bool asCScriptEngine::CallObjectMethodRetBool(void *obj, int func)
+ 				asDWORD baseOffset;
+ 			} f;
+ 		} p;
++#ifdef AS_ARM64
++		// The ARM C++ ABI adjustment is pointer sized, not 32 bits
++		memset(&p, 0, sizeof(p));
++#endif
+ 		p.f.func = (void (*)())(i->func);
+ 		p.f.baseOffset = i->baseOffset;
+ 		bool (asCSimpleDummy::*f)() = (bool (asCSimpleDummy::*)())(p.mthd);
+@@ -3036,6 +3040,10 @@ int asCScriptEngine::CallObjectMethodRetInt(void *obj, int func)
+ 				asDWORD baseOffset;
+ 			} f;
+ 		} p;
++#ifdef AS_ARM64
++		// The ARM C++ ABI adjustment is pointer sized, not 32 bits
++		memset(&p, 0, sizeof(p));
++#endif
+ 		p.f.func = (void (*)())(i->func);
+ 		p.f.baseOffset = i->baseOffset;
+ 		int (asCSimpleDummy::*f)() = (int (asCSimpleDummy::*)())(p.mthd);
+diff --git a/HPL2/dependencies/sources/Newton/CMakeLists.txt b/HPL2/dependencies/sources/Newton/CMakeLists.txt
+new file mode 100644
+index 0000000..1888309
+--- /dev/null
++++ b/HPL2/dependencies/sources/Newton/CMakeLists.txt
+@@ -0,0 +1,18 @@
++cmake_minimum_required (VERSION 3.16)
++project (Newton)
++
++file(GLOB newton_sources
++    ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp
++    ${CMAKE_CURRENT_SOURCE_DIR}/physics/*.cpp
++    ${CMAKE_CURRENT_SOURCE_DIR}/newton/*.cpp
++)
++# not built by the original project files either
++list(REMOVE_ITEM newton_sources ${CMAKE_CURRENT_SOURCE_DIR}/physics/dgVehicleConstraint.cpp)
++
++add_library(Newton STATIC ${newton_sources})
++target_include_directories(Newton PRIVATE
++    ${CMAKE_CURRENT_SOURCE_DIR}/core
++    ${CMAKE_CURRENT_SOURCE_DIR}/physics
++    ${DEP_HEADERS_DIR}
++)
++target_compile_definitions(Newton PUBLIC _NEWTON_USE_LIB)
+diff --git a/HPL2/dependencies/sources/Newton/core/dgTypes.h b/HPL2/dependencies/sources/Newton/core/dgTypes.h
+index c752ac6..870d412 100644
+--- a/HPL2/dependencies/sources/Newton/core/dgTypes.h
++++ b/HPL2/dependencies/sources/Newton/core/dgTypes.h
+@@ -30,6 +30,16 @@
+ #include <ctype.h>
+ #include <new>
+ 
++#if defined (__APPLE__) && !defined (_MAC_VER)
++	#define _MAC_VER
++#endif
++
++// the SIMD code is SSE: other CPUs (Apple silicon) use the scalar code
++#if !(defined (__i386__) || defined (__x86_64__) || defined (_M_IX86) || defined (_M_X64))
++	#ifndef _SCALAR_ARITHMETIC_ONLY
++		#define _SCALAR_ARITHMETIC_ONLY
++	#endif
++#endif
+ 
+ #if !(defined (__ppc__) || defined (__USE_DOUBLE_PRECISION__) || defined (_SCALAR_ARITHMETIC_ONLY))
+ 	#define DG_BUILD_SIMD_CODE
+@@ -650,8 +660,8 @@ inline dgInt32 dgAtomicAdd (dgInt32* const addend, dgInt32 amount)
+ 	#endif
+ 
+ 	#if (defined (_MAC_VER))
+-		dgInt32 count = OSAtomicAdd32 (amount, (int32_t*)addend);
+-		return count - (*addend);
++		// returns the value before the add, like the other platforms
++		return __sync_fetch_and_add ((int32_t*)addend, amount);
+ 	#endif
+ }
+ 
+diff --git a/amnesia/src/CMakeLists.txt b/amnesia/src/CMakeLists.txt
+index 07acf35..ba9a8f2 100644
+--- a/amnesia/src/CMakeLists.txt
++++ b/amnesia/src/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 2.8.11)
++cmake_minimum_required (VERSION 3.16)
+ project(Lux)
+ 
+ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+@@ -7,14 +7,6 @@ OPTION(USERDIR_RESOURCES "Allow using local userdirectory resources" ON)
+ 
+ set(MACOSX_BUNDLE_COPYRIGHT "Copyright © 2010-2013 Frictional Games")
+ 
+-OPTION(IS_APPLE_64 "Apple build in 64 bits" OFF)
+-
+-if(APPLE)
+-    if(NOT IS_APPLE_64)
+-        set(CMAKE_OSX_ARCHITECTURES "i386")
+-    endif()
+-endif()
+-
+ # silence some annoying warnings
+ add_definitions(
+     -Wno-switch
+@@ -35,12 +27,8 @@ set(VERSION "1.3.1")
+ 
+ add_subdirectory(game game)
+ 
+-if(APPLE)
+-    add_subdirectory(launcher-macosx launcher)
+-else()
++# The launcher (graphics settings) is FLTK on Linux and a 32-bit era
++# Cocoa app on the Mac; the game's own options menu covers the same.
++if(NOT APPLE)
+     add_subdirectory(launcher launcher)
+ endif()
+-
+-add_custom_target(GameRelease
+-    DEPENDS Amnesia Launcher
+-)
+diff --git a/amnesia/src/game/CMakeLists.txt b/amnesia/src/game/CMakeLists.txt
+index 34356d8..3cb088f 100644
+--- a/amnesia/src/game/CMakeLists.txt
++++ b/amnesia/src/game/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required (VERSION 2.8.11)
++cmake_minimum_required (VERSION 3.16)
+ project(Amnesia)
+ 
+ file(GLOB all_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+@@ -42,7 +42,8 @@ else()
+ endif()
+ 
+ 
+-add_executable(Amnesia MACOSX_BUNDLE
++# macOS: a plain executable; MSPBuildSystem makes the app bundle
++add_executable(Amnesia
+     ${full_sources}
+ )
+ target_link_libraries(Amnesia HPL2)
+@@ -80,13 +81,5 @@ set_target_properties(AmnesiaDemo PROPERTIES
+     MACOSX_BUNDLE_BUNDLE_NAME "Amnesia: The Dark Descent"
+ )
+ 
+-IF(APPLE)
+-	PostBuildMacBundle(Amnesia "${HPL2_FRAMEWORKS}" "${HPL2_LIBRARIES}")
+-	PostBuildMacBundle(AmnesiaDemo "${HPL2_FRAMEWORKS}" "${HPL2_LIBRARIES}")
+-	install(TARGETS Amnesia
+-		RUNTIME DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../../redist"
+-		BUNDLE DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../../redist"
+-	)
+-ENDIF()
+ 
+ # vim: noet ts=4:
