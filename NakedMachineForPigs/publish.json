@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "NakedMachineForPigs-*.dmg",
+        "sourcePortStub": "nakedmachineforpigs",
+        "buildType": 1
+    }
+]
