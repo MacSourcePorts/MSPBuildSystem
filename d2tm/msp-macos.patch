@@ -102,7 +102,7 @@ index cb674eb9..6fdf28e3 100644
 +
  }
 diff --git a/src/game/cSDLSystem.cpp b/src/game/cSDLSystem.cpp
-index f209bbbc..4ad473cd 100644
+index 56b99c15..3bbee4db 100644
 --- a/src/game/cSDLSystem.cpp
 +++ b/src/game/cSDLSystem.cpp
 @@ -287,7 +287,10 @@ cSDLSystem::cSDLSystem(int desiredWidth, int desiredHeight, const std::string &t
@@ -115,7 +115,7 @@ index f209bbbc..4ad473cd 100644
 +    // SDL_RenderCoordinatesFromWindow, so it follows)
 +    window = SDL_CreateWindow(title.c_str(), renderResolution.width, renderResolution.height, SDL_WINDOW_RESIZABLE);
      if (window == nullptr) {
-         Logger::error(COMP_SDL2, "Screen init", "Failed initialized screen with resolution {}x{}", renderResolution.width, renderResolution.height);
+         Logger::error(COMP_SDL3, "Screen init", "Failed initialized screen with resolution {}x{}", renderResolution.width, renderResolution.height);
          SDL_Quit();
 @@ -309,6 +312,7 @@ cSDLSystem::cSDLSystem(int desiredWidth, int desiredHeight, const std::string &t
      }
@@ -126,7 +126,7 @@ index f209bbbc..4ad473cd 100644
      // SDL_RENDER_SCALE_QUALITY was removed in SDL3. The correct way to control
      // the logical presentation's internal texture scale is via the renderer's
 diff --git a/src/gameobjects/map/cPreviewMaps.cpp b/src/gameobjects/map/cPreviewMaps.cpp
-index 5f7381d1..62239a4b 100644
+index b1874535..9ddfd5b7 100644
 --- a/src/gameobjects/map/cPreviewMaps.cpp
 +++ b/src/gameobjects/map/cPreviewMaps.cpp
 @@ -21,11 +21,13 @@
@@ -143,14 +143,13 @@ index 5f7381d1..62239a4b 100644
  
  namespace fs = std::filesystem;
  
-@@ -296,13 +298,19 @@ void cPreviewMaps::loadSkirmishMaps()
+@@ -295,12 +297,19 @@ void cPreviewMaps::loadSkirmishMaps()
  {
      initPreviews(); // clear all of them
  
 -    const std::filesystem::path pathfile{"skirmish"};
 -    for (auto const &file: std::filesystem::directory_iterator{pathfile}) {
 -        auto fullname = file.path().string();
--        // std::cout << "Found file: " << fullname << std::endl;
 -        if (file.path().extension() == ".ini") {
 -            loadSkirmish(fullname);
 -            Logger::info(COMP_MAP, "cPreviewMaps", "Loading skirmish map: {}", fullname);
@@ -170,7 +169,7 @@ index 5f7381d1..62239a4b 100644
          }
      }
  }
-@@ -341,9 +349,12 @@ static std::optional<char> terrainToMapChar(int terrain)
+@@ -339,9 +348,12 @@ static std::optional<char> terrainToMapChar(int terrain)
  
  bool cPreviewMaps::saveSkirmishMap(const s_PreviewMap &map, bool backup)
  {
@@ -215,10 +214,10 @@ index 0f87bbca..e60d768d 100644
          const auto prefsFile = PreferencesPath::file(PREFERENCES_FILE);
          if (!prefsFile) {
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index 02c58492..437e14b7 100644
+index 89fd82df..97c49938 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
-@@ -82,6 +82,7 @@ set(TEST_SOURCES
+@@ -88,6 +88,7 @@ set(TEST_SOURCES
      ${CMAKE_SOURCE_DIR}/src/game/GameStateMachine.cpp
      ${CMAKE_SOURCE_DIR}/src/include/eGameState.cpp
      ${CMAKE_SOURCE_DIR}/src/game/Preferences.cpp

@@ -32,8 +32,12 @@ cd ../../Dune-II---The-Maker
 # soundfont for the MIDI music. Also makes the unit tests optional, as they
 # need Catch2 -- see the patch.
 # Skip if it's already applied.
+# Upstream changes many times a day, so apply it as a three-way merge: code
+# that has moved, or changed near our edits, merges like a branch would, and
+# only a real conflict (upstream rewrote the same lines) stops the build, which
+# then needs the patch updated.
 if ! git apply -R --check "${PATCH_DIR}/msp-macos.patch" 2>/dev/null; then
-	git apply "${PATCH_DIR}/msp-macos.patch"
+	git apply --3way "${PATCH_DIR}/msp-macos.patch"
 fi
 
 if [ -n "$2" ]; then
@@ -78,8 +82,11 @@ ditto resources/bin/skirmish "${RESOURCES}/skirmish"
 # game, and the choice is saved.
 sed 's/^ScalingMode=IntegerScale$/ScalingMode=Letterbox/' resources/bin/settings.ini > "${RESOURCES}/settings.ini"
 grep -q '^ScalingMode=Letterbox$' "${RESOURCES}/settings.ini"
-for rules in houses structures units bullets terrain; do
-	cp resources/${rules}.ini.org "${RESOURCES}/${rules}.ini"
+# the game rules (houses, units, upgrades, particles...): every
+# resources/*.ini.org, as create_release.sh copies them, so new ones come along
+for rules in resources/*.ini.org; do
+	name=$(basename "$rules" .ini.org)
+	cp "$rules" "${RESOURCES}/${name}.ini"
 done
 cp resources/doc/versionhistory.txt resources/doc/controls.txt "${RESOURCES}/"
 
