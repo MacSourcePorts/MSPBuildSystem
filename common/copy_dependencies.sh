@@ -56,27 +56,32 @@ copy_libraries() {
 copy_symlink_and_target() {
     echo "enter copy_symlink_and_target"
 
-    symlink="$1"
-    dest="$2"
+    local path="$1"
+    local dest="$2"
 
     echo mkdir -p "$dest"
     mkdir -p "$dest"
 
-    # Copy the symlink itself without resolving
-    echo cp -P "$symlink" "$dest/"
-    cp -P "$symlink" "$dest/"
+    # Copy every link in the chain without resolving it, then the file it
+    # ends at. Libraries can be two links deep (libheif.dylib ->
+    # libheif.1.dylib -> libheif.1.21.2.dylib); copying only the first link
+    # and the file would leave the middle one missing and the first dangling.
+    while [[ -L "$path" ]]; do
+        echo cp -P "$path" "$dest/"
+        cp -P "$path" "$dest/"
 
-    # Get the symlink target (can be relative)
-    link_target=$(readlink "$symlink")
-
-    # Resolve it to an absolute path
-    symlink_dir=$(dirname "$symlink")
-    absolute_target=$(realpath "$symlink_dir/$link_target")
+        # the link target can be relative to the link's folder
+        local link_target=$(readlink "$path")
+        if [[ "$link_target" != /* ]]; then
+            link_target="$(dirname "$path")/$link_target"
+        fi
+        path="$link_target"
+    done
 
     # Copy the target file
-    if [[ -f $absolute_target ]]; then
-        echo cp -R "$absolute_target" "$dest/"
-        cp -R "$absolute_target" "$dest/"
+    if [[ -f "$path" ]]; then
+        echo cp -R "$path" "$dest/"
+        cp -R "$path" "$dest/"
     fi
 
     echo "exit copy_symlink_and_target"
