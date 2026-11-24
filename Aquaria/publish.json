@@ -1,7 +1,0 @@
-[
-    {
-        "filenameGlob": "Aquaria-*.dmg",
-        "sourcePortStub": "aquaria",
-        "buildType": 1
-    }
-]

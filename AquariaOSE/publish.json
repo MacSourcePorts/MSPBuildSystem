@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "AquariaOSE-*.dmg",
+        "sourcePortStub": "aquariaose",
+        "buildType": 1
+    }
+]

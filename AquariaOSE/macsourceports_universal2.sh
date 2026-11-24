@@ -7,9 +7,9 @@ if [ -n "${MSP_VERSION_DATE}" ]; then
 else
 	export APP_VERSION="1.0"
 fi
-export PRODUCT_NAME="Aquaria"
-export PROJECT_NAME="Aquaria"
-export PORT_NAME="Aquaria"
+export PRODUCT_NAME="AquariaOSE"
+export PROJECT_NAME="AquariaOSE"
+export PORT_NAME="AquariaOSE"
 export ICONSFILENAME="aquaria"
 export EXECUTABLE_NAME="aquaria"
 export PKGINFO="APPLAQUA"
