@@ -30,6 +30,12 @@ if ! git apply -R --check "${CROSS_FILE_DIR}/msp-bundle-resources.patch" 2>/dev/
 	git apply "${CROSS_FILE_DIR}/msp-bundle-resources.patch" || exit 1
 fi
 
+# The same build ships as a Clear Sky app too (packaged below): an MSPGameMode
+# key in the app's Info.plist adds the -cs flag that picks the game.
+if ! git apply -R --check "${CROSS_FILE_DIR}/msp-game-mode.patch" 2>/dev/null; then
+	git apply "${CROSS_FILE_DIR}/msp-game-mode.patch" || exit 1
+fi
+
 # the build puts everything in a top-level bin/<arch>/Release folder
 rm -rf bin
 rm -rf ${BUILT_PRODUCTS_DIR}
@@ -92,5 +98,40 @@ cp -R res/gamedata "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/o
 # sign and notarize
 "../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
 
-# create dmg
-"../MSPBuildSystem/common/package_dmg.sh"
+# create dmg (and don't clean up: the Clear Sky app is made from this one)
+"../MSPBuildSystem/common/package_dmg.sh" "skipcleanup"
+
+# Clear Sky: the same engine, libraries and resources, with MSPGameMode=cs
+# in the Info.plist (msp-game-mode.patch). Its data goes in
+# ~/Library/Application Support/GSC Game World/S.T.A.L.K.E.R. - Clear Sky/
+COP_WRAPPER_NAME="${WRAPPER_NAME}"
+export PRODUCT_NAME="openxrayCS"
+export PORT_NAME="OpenXRay Clear Sky"
+export ICONSFILENAME="openxraycs"
+export PKGINFO="APPLOXCS"
+export EXTRA_INFO_PLIST_ENTRIES="
+    <key>MSPGameMode</key>
+    <string>cs</string>"
+
+# have to re-do all the variables cascading down from PRODUCT_NAME
+export WRAPPER_NAME="${PRODUCT_NAME}.app"
+export CONTENTS_FOLDER_PATH="${WRAPPER_NAME}/Contents"
+export EXECUTABLE_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/MacOS"
+export BUNDLE_ID="com.macsourceports.${PRODUCT_NAME}"
+export UNLOCALIZED_RESOURCES_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Resources"
+export FRAMEWORKS_FOLDER_PATH="${CONTENTS_FOLDER_PATH}/Frameworks"
+export ICONS="${ICONSFILENAME}.icns"
+
+rm -rf "${BUILT_PRODUCTS_DIR}/${WRAPPER_NAME}"
+"../MSPBuildSystem/common/build_app_bundle.sh" "skiplipo"
+
+COP_CONTENTS="${BUILT_PRODUCTS_DIR}/${COP_WRAPPER_NAME}/Contents"
+cp "${COP_CONTENTS}/MacOS/${EXECUTABLE_NAME}" "${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/" || exit 1
+cp -R "${COP_CONTENTS}/Frameworks" "${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/" || exit 1
+cp -R "${COP_CONTENTS}/Resources/openxray" "${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/" || exit 1
+
+# sign and notarize
+"../MSPBuildSystem/common/sign_and_notarize.sh" "$1"
+
+# create dmg (and don't delete the previous one)
+"../MSPBuildSystem/common/package_dmg.sh" "skipdelete"

@@ -3,5 +3,10 @@
         "filenameGlob": "openxray-*.dmg",
         "sourcePortStub": "openxray",
         "buildType": 1
+    },
+    {
+        "filenameGlob": "openxrayCS-*.dmg",
+        "sourcePortStub": "openxraycs",
+        "buildType": 1
     }
 ]
