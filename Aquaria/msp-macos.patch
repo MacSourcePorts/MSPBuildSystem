@@ -1,0 +1,170 @@
+diff --git a/Aquaria/DSQ.cpp b/Aquaria/DSQ.cpp
+index dc18033..cf9ac40 100644
+--- a/Aquaria/DSQ.cpp
++++ b/Aquaria/DSQ.cpp
+@@ -56,7 +56,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ #include <dirent.h>
+ #include <fcntl.h>
+ 
+-static void Linux_CopyTree(const char *src, const char *dst)
++static void Linux_CopyTree(const char *src, const char *dst, bool overwrite = false)
+ {
+     //printf("Linux_CopyTree('%s', '%s')...\n", src, dst);
+ 
+@@ -82,7 +82,7 @@ static void Linux_CopyTree(const char *src, const char *dst)
+             const size_t dstlen = strlen(dst) + strlen(dent->d_name) + 2;
+             char *subdst = new char[dstlen];
+             snprintf(subdst, dstlen, "%s/%s", dst, dent->d_name);
+-            Linux_CopyTree(subsrc, subdst);
++            Linux_CopyTree(subsrc, subdst, overwrite);
+             delete[] subdst;
+             delete[] subsrc;
+         }
+@@ -96,7 +96,8 @@ static void Linux_CopyTree(const char *src, const char *dst)
+             return;
+ 
+         // fail if it already exists. That's okay in this case.
+-        const int out = open(dst, O_WRONLY | O_CREAT | O_EXCL, 0600);
++        // (unless we're asked to replace it)
++        const int out = open(dst, O_WRONLY | O_CREAT | (overwrite ? O_TRUNC : O_EXCL), 0600);
+         if (out == -1)
+         {
+             close(in);
+@@ -927,10 +928,26 @@ This build is not yet final, and as such there are a couple things lacking. They
+ 	fn = getPreferencesFolder() + "/" + userSettingsFilename;
+ 	if (!exists(fn))
+ 		Linux_CopyTree(core->adjustFilenameCase(userSettingsFilename).c_str(), core->adjustFilenameCase(fn).c_str());
++#ifdef BBGE_BUILD_MACOSX
++	// The Windows version (GOG etc.) has no usersettings.xml, just the
++	// defaults that its Windows build loads: start from those.
++	if (!exists(fn))
++	{
++		std::ostringstream os;
++		os << "default-" << VERSION_USERSETTINGS << ".xml";
++		Linux_CopyTree(core->adjustFilenameCase(os.str()).c_str(), core->adjustFilenameCase(fn).c_str());
++	}
++#endif
+ 
+ 	fn = getUserDataFolder() + "/_mods";
+ 	if (!exists(fn))
+ 		Linux_CopyTree(core->adjustFilenameCase("_mods").c_str(), core->adjustFilenameCase(fn).c_str());
++#ifdef BBGE_BUILD_MACOSX
++	// The default mods' scripts need the updated versions that ship with this
++	// build (the originals don't work with it): put them over the user's copies.
++	if (!_extraDataDir.empty())
++		Linux_CopyTree((_extraDataDir + "/_mods").c_str(), fn.c_str(), true);
++#endif
+ #endif
+ 
+ 	createDir(getUserDataFolder());
+diff --git a/Aquaria/Main.cpp b/Aquaria/Main.cpp
+index 9af0c15..251ab83 100644
+--- a/Aquaria/Main.cpp
++++ b/Aquaria/Main.cpp
+@@ -26,6 +26,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ 	#include <shellapi.h>
+ #endif
+ 
++#ifdef BBGE_BUILD_MACOSX
++	#include <CoreFoundation/CoreFoundation.h>
++	#include <limits.h>
++	#include <sys/stat.h>
++
++// The app bundle's Resources folder, which holds the updated data files
++// (the repo's "files" folder, plus the updated mod scripts in files/_mods)
++// that are used on top of the original game's data.
++static std::string MacBundleResourcesDir()
++{
++	std::string ret;
++	CFBundleRef mainBundle = CFBundleGetMainBundle();
++	if (!mainBundle)
++		return ret;
++	CFURLRef url = CFBundleCopyResourcesDirectoryURL(mainBundle);
++	if (!url)
++		return ret;
++	char path[PATH_MAX];
++	if (CFURLGetFileSystemRepresentation(url, TRUE, (UInt8 *)path, PATH_MAX))
++		ret = path;
++	CFRelease(url);
++	return ret;
++}
++#endif
++
+ 
+ static void MakeRan(void)
+ {
+@@ -101,6 +126,42 @@ static void CheckConfig(void)
+ #ifdef AQUARIA_EXTRA_DATA_DIR
+ 		extraDataDir = AQUARIA_EXTRA_DATA_DIR;
+ #endif
++#if defined(BBGE_BUILD_MACOSX) && !defined(AQUARIA_DEFAULT_DATA_DIR)
++		// The original game's data goes in ~/Library/Application Support/Aquaria
++		// (also where saves and settings are kept)
++		if (!envPath)
++		{
++			const char *home = getenv("HOME");
++			if (home)
++				dsqParam = std::string(home) + "/Library/Application Support/Aquaria";
++		}
++#endif
++#ifdef BBGE_BUILD_MACOSX
++		// Without the original game's data there's nothing to run: say where it goes
++		if (!dsqParam.empty())
++		{
++			struct stat st;
++			if (stat((dsqParam + "/data").c_str(), &st) != 0 || stat((dsqParam + "/gfx").c_str(), &st) != 0)
++			{
++				mkdir(dsqParam.c_str(), 0755);
++				const std::string msg =
++					"Aquaria needs the data files from the original game (for example the GOG, "
++					"Humble Bundle or Steam version).\n\n"
++					"Copy everything from the game's folder (data, gfx, mus, scripts, sfx, vox, _mods, ...) into:\n\n"
++					+ dsqParam;
++				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Game data not found", msg.c_str(), NULL);
++				return 1;
++			}
++		}
++#endif
++#if defined(BBGE_BUILD_MACOSX) && !defined(AQUARIA_EXTRA_DATA_DIR)
++		{
++			const std::string res = MacBundleResourcesDir();
++			struct stat st;
++			if (!res.empty() && stat((res + "/files").c_str(), &st) == 0 && S_ISDIR(st.st_mode))
++				extraDataDir = res + "/files";
++		}
++#endif
+ 
+ #endif
+ 
+diff --git a/BBGE/Core.cpp b/BBGE/Core.cpp
+index 61b2f69..fa2f799 100644
+--- a/BBGE/Core.cpp
++++ b/BBGE/Core.cpp
+@@ -1051,7 +1051,13 @@ Core::Core(const std::string &filesystem, const std::string& extraDataDir, int n
+ void Core::initPlatform(const std::string &filesystem)
+ {
+ #if defined(BBGE_BUILD_MACOSX) && !defined(BBGE_BUILD_MACOSX_NOBUNDLEPATH)
+-	// FIXME: filesystem not handled
++	if (!filesystem.empty())
++	{
++		if (chdir(filesystem.c_str()) == 0)
++			return;
++		else
++			debugLog("Failed to chdir to filesystem path " + filesystem);
++	}
+ 	CFBundleRef mainBundle = CFBundleGetMainBundle();
+ 	//CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+ 	CFURLRef resourcesURL = CFBundleCopyBundleURL(mainBundle);
+diff --git a/ExternalLibs/glpng/png/pngpriv.h b/ExternalLibs/glpng/png/pngpriv.h
+index a76c262..a96594e 100644
+--- a/ExternalLibs/glpng/png/pngpriv.h
++++ b/ExternalLibs/glpng/png/pngpriv.h
+@@ -323,7 +323,7 @@ typedef PNG_CONST png_uint_16p FAR * png_const_uint_16pp;
+ #  include <float.h>
+ 
+ #  if (defined(__MWERKS__) && defined(macintosh)) || defined(applec) || \
+-    defined(THINK_C) || defined(__SC__) || defined(TARGET_OS_MAC)
++    defined(THINK_C) || defined(__SC__)
+      /* We need to check that <math.h> hasn't already been included earlier
+       * as it seems it doesn't agree with <fp.h>, yet we should really use
+       * <fp.h> if possible.
