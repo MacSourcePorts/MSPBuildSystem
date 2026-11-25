@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenFodder-*.dmg",
+        "sourcePortStub": "openfodder",
+        "buildType": 1
+    }
+]

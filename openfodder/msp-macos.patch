@@ -1,0 +1,73 @@
+diff --git a/Source/ResourceMan.cpp b/Source/ResourceMan.cpp
+index bf893a6..9aa69a1 100644
+--- a/Source/ResourceMan.cpp
++++ b/Source/ResourceMan.cpp
+@@ -335,6 +335,29 @@ void cResourceMan::addDefaultDirs() {
+ 	}
+ 	//Fallback to /usr/local/share
+ 	addBaseDir("/usr/local/share/");
++
++#ifdef __APPLE__
++	// The per-user folder the installer writes to (InstallPaths.cpp)
++	path1 = std::getenv("HOME");
++	if (path1 && *path1) {
++		// (the working directory already, when launched from the app bundle)
++		std::error_code ec;
++		const std::string appSupport = std::string(path1) + "/Library/Application Support/OpenFodder";
++		if (!std::filesystem::equivalent(appSupport, getcwd(), ec))
++			addBaseDir(std::string(path1) + "/Library/Application Support/");
++	}
++
++	// The data (campaigns, scripts, demos) bundled in the app's Resources,
++	// searched last so anything in the per-user folder wins
++	const char* base = SDL_GetBasePath();
++	if (base && *base) {
++		std::string resources = base;
++		if (resources.back() != '/')
++			resources.append("/");
++		if (std::find(mAllPaths.begin(), mAllPaths.end(), resources) == mAllPaths.end())
++			mAllPaths.push_back(resources);
++	}
++#endif
+ #endif
+ }
+ 
+diff --git a/Source/stdafx.cpp b/Source/stdafx.cpp
+index 3333736..a75e48c 100644
+--- a/Source/stdafx.cpp
++++ b/Source/stdafx.cpp
+@@ -31,7 +31,34 @@ std::shared_ptr<cScriptingEngine> g_ScriptingEngine;
+ 
+ const char gPathSeperator = '/';
+ 
++#ifdef __APPLE__
++#include <filesystem>
++
++// Launched from an app bundle, the working directory is "/". Use the
++// per-user data folder (~/Library/Application Support/OpenFodder) instead,
++// so the INI, saves and retail data live there; the bundled data in
++// Contents/Resources is searched after it (see cResourceMan::addDefaultDirs).
++static void macOSUseAppSupport() {
++	const char* base = SDL_GetBasePath();
++	if (!base || !std::strstr(base, ".app/Contents/Resources"))
++		return;
++
++	const char* home = std::getenv("HOME");
++	if (!home || !*home)
++		return;
++
++	const std::filesystem::path root = std::filesystem::path(home) / "Library" / "Application Support" / "OpenFodder";
++	std::error_code ec;
++	for (const char* sub : { "Data/Dos_CD", "Data/Dos2_CD", "Saves" })
++		std::filesystem::create_directories(root / sub, ec);
++	std::filesystem::current_path(root, ec);
++}
++#endif
++
+ int main(int argc, char *argv[]) {
++#ifdef __APPLE__
++	macOSUseAppSupport();
++#endif
+ 	auto result = start(argc, argv);
+     bool unattended = false;
+     for (int i = 1; i < argc; ++i) {
