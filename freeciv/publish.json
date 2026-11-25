@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "Freeciv-*.dmg",
+        "sourcePortStub": "freeciv",
+        "buildType": 1
+    }
+]

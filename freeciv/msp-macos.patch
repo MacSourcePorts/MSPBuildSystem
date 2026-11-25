@@ -1,0 +1,305 @@
+diff --git a/client/connectdlg_common.c b/client/connectdlg_common.c
+index 64d100e142..31f615eb22 100644
+--- a/client/connectdlg_common.c
++++ b/client/connectdlg_common.c
+@@ -432,6 +432,16 @@ bool client_start_server(void)
+       execvp(BINDIR "/freeciv-web", argv);
+       execvp("freeciv-web", argv);
+ #else  /* FREECIV_WEB */
++#ifdef __APPLE__
++      /* MSP: freeciv-server packed beside the client in the app bundle */
++      if (macos_bundle_exe_dir() != NULL) {
++        char srvpath[PATH_MAX + 32];
++
++        fc_snprintf(srvpath, sizeof(srvpath), "%s/freeciv-server",
++                    macos_bundle_exe_dir());
++        execvp(srvpath, argv);
++      }
++#endif /* __APPLE__ */
+       execvp(BINDIR "/freeciv-server", argv);
+       execvp("freeciv-server", argv);
+ #endif /* FREECIV_WEB */
+diff --git a/client/gui-sdl2/graphics.c b/client/gui-sdl2/graphics.c
+index 79a12678a1..bffdf35fc7 100644
+--- a/client/gui-sdl2/graphics.c
++++ b/client/gui-sdl2/graphics.c
+@@ -545,6 +545,10 @@ static void free_surfaces(void)
+     main_data.renderer = NULL;
+ 
+     FREESURFACE(main_surface);
++    /* These are recreated with the new size too (the renderer's
++     * destruction already took the texture with it) */
++    FREESURFACE(main_data.map);
++    main_data.maintext = NULL;
+   }
+ }
+ 
+@@ -637,13 +641,16 @@ bool set_video_mode(unsigned width, unsigned height, unsigned flags_in)
+                                       SDL_WINDOWPOS_UNDEFINED,
+                                       SDL_WINDOWPOS_UNDEFINED,
+                                       width, height,
+-                                      0);
++                                      SDL_WINDOW_RESIZABLE);
+ 
+   if (main_data.screen == NULL) {
+     log_fatal(_("Failed to create main window: %s"), SDL_GetError());
+     return FALSE;
+   }
+ 
++  /* The interface doesn't fit in anything smaller */
++  SDL_SetWindowMinimumSize(main_data.screen, 640, 480);
++
+   if (flags_in & SDL_WINDOW_FULLSCREEN) {
+     SDL_DisplayMode mode;
+ 
+diff --git a/client/gui-sdl2/gui_main.c b/client/gui-sdl2/gui_main.c
+index 6d3c405b74..ae427f0692 100644
+--- a/client/gui-sdl2/gui_main.c
++++ b/client/gui-sdl2/gui_main.c
+@@ -142,6 +142,7 @@ static SDL_Event *flush_user_event = NULL;
+ static SDL_Event *map_scroll_user_event = NULL;
+ 
+ static void print_usage(void);
++static void real_resize_window_callback(void *data);
+ static bool parse_options(int argc, char **argv);
+ static bool check_scroll_area(int x, int y);
+ 
+@@ -742,6 +743,25 @@ widget_id gui_event_loop(void *data,
+           return MAX_ID;
+           break;
+ 
++        case SDL_WINDOWEVENT:
++          /* The window was resized, maximized or made full screen by the
++           * window manager: redo the screen at the new size and remember
++           * it for next time. */
++          if (main_data.event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED
++              && (main_data.event.window.data1 != main_window_width()
++                  || main_data.event.window.data2 != main_window_height())) {
++            int w = main_data.event.window.data1;
++            int h = main_data.event.window.data2;
++
++            if (create_surfaces(w, h)) {
++              if (!GUI_SDL_OPTION(fullscreen)) {
++                GUI_SDL_OPTION(screen) = VIDEO_MODE(w, h);
++              }
++              update_queue_add(real_resize_window_callback, NULL);
++            }
++          }
++          break;
++
+         case SDL_KEYUP:
+           switch (main_data.event.key.keysym.sym) {
+             /* find if Shifts are released */
+diff --git a/client/gui-sdl2/mapctrl.c b/client/gui-sdl2/mapctrl.c
+index 53c2b15ed0..0d559e0f9d 100644
+--- a/client/gui-sdl2/mapctrl.c
++++ b/client/gui-sdl2/mapctrl.c
+@@ -2726,11 +2726,12 @@ static int newcity_ok_callback(struct widget *ok_button)
+ static int newcity_cancel_callback(struct widget *cancel_button)
+ {
+   if (PRESSED_EVENT(main_data.event)) {
++    /* Before the popdown, which frees the button */
++    cancel_city(cancel_button->data.tile);
++
+     popdown_window_group_dialog(new_city_dlg->begin_widget_list,
+                                 new_city_dlg->end_widget_list);
+ 
+-    cancel_city(cancel_button->data.tile);
+-
+     FC_FREE(new_city_dlg);
+ 
+     FC_FREE(suggested_city_name);
+diff --git a/utility/fcintl.c b/utility/fcintl.c
+index 813eb123d0..42104014b6 100644
+--- a/utility/fcintl.c
++++ b/utility/fcintl.c
+@@ -25,6 +25,9 @@
+ #include "mem.h"
+ 
+ #include "fcintl.h"
++#ifdef __APPLE__
++#include "shared.h"
++#endif
+ 
+ static bool autocap = FALSE;
+ 
+@@ -116,6 +119,17 @@ const char *get_locale_dir(void)
+   if (!ldbuf_init) {
+     bool absolute = FALSE;
+ 
++#ifdef __APPLE__
++    /* MSP: translations packed into the app bundle */
++    if (macos_bundle_resources_dir() != NULL) {
++      fc_snprintf(buf, sizeof(buf), "%s/locale",
++                  macos_bundle_resources_dir());
++      ldbuf_init = TRUE;
++
++      return buf;
++    }
++#endif /* __APPLE__ */
++
+     /* FIXME: On Windows, also something starting with the drive,
+      *        e.g., "C:\", can be absolute path. Paths like that
+      *        are never used with our currently supported setups.
+diff --git a/utility/shared.c b/utility/shared.c
+index 1c9f2eafe7..b3fc1bf822 100644
+--- a/utility/shared.c
++++ b/utility/shared.c
+@@ -44,6 +44,9 @@
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+ #endif
++#ifdef __APPLE__
++#include <mach-o/dyld.h>
++#endif
+ #ifdef FREECIV_MSWINDOWS
+ #include <windows.h>
+ #include <lmcons.h>     /* UNLEN */
+@@ -879,6 +882,63 @@ void free_data_dir_names(void)
+   }
+ }
+ 
++#ifdef __APPLE__
++/************************************************************************//**
++  MSP: when running from inside a macOS app bundle
++  (Something.app/Contents/MacOS/executable), returns the absolute path of
++  that Contents/MacOS directory, otherwise NULL.
++****************************************************************************/
++const char *macos_bundle_exe_dir(void)
++{
++  static bool init = FALSE;
++  static bool in_bundle = FALSE;
++  static char dir[PATH_MAX];
++
++  if (!init) {
++    char raw[PATH_MAX];
++    uint32_t size = sizeof(raw);
++
++    init = TRUE;
++    if (_NSGetExecutablePath(raw, &size) == 0
++        && realpath(raw, dir) != NULL) {
++      char *slash = strrchr(dir, '/');
++
++      if (slash != NULL) {
++        size_t len;
++
++        *slash = '\0';
++        len = strlen(dir);
++        in_bundle = (len > 15
++                     && strcmp(dir + len - 15, "/Contents/MacOS") == 0);
++      }
++    }
++  }
++
++  return in_bundle ? dir : NULL;
++}
++
++/************************************************************************//**
++  MSP: the app bundle's Contents/Resources directory, or NULL when not
++  running from inside an app bundle.
++****************************************************************************/
++const char *macos_bundle_resources_dir(void)
++{
++  static char res[PATH_MAX];
++  const char *exe_dir = macos_bundle_exe_dir();
++
++  if (exe_dir == NULL) {
++    return NULL;
++  }
++  if (res[0] == '\0') {
++    /* Swap the trailing "/MacOS" for "/Resources" */
++    fc_snprintf(res, sizeof(res), "%.*s/Resources",
++                (int) (strlen(exe_dir) - 6), exe_dir);
++  }
++
++  return res;
++}
++#endif /* __APPLE__ */
++
+ /************************************************************************//**
+   Returns a list of data directory paths, in the order in which they should
+   be searched. These paths are specified internally or may be set as the
+@@ -909,15 +969,30 @@ const struct strvec *get_data_dirs(void)
+ #else  /* FREECIV_APPIMAGE */
+ #define default_data_path DEFAULT_DATA_PATH
+ #endif /* FREECIV_APPIMAGE */
++    const char *data_path_default = default_data_path;
++#ifdef __APPLE__
++    /* MSP: inside an app bundle, the user's own data directory and then
++     * the data packed into the bundle */
++    char bundle_data_path[PATH_MAX + 64];
++
++    if (macos_bundle_resources_dir() != NULL) {
++      fc_snprintf(bundle_data_path, sizeof(bundle_data_path),
++                  FREECIV_STORAGE_DIR DIR_SEPARATOR DATASUBDIR
++                  PATH_SEPARATOR
++                  "%s/freeciv",
++                  macos_bundle_resources_dir());
++      data_path_default = bundle_data_path;
++    }
++#endif /* __APPLE__ */
+ 
+     if ((path = getenv(FREECIV_DATA_PATH)) && '\0' == path[0]) {
+       /* TRANS: <FREECIV_DATA_PATH> configuration error */
+       log_error(_("\"%s\" is set but empty; using default \"%s\" "
+                  "data directories instead."),
+-                FREECIV_DATA_PATH, default_data_path);
++                FREECIV_DATA_PATH, data_path_default);
+       path = NULL;
+     }
+-    data_dir_names = base_get_dirs(NULL != path ? path : default_data_path);
++    data_dir_names = base_get_dirs(NULL != path ? path : data_path_default);
+     strvec_remove_duplicate(data_dir_names, strcmp); /* Don't set a path both. */
+     strvec_iterate(data_dir_names, dirname) {
+       log_verbose("Data path component: %s", dirname);
+@@ -996,15 +1071,32 @@ const struct strvec *get_scenario_dirs(void)
+ #else  /* FREECIV_APPIMAGE */
+ #define default_scenario_path DEFAULT_SCENARIO_PATH
+ #endif /* FREECIV_APPIMAGE */
++    const char *scenario_path_default = default_scenario_path;
++#ifdef __APPLE__
++    /* MSP: inside an app bundle, the user's own scenario directories and
++     * then the scenarios packed into the bundle */
++    char bundle_scenario_path[PATH_MAX + 128];
++
++    if (macos_bundle_resources_dir() != NULL) {
++      fc_snprintf(bundle_scenario_path, sizeof(bundle_scenario_path),
++                  FREECIV_STORAGE_DIR DIR_SEPARATOR DATASUBDIR DIR_SEPARATOR "scenarios"
++                  PATH_SEPARATOR
++                  FREECIV_STORAGE_DIR DIR_SEPARATOR "scenarios"
++                  PATH_SEPARATOR
++                  "%s/freeciv/scenarios",
++                  macos_bundle_resources_dir());
++      scenario_path_default = bundle_scenario_path;
++    }
++#endif /* __APPLE__ */
+ 
+     if ((path = getenv(FREECIV_SCENARIO_PATH)) && '\0' == path[0]) {
+       /* TRANS: <FREECIV_SCENARIO_PATH> configuration error */
+       log_error( _("\"%s\" is set but empty; using default \"%s\" "
+                    "scenario directories instead."),
+-                 FREECIV_SCENARIO_PATH, default_scenario_path);
++                 FREECIV_SCENARIO_PATH, scenario_path_default);
+       path = NULL;
+     }
+-    scenario_dir_names = base_get_dirs(NULL != path ? path : default_scenario_path);
++    scenario_dir_names = base_get_dirs(NULL != path ? path : scenario_path_default);
+     strvec_remove_duplicate(scenario_dir_names, strcmp); /* Don't set a path both. */
+     strvec_iterate(scenario_dir_names, dirname) {
+       log_verbose("Scenario path component: %s", dirname);
+diff --git a/utility/shared.h b/utility/shared.h
+index 4c3a5cb819..f55da0a169 100644
+--- a/utility/shared.h
++++ b/utility/shared.h
+@@ -183,6 +183,11 @@ char *user_username(char *buf, size_t bufsz);
+ char *freeciv_storage_dir(void);
+ void free_freeciv_storage_dir(void);
+ 
++#ifdef __APPLE__
++const char *macos_bundle_exe_dir(void);
++const char *macos_bundle_resources_dir(void);
++#endif
++
+ const struct strvec *get_data_dirs(void);
+ const struct strvec *get_save_dirs(void);
+ const struct strvec *get_scenario_dirs(void);
