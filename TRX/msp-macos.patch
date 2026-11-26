@@ -1,0 +1,622 @@
+diff --git a/src/meson.build b/src/meson.build
+index e6650e359..e00714a2e 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -277,6 +277,11 @@ dependencies = [
+   dep_zlib,
+ ]
+ 
++if host_machine.system() == 'darwin'
++  # MacSourcePorts: reads the MSPDataFolder key from the app's Info.plist
++  dependencies += dependency('appleframeworks', modules: ['CoreFoundation'])
++endif
++
+ common_sources = [
+   'trx/av/audio.c',
+   'trx/av/audio_decoder.c',
+diff --git a/src/trx/game/music/backend_files.c b/src/trx/game/music/backend_files.c
+index 6f8904d7c..ed290201e 100644
+--- a/src/trx/game/music/backend_files.c
++++ b/src/trx/game/music/backend_files.c
+@@ -130,6 +130,18 @@ static char *M_GetTrackFileName(
+             Locale_Find(LOCALE_ROLE_AUDIO, tmp_path, M_FindTrackFile, nullptr);
+         Memory_FreePointer(&tmp_path);
+     }
++    if (result == nullptr) {
++        tmp_path = String_Format("%s/%02d.flac", data->dir, track);
++        result =
++            Locale_Find(LOCALE_ROLE_AUDIO, tmp_path, M_FindTrackFile, nullptr);
++        Memory_FreePointer(&tmp_path);
++    }
++    if (result == nullptr) {
++        tmp_path = String_Format("%s/track_%02d.flac", data->dir, track);
++        result =
++            Locale_Find(LOCALE_ROLE_AUDIO, tmp_path, M_FindTrackFile, nullptr);
++        Memory_FreePointer(&tmp_path);
++    }
+     return result;
+ }
+ 
+@@ -163,10 +175,15 @@ static bool M_ParseTrackID(
+         return false;
+     }
+ 
++    // MacSourcePorts: also take the zero-padded names GOG's TR1 uses
++    // (02.mp3) and track_02.ogg
+     const char *const canonical_entry = prefix_len > 0
+-        ? String_FormatStatic("track%02d%s", track_id, ext)
++        ? String_FormatStatic("%s%02d%s", prefix, track_id, ext)
+         : String_FormatStatic("%d%s", track_id, ext);
+-    if (String_Equivalent(entry_name, canonical_entry)) {
++    if (String_Equivalent(entry_name, canonical_entry)
++        || (prefix_len == 0
++            && String_Equivalent(
++                entry_name, String_FormatStatic("%02d%s", track_id, ext)))) {
+         *out = track_id;
+         return true;
+     }
+@@ -177,6 +194,7 @@ static bool M_ParseTrackID(
+ static bool M_TryParseTrackID(const char *const entry_name, int32_t *const out)
+ {
+     return M_ParseTrackID(entry_name, "track", out)
++        || M_ParseTrackID(entry_name, "track_", out)
+         || M_ParseTrackID(entry_name, "", out);
+ }
+ 
+diff --git a/src/trx/game/paths.c b/src/trx/game/paths.c
+index e4deb8d8c..87156ee2a 100644
+--- a/src/trx/game/paths.c
++++ b/src/trx/game/paths.c
+@@ -41,7 +41,7 @@ typedef struct {
+ 
+ typedef struct {
+     GAME_DYNAMIC_PATH id;
+-    const char *patterns[8];
++    const char *patterns[12];
+     const char **extensions;
+     bool check_exists;
+     bool is_dir;
+@@ -88,6 +88,9 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+             "%mod_dir%/%rel%",
+             "%base_mod_dir%/%rel%",
+             "%config_dir%/%rel%",
++            // MacSourcePorts: config_dir is in Application Support, the
++            // shipped files stay in the app bundle
++            "%trx_dir%/cfg/%rel%",
+             nullptr,
+         },
+         .check_exists = true,
+@@ -97,6 +100,9 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+             "%mod_dir%/%rel%",
+             "%base_mod_dir%/%rel%",
+             "%config_dir%/%rel%",
++            // MacSourcePorts: config_dir is in Application Support, the
++            // shipped files stay in the app bundle
++            "%trx_dir%/cfg/%rel%",
+             nullptr,
+         },
+         .check_exists = true,
+@@ -111,6 +117,10 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+     [GAME_DYNAMIC_PATH_LEVEL_FILE] = {
+         .patterns = {
+             "%mod_dir%/levels/%rel%",
++            // MacSourcePorts: the original game's files, as installed
++            "%msp_data_dir%/%mod%/data/%rel%",
++            "%msp_data_dir%/data/%rel%",
++            "%msp_data_dir%/cuts/%rel%",
+             "%trx_dir%/data/%rel%",
+             "%trx_dir%/%rel%",
+             // TR3 legacy cutscenes
+@@ -124,6 +134,8 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+         .patterns = {
+             "%mod_dir%/levels/%rel%",
+             "%base_mod_dir%/levels/%rel%",
++            "%msp_data_dir%/%mod%/data/%rel%",
++            "%msp_data_dir%/data/%rel%",
+             "%trx_dir%/data/%rel%",
+             "%trx_dir%/%rel%",
+             nullptr,
+@@ -193,6 +205,7 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+         .patterns = {
+             "%mod_dir%/fmv/%rel%",
+             "%base_mod_dir%/fmv/%rel%",
++            "%msp_data_dir%/fmv/%rel%",
+             "%trx_dir%/fmv/%rel%",
+             "%trx_dir%/%rel%",
+             nullptr,
+@@ -203,7 +216,9 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+     [GAME_DYNAMIC_PATH_SFX_FILE] = {
+         .patterns = {
+             "%mod_dir%/%rel%",
++            "%msp_data_dir%/%mod%/data/%rel%",
+             "%base_mod_dir%/%rel%",
++            "%msp_data_dir%/data/%rel%",
+             "%trx_dir%/data/%rel%",
+             "%trx_dir%/%rel%",
+             nullptr,
+@@ -216,6 +231,7 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+             "%mod_dir%/audio/%rel%",
+             "%base_mod_dir%/music/%rel%",
+             "%base_mod_dir%/audio/%rel%",
++            "%msp_data_dir%/audio/%rel%",
+             "%trx_dir%/audio/%rel%",
+             "%trx_dir%/%rel%",
+             nullptr,
+@@ -224,6 +240,8 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+     },
+     [GAME_DYNAMIC_PATH_MUSIC_DIR] = {
+         .patterns = {
++            // MacSourcePorts: the original game's music, which is all of it
++            "%msp_music_dir%",
+             "%mod_dir%/music",
+             "%base_mod_dir%/music",
+             "%trx_dir%/music",
+@@ -239,6 +257,7 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+             "%base_mod_dir%/shaders/%rel%",
+             "%trx_dir%/shaders/%rel%",
+             "%config_dir%/shaders/%rel%",
++            "%trx_dir%/cfg/shaders/%rel%",
+             nullptr,
+         },
+         .check_exists = true,
+@@ -254,6 +273,397 @@ static const M_DYNAMIC_PATH_POLICY m_PathPolicies[GAME_DYNAMIC_PATH_NUMBER_OF] =
+ };
+ 
+ static M_CONTEXT m_Context = {};
++
++#if defined(__APPLE__)
++// MacSourcePorts: one TRX build ships as an app per game. The app's
++// Info.plist names the game's folder in ~/Library/Application Support
++// (MSPDataFolder, e.g. TombRaider1), which holds the original game's files
++// as the GOG, Steam or CD release installs them: data/, fmv/, music/,
++// audio/, cuts/. TR1 can stay as the GOG/Steam disc image (GAME.GOG, a
++// .bin or .iso), from which data/ and fmv/ are extracted on the first run,
++// with its music as the 02.mp3 ... files beside it. The settings, saves,
++// screenshots and cache go in ~/Library/Application Support/TRX, since the
++// app bundle can't be written to. Outside such an app nothing changes.
++#include <CoreFoundation/CoreFoundation.h>
++#include <dirent.h>
++#include <stdio.h>
++#include <strings.h>
++#include <sys/stat.h>
++
++static char *m_MSPDataDir = nullptr;
++static char *m_MSPMusicDir = nullptr;
++
++static char *M_MSPGetBundleString(const char *const key)
++{
++    CFStringRef cf_key = CFStringCreateWithCString(
++        nullptr, key, kCFStringEncodingUTF8);
++    CFTypeRef value = CFBundleGetValueForInfoDictionaryKey(
++        CFBundleGetMainBundle(), cf_key);
++    CFRelease(cf_key);
++    char buffer[256];
++    if (value == nullptr || CFGetTypeID(value) != CFStringGetTypeID()
++        || !CFStringGetCString(
++            (CFStringRef)value, buffer, sizeof(buffer), kCFStringEncodingUTF8)
++        || buffer[0] == '\0') {
++        return nullptr;
++    }
++    return Memory_DupStr(buffer);
++}
++
++static void M_MSPMakeDir(const char *const path)
++{
++    // mkdir -p
++    char *tmp = Memory_DupStr(path);
++    for (char *p = tmp + 1; *p != '\0'; p++) {
++        if (*p == '/') {
++            *p = '\0';
++            mkdir(tmp, 0755);
++            *p = '/';
++        }
++    }
++    mkdir(tmp, 0755);
++    Memory_FreePointer(&tmp);
++}
++
++static void M_MSPSetDirEnv(
++    const char *const env_name, const char *const base, const char *const name)
++{
++    if (getenv(env_name) != nullptr) {
++        return;
++    }
++    char *path = String_Format("%s/%s", base, name);
++    M_MSPMakeDir(path);
++    setenv(env_name, path, 0);
++    Memory_FreePointer(&path);
++}
++
++// The entry of dir named name, in any case, or nullptr
++static char *M_MSPFindEntry(
++    const char *const dir, const char *const name, const bool want_dir)
++{
++    DIR *const d = opendir(dir);
++    if (d == nullptr) {
++        return nullptr;
++    }
++    char *result = nullptr;
++    struct dirent *e;
++    while (result == nullptr && (e = readdir(d)) != nullptr) {
++        if (strcasecmp(e->d_name, name) != 0) {
++            continue;
++        }
++        char *path = String_Format("%s/%s", dir, e->d_name);
++        struct stat st;
++        if (stat(path, &st) == 0 && S_ISDIR(st.st_mode) == want_dir) {
++            result = path;
++        } else {
++            Memory_FreePointer(&path);
++        }
++    }
++    closedir(d);
++    return result;
++}
++
++// A CD image: 2048-byte ISO sectors, or 2352-byte raw sectors with the
++// 2048 bytes of data at an offset that depends on the sector mode
++typedef struct {
++    FILE *fp;
++    long sector_size;
++    long data_offset;
++} M_MSP_DISC;
++
++static bool M_MSPReadSector(
++    const M_MSP_DISC *const disc, const uint32_t lba, uint8_t *const out)
++{
++    return fseeko(
++               disc->fp,
++               (off_t)lba * disc->sector_size + disc->data_offset, SEEK_SET)
++        == 0
++        && fread(out, 1, 2048, disc->fp) == 2048;
++}
++
++static bool M_MSPOpenDisc(const char *const path, M_MSP_DISC *const disc)
++{
++    static const long layouts[][2] = { { 2048, 0 }, { 2352, 16 }, { 2352, 24 } };
++    disc->fp = fopen(path, "rb");
++    if (disc->fp == nullptr) {
++        return false;
++    }
++    for (size_t i = 0; i < ARRAY_SIZE(layouts); i++) {
++        disc->sector_size = layouts[i][0];
++        disc->data_offset = layouts[i][1];
++        uint8_t sector[2048];
++        if (M_MSPReadSector(disc, 16, sector) && sector[0] == 1
++            && memcmp(sector + 1, "CD001", 5) == 0) {
++            return true;
++        }
++    }
++    fclose(disc->fp);
++    disc->fp = nullptr;
++    return false;
++}
++
++static uint32_t M_MSPLE32(const uint8_t *const p)
++{
++    return p[0] | (p[1] << 8) | (p[2] << 16) | ((uint32_t)p[3] << 24);
++}
++
++typedef bool (*M_MSP_DIR_VISITOR)(
++    const M_MSP_DISC *disc, const char *name, bool is_dir, uint32_t lba,
++    uint32_t size, void *user_data);
++
++static bool M_MSPWalkDir(
++    const M_MSP_DISC *const disc, const uint32_t lba, const uint32_t size,
++    const M_MSP_DIR_VISITOR visitor, void *const user_data)
++{
++    uint8_t sector[2048];
++    for (uint32_t offset = 0; offset < size; offset += 2048) {
++        if (!M_MSPReadSector(disc, lba + offset / 2048, sector)) {
++            return false;
++        }
++        for (uint32_t pos = 0; pos < 2048 && sector[pos] != 0;
++             pos += sector[pos]) {
++            const uint8_t *const rec = sector + pos;
++            const uint8_t name_len = rec[32];
++            if (rec[0] < 34 || pos + rec[0] > 2048 || 33 + name_len > rec[0]) {
++                break;
++            }
++            if (name_len == 1 && (rec[33] == 0 || rec[33] == 1)) {
++                continue; // . and ..
++            }
++            char name[256];
++            memcpy(name, rec + 33, name_len);
++            name[name_len] = '\0';
++            char *version = strchr(name, ';');
++            if (version != nullptr) {
++                *version = '\0';
++            }
++            const size_t len = strlen(name);
++            if (len > 0 && name[len - 1] == '.') {
++                name[len - 1] = '\0';
++            }
++            if (!visitor(
++                    disc, name, (rec[25] & 2) != 0, M_MSPLE32(rec + 2),
++                    M_MSPLE32(rec + 10), user_data)) {
++                return false;
++            }
++        }
++    }
++    return true;
++}
++
++static bool M_MSPExtractFile(
++    const M_MSP_DISC *const disc, const char *const name, const bool is_dir,
++    const uint32_t lba, const uint32_t size, void *const user_data)
++{
++    if (is_dir) {
++        return true;
++    }
++    char *path = String_Format("%s/%s", (const char *)user_data, name);
++    FILE *const out = fopen(path, "wb");
++    Memory_FreePointer(&path);
++    if (out == nullptr) {
++        return false;
++    }
++    uint8_t sector[2048];
++    bool ok = true;
++    for (uint32_t done = 0; ok && done < size; done += 2048) {
++        const uint32_t chunk = size - done < 2048 ? size - done : 2048;
++        ok = M_MSPReadSector(disc, lba + done / 2048, sector)
++            && fwrite(sector, 1, chunk, out) == chunk;
++    }
++    return fclose(out) == 0 && ok;
++}
++
++typedef struct {
++    const char *staging_dir;
++    bool ok;
++    int32_t extracted;
++} M_MSP_EXTRACT_CONTEXT;
++
++static bool M_MSPExtractTopDir(
++    const M_MSP_DISC *const disc, const char *const name, const bool is_dir,
++    const uint32_t lba, const uint32_t size, void *const user_data)
++{
++    M_MSP_EXTRACT_CONTEXT *const ctx = user_data;
++    if (!is_dir
++        || (strcasecmp(name, "data") != 0 && strcasecmp(name, "fmv") != 0)) {
++        return true;
++    }
++    char *dir = String_Format("%s/%s", ctx->staging_dir, name);
++    mkdir(dir, 0755);
++    ctx->ok &= M_MSPWalkDir(disc, lba, size, M_MSPExtractFile, dir);
++    Memory_FreePointer(&dir);
++    ctx->extracted++;
++    return ctx->ok;
++}
++
++static void M_MSPRemoveTree(const char *const path)
++{
++    DIR *const d = opendir(path);
++    if (d != nullptr) {
++        struct dirent *e;
++        while ((e = readdir(d)) != nullptr) {
++            if (strcmp(e->d_name, ".") == 0 || strcmp(e->d_name, "..") == 0) {
++                continue;
++            }
++            char *child = String_Format("%s/%s", path, e->d_name);
++            M_MSPRemoveTree(child);
++            Memory_FreePointer(&child);
++        }
++        closedir(d);
++        rmdir(path);
++    } else {
++        unlink(path);
++    }
++}
++
++// Extracts data/ and fmv/ from the first CD image in the game's folder,
++// unless it has a data folder already
++static void M_MSPExtractDiscImage(const char *const data_dir)
++{
++    char *existing = M_MSPFindEntry(data_dir, "data", true);
++    if (existing != nullptr) {
++        Memory_FreePointer(&existing);
++        return;
++    }
++
++    DIR *const d = opendir(data_dir);
++    if (d == nullptr) {
++        return;
++    }
++    M_MSP_DISC disc = {};
++    struct dirent *e;
++    while (disc.fp == nullptr && (e = readdir(d)) != nullptr) {
++        const char *ext = strrchr(e->d_name, '.');
++        if (ext == nullptr
++            || (strcasecmp(ext, ".gog") != 0 && strcasecmp(ext, ".iso") != 0
++                && strcasecmp(ext, ".bin") != 0
++                && strcasecmp(ext, ".img") != 0)) {
++            continue;
++        }
++        char *path = String_Format("%s/%s", data_dir, e->d_name);
++        if (M_MSPOpenDisc(path, &disc)) {
++            fprintf(stderr, "Extracting the game's files from %s\n", path);
++        }
++        Memory_FreePointer(&path);
++    }
++    closedir(d);
++    if (disc.fp == nullptr) {
++        return;
++    }
++
++    char *staging = String_Format("%s/.extracting", data_dir);
++    M_MSPRemoveTree(staging);
++    M_MSPMakeDir(staging);
++    M_MSP_EXTRACT_CONTEXT ctx = { .staging_dir = staging, .ok = true };
++    uint8_t pvd[2048];
++    if (M_MSPReadSector(&disc, 16, pvd)) {
++        const uint8_t *const root = pvd + 156;
++        ctx.ok = M_MSPWalkDir(
++            &disc, M_MSPLE32(root + 2), M_MSPLE32(root + 10),
++            M_MSPExtractTopDir, &ctx);
++    } else {
++        ctx.ok = false;
++    }
++    fclose(disc.fp);
++
++    // Move the folders into place only once everything is out
++    if (ctx.ok && ctx.extracted > 0) {
++        DIR *const sd = opendir(staging);
++        while (sd != nullptr && (e = readdir(sd)) != nullptr) {
++            if (e->d_name[0] == '.') {
++                continue;
++            }
++            char *from = String_Format("%s/%s", staging, e->d_name);
++            char *to = String_Format("%s/%s", data_dir, e->d_name);
++            char *clash = M_MSPFindEntry(data_dir, e->d_name, true);
++            if (clash == nullptr) {
++                rename(from, to);
++            }
++            Memory_FreePointer(&clash);
++            Memory_FreePointer(&from);
++            Memory_FreePointer(&to);
++        }
++        if (sd != nullptr) {
++            closedir(sd);
++        }
++    } else {
++        fprintf(stderr, "Could not extract the game's files\n");
++    }
++    M_MSPRemoveTree(staging);
++    Memory_FreePointer(&staging);
++}
++
++static bool M_MSPIsTrackFile(const char *const name)
++{
++    int32_t id;
++    int32_t len = 0;
++    const char *digits = name;
++    if (strncasecmp(digits, "track_", 6) == 0) {
++        digits += 6;
++    } else if (strncasecmp(digits, "track", 5) == 0) {
++        digits += 5;
++    }
++    if (sscanf(digits, "%d%n", &id, &len) != 1 || digits[len] != '.') {
++        return false;
++    }
++    const char *ext = digits + len;
++    return strcasecmp(ext, ".mp3") == 0 || strcasecmp(ext, ".ogg") == 0
++        || strcasecmp(ext, ".flac") == 0 || strcasecmp(ext, ".wav") == 0;
++}
++
++// The music: a music folder, or numbered tracks (02.mp3, track02.ogg,
++// track_02.ogg) loose in the game's folder, as GOG's TR1 has them
++static char *M_MSPFindMusicDir(const char *const data_dir)
++{
++    char *music = M_MSPFindEntry(data_dir, "music", true);
++    if (music != nullptr) {
++        return music;
++    }
++    DIR *const d = opendir(data_dir);
++    if (d == nullptr) {
++        return nullptr;
++    }
++    bool found = false;
++    struct dirent *e;
++    while (!found && (e = readdir(d)) != nullptr) {
++        found = M_MSPIsTrackFile(e->d_name);
++    }
++    closedir(d);
++    return found ? Memory_DupStr(data_dir) : nullptr;
++}
++
++static void M_MSPSetup(void)
++{
++    static bool done = false;
++    if (done) {
++        return;
++    }
++    done = true;
++
++    char *folder = M_MSPGetBundleString("MSPDataFolder");
++    const char *home = getenv("HOME");
++    if (folder == nullptr || home == nullptr) {
++        Memory_FreePointer(&folder);
++        return;
++    }
++
++    char *trx_support =
++        String_Format("%s/Library/Application Support/TRX", home);
++    M_MSPSetDirEnv("TRX_CONFIG_DIR", trx_support, "cfg");
++    M_MSPSetDirEnv("TRX_CACHE_DIR", trx_support, "cache");
++    M_MSPSetDirEnv("TRX_SAVES_DIR", trx_support, "saves");
++    M_MSPSetDirEnv("TRX_SCREENSHOTS_DIR", trx_support, "screenshots");
++    Memory_FreePointer(&trx_support);
++
++    m_MSPDataDir =
++        String_Format("%s/Library/Application Support/%s", home, folder);
++    Memory_FreePointer(&folder);
++    M_MSPMakeDir(m_MSPDataDir);
++    M_MSPExtractDiscImage(m_MSPDataDir);
++    m_MSPMusicDir = M_MSPFindMusicDir(m_MSPDataDir);
++}
++#endif
+ static VECTOR *m_DirCache = nullptr; // M_DIR_CACHE_ENTRY
+ static VECTOR *m_ResolveCache = nullptr; // M_RESOLVE_CACHE_ENTRY
+ static uint32_t m_ResolveCacheGeneration = 0;
+@@ -857,6 +1267,10 @@ static char *M_ExpandDynamicPattern(
+         { "%base_mod%", base_mod_id != nullptr ? base_mod_id : "" },
+         { "%base_dir%", base_dir },
+         { "%tr_version%", tr_version },
++#if defined(__APPLE__)
++        { "%msp_data_dir%", m_MSPDataDir },
++        { "%msp_music_dir%", m_MSPMusicDir },
++#endif
+     };
+ 
+     char *expanded = Memory_DupStr(pattern);
+@@ -1132,6 +1546,9 @@ char *GamePath_ExpandVars(const char *const in)
+ void GamePath_Init(const SHELL_ARGS *const args)
+ {
+     M_Shutdown();
++#if defined(__APPLE__)
++    M_MSPSetup();
++#endif
+ 
+     m_Context.args = args;
+     m_ResolveCacheGeneration++;
+diff --git a/src/trx/game/shell/flow.c b/src/trx/game/shell/flow.c
+index 404733875..10c97529f 100644
+--- a/src/trx/game/shell/flow.c
++++ b/src/trx/game/shell/flow.c
+@@ -12,6 +12,7 @@
+ #include <trx/game/game_flow.h>
+ #include <trx/game/game_strings/manager.h>
+ #include <trx/game/lua.h>
++#include <trx/game/lua/guard.h>
+ #include <trx/game/lua/startup.h>
+ #include <trx/game/output.h>
+ #include <trx/game/replay/test_recorder.h>
+@@ -378,6 +379,10 @@ int32_t Shell_Main(const SHELL_ARGS *const args)
+     } else {
+         M_ShowWindow();
+     }
++    // MacSourcePorts: Lua ran before the window and GL context were made,
++    // which can take seconds (a slow or software GL driver), and the guard
++    // would blame the next script for that time
++    LUA_Guard_Heartbeat();
+ 
+     GF_Init();
+     EXIT_ON_FAIL(
+diff --git a/src/trx/game/shell/main.c b/src/trx/game/shell/main.c
+index c5d3c9b38..d684ff59f 100644
+--- a/src/trx/game/shell/main.c
++++ b/src/trx/game/shell/main.c
+@@ -31,8 +31,14 @@ int main(int argc, char *argv[])
+ 
+     GamePath_Init(args);
+ 
++#if defined(__APPLE__)
++    // MacSourcePorts: the app bundle can't be written to
++    char *log_path =
++        String_Format("%s/TRX.log", GamePath_Get(GAME_PATH_CONFIG_DIR));
++#else
+     char *log_path =
+         String_Format("%s/TRX.log", GamePath_Get(GAME_PATH_TRX_DIR));
++#endif
+     Log_Init(log_path, args->quiet ? LOG_LEVEL_WARNING : LOG_LEVEL_MAX);
+     Memory_FreePointer(&log_path);
+ 

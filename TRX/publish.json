@@ -1,0 +1,17 @@
+[
+    {
+        "filenameGlob": "TR1X-*.dmg",
+        "sourcePortStub": "tr1x",
+        "buildType": 1
+    },
+    {
+        "filenameGlob": "TR2X-*.dmg",
+        "sourcePortStub": "tr2x",
+        "buildType": 1
+    },
+    {
+        "filenameGlob": "TR3X-*.dmg",
+        "sourcePortStub": "tr3x",
+        "buildType": 1
+    }
+]

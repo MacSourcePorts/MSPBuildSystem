@@ -13,6 +13,7 @@
 ./brotli.sh
 ./ca-certificates.sh
 ./cjson.sh
+./uthash.sh
 ./cpp-httplib.sh
 ./enet6.sh
 ./enet.sh
