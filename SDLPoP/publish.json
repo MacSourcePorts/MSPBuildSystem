@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "SDLPoP-*.dmg",
+        "sourcePortStub": "sdlpop",
+        "buildType": 1
+    }
+]
