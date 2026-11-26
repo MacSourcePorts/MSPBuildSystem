@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "remc2-*.dmg",
+        "sourcePortStub": "remc2",
+        "buildType": 1
+    }
+]

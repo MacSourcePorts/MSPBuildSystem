@@ -1,0 +1,1039 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e684aa52..b43e29c1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -297,8 +297,11 @@ endif ()
+ 
+ # remc2 and tests
+ add_subdirectory(remc2)
+-add_subdirectory(remc2-editor)
+-add_subdirectory(remc2-configurator)
++option(REMC2_BUILD_TOOLS "Build the editor and the configurator (wxWidgets)" ON)
++if (REMC2_BUILD_TOOLS)
++    add_subdirectory(remc2-editor)
++    add_subdirectory(remc2-configurator)
++endif ()
+ if (UNIT_TESTS)
+     find_package(GTest REQUIRED)
+     add_subdirectory(remc2-unit-test)
+diff --git a/remc1/Mc1Main.cpp b/remc1/Mc1Main.cpp
+index 24295122..b15d07ab 100644
+--- a/remc1/Mc1Main.cpp
++++ b/remc1/Mc1Main.cpp
+@@ -17,6 +17,9 @@
+ #include "../remc2/portability/port_sdl_vga_mouse.h"
+ #include "../remc2/portability/port_time.h"
+ #include "../remc2/shared/EventDispatcher.h"
++#ifdef __APPLE__
++#include "../remc2/portability/msp_macos.h"
++#endif
+ 
+ // a folder of the config: the existing one in the data locations, else (e.g. the install folder before the install) next to the .exe
+ static std::string Mc1FolderPath(const std::string& folder)
+@@ -43,6 +46,10 @@ int Mc1Main(int argc, char** argv)
+ 		return -1;
+ 	}
+ 	EventDispatcher::I = new EventDispatcher();
++#ifdef __APPLE__
++	// MSP: game.gog extracted to CD_Files on the first run (the launcher does it first)
++	MspPrepareGameData([](const std::string& message) { Logger->info("{}", message); });
++#endif
+ 
+ 	// -game select shows the Magic Carpet Plus selector, -game mc1 / mc1hw start the game directly
+ 	int16_t game = SELECTED_MAGIC_CARPET;
+diff --git a/remc1/engine/Mc1World.cpp b/remc1/engine/Mc1World.cpp
+index ec78a5ba..7748594c 100644
+--- a/remc1/engine/Mc1World.cpp
++++ b/remc1/engine/Mc1World.cpp
+@@ -67,6 +67,10 @@ void GameLoop_34610_349D0()
+ 
+ void GameFrame_34530_348F0()
+ {
++	// port: the start of the frame for the maxGameFps lock in the blit (as
++	// MC2's DrawAndEventsInGame_47560), else LockFps never waits and the game
++	// runs as fast as the machine can
++	SetFrameStart(std::chrono::system_clock::now());
+ 	Type_Mc1Settings_AE408_AE3F8* settings = mc1Settings_AE408_AE3F8;
+ 	if (!mc1State_AE400_AE3F0->screenSize_0x219B_8603)
+ 		UpdatePalette_34690_34A50();
+diff --git a/remc2-configurator/CMakeLists.txt b/remc2-configurator/CMakeLists.txt
+index 2398b78f..4465ac75 100644
+--- a/remc2-configurator/CMakeLists.txt
++++ b/remc2-configurator/CMakeLists.txt
+@@ -8,6 +8,8 @@ set(SOURCE_FILES_CONFIGURATOR
+     "Remc2ConfiguratorApp.cpp"
+     "../remc2/portability/Config.cpp"
+     "../remc2/portability/Config.h"
++    "../remc2/portability/msp_macos.cpp"
++    "../remc2/portability/msp_macos.h"
+ 	"SettingsDialog.cpp"
+ 	"SettingsDialog.h"
+ 	"LaunchOptionsDialog.cpp"
+@@ -67,6 +69,7 @@ target_link_libraries(${CONFIGURATOR_TARGET} PUBLIC
+ 
+ target_include_directories(${CONFIGURATOR_TARGET} PUBLIC
+     "../spdlog/include"
++    "${CMAKE_SOURCE_DIR}/nlohmann-json"
+ )
+ 
+ if (APPLE)
+diff --git a/remc2-configurator/GameFilesDialog.cpp b/remc2-configurator/GameFilesDialog.cpp
+index d231f75d..a32148a4 100644
+--- a/remc2-configurator/GameFilesDialog.cpp
++++ b/remc2-configurator/GameFilesDialog.cpp
+@@ -1,13 +1,18 @@
+ #include "GameFilesDialog.h"
+ #include "PathHelpers.h"
+ #include "GameFilesCheck.h"
++#ifdef __APPLE__
++#include "../remc2/portability/msp_macos.h"
++#endif
+ 
+ using GameName = Config::Settings::GameName;
+ using PathKey = Config::Settings::PathKey;
+ 
+ const GameFilesDialog::GameInfo GameFilesDialog::s_games[] = {
++#if !defined(__APPLE__) || MSP_MC1_ENABLED // see msp_macos.h
+ 	{ GameName::MagicCarpet, "Magic Carpet", "the CARPET.CD install folder" },
+ 	{ GameName::HiddenWorlds, "Magic Carpet Hidden Worlds", "the CARPET.CD install folder" },
++#endif
+ 	{ GameName::MagicCarpet2, "Magic Carpet 2", "the NETHERW folder" },
+ };
+ 
+diff --git a/remc2-configurator/LaunchOptionsDialog.cpp b/remc2-configurator/LaunchOptionsDialog.cpp
+index e3859b3a..a247006c 100644
+--- a/remc2-configurator/LaunchOptionsDialog.cpp
++++ b/remc2-configurator/LaunchOptionsDialog.cpp
+@@ -1,11 +1,17 @@
+ #include "LaunchOptionsDialog.h"
++#ifdef __APPLE__
++#include "../remc2/portability/msp_macos.h"
++#endif
+ 
+ const LaunchOptionsDialog::GameOption LaunchOptionsDialog::s_games[] = {
++#if !defined(__APPLE__) || MSP_MC1_ENABLED // see msp_macos.h
+ 	{ "Magic Carpet", "mc1" },
+ 	{ "Magic Carpet Hidden Worlds", "mc1hw" },
++#endif
+ 	{ "Magic Carpet 2", "mc2" },
+ };
+-static constexpr int kDefaultGame = 2; // Magic Carpet 2, as the game without --game
++// the default game is the last, Magic Carpet 2, as the game without --game
++#define kDefaultGame (static_cast<int>(std::size(s_games)) - 1)
+ 
+ LaunchOptionsDialog::LaunchOptionsDialog(wxWindow* parent, std::string launchArguments)
+ 	: wxDialog(parent, wxID_ANY, "Launch Options", wxDefaultPosition, wxSize(430, 500),
+diff --git a/remc2-configurator/MainFrame.cpp b/remc2-configurator/MainFrame.cpp
+index 0fa9f6f4..fdf14a79 100644
+--- a/remc2-configurator/MainFrame.cpp
++++ b/remc2-configurator/MainFrame.cpp
+@@ -1,6 +1,9 @@
+ #include "MainFrame.h"
+ 
+ #include "GameFilesCheck.h"
++#ifdef __APPLE__
++#include "../remc2/portability/msp_macos.h"
++#endif
+ 
+ MainFrame::MainFrame(const wxString& title, const std::string fileName) : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(430, 630), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxMAXIMIZE_BOX)
+ {
+@@ -53,6 +56,11 @@ MainFrame::MainFrame(const wxString& title, const std::string fileName) : wxFram
+ 	buttonSizer->Add(btnMultiplayer, flags);
+ 	buttonSizer->Add(btnSettings, flags);
+ 	buttonSizer->Add(btnExit, flags);
++#if defined(__APPLE__) && !MSP_MC1_ENABLED
++	// Mac Source Ports: Magic Carpet 2 only for now, see msp_macos.h
++	m_btnPlayMagicCarpet->Hide();
++	m_btnPlayHiddenWorlds->Hide();
++#endif
+ 
+ 	vSizer->Add(
+ 		buttonSizer,
+@@ -91,8 +99,12 @@ MainFrame::MainFrame(const wxString& title, const std::string fileName) : wxFram
+ // ── Play buttons ─────────────────────────────────────────────────────────────
+ void MainFrame::SetButtonImage(wxButton* button, const wxString& fileName, int width)
+ {
++#ifdef __APPLE__
++	const wxString path = GetImagesDir() + wxFileName::GetPathSeparator() + fileName;
++#else
+ 	const wxString path = wxFileName(wxStandardPaths::Get().GetExecutablePath()).GetPathWithSep() + "images" +
+ 		wxFileName::GetPathSeparator() + fileName;
++#endif
+ 	if (!wxFileExists(path))
+ 		return;
+ 	wxImage image(path, wxBITMAP_TYPE_PNG);
+@@ -117,6 +129,14 @@ void MainFrame::UpdatePlayButtons()
+ 	UpdatePlayButton(m_btnPlayMagicCarpet2, GameFilesCheck::Missing(paths, GameName::MagicCarpet2));
+ }
+ 
++bool MainFrame::AnyGamePlayable() const
++{
++	for (const wxButton* button : { m_btnPlayMagicCarpet, m_btnPlayHiddenWorlds, m_btnPlayMagicCarpet2 })
++		if (button->IsShown() && button->IsEnabled())
++			return true;
++	return false;
++}
++
+ void MainFrame::UpdatePlayButton(wxButton* button, const std::vector<wxString>& missing)
+ {
+ 	button->Enable(missing.empty());
+diff --git a/remc2-configurator/MainFrame.h b/remc2-configurator/MainFrame.h
+index 92948603..2aca137e 100644
+--- a/remc2-configurator/MainFrame.h
++++ b/remc2-configurator/MainFrame.h
+@@ -10,6 +10,7 @@ class MainFrame : public wxFrame
+ {
+ public:
+ 	MainFrame(const wxString& title, const std::string fileName);
++	bool AnyGamePlayable() const;//MSP
+ 
+ private:
+ 
+diff --git a/remc2-configurator/PathHelpers.cpp b/remc2-configurator/PathHelpers.cpp
+index 784cea9a..00041292 100644
+--- a/remc2-configurator/PathHelpers.cpp
++++ b/remc2-configurator/PathHelpers.cpp
+@@ -1,5 +1,13 @@
+ #include "PathHelpers.h"
+ 
++#ifdef __APPLE__
++#include "../remc2/portability/msp_macos.h"
++#include <wx/busyinfo.h>
++#include <wx/cmdline.h>
++#include <memory>
++#include <system_error>
++#endif
++
+ wxString GetExeDir()
+ {
+ 	wxFileName exe(wxStandardPaths::Get().GetExecutablePath());
+@@ -8,6 +16,11 @@ wxString GetExeDir()
+ 
+ wxString ToRelative(const wxString& absPath)
+ {
++#ifdef __APPLE__
++	// MSP: as config.json has it: MC2/... for Application Support/MagicCarpet2,
++	// MC1/... for MagicCarpet, relative for the app's Resources, else absolute
++	return wxString::FromUTF8(MspConfigPath(std::filesystem::path(absPath.ToStdString(wxConvUTF8))).string());
++#endif
+ 	wxFileName fn(absPath);
+ 	fn.MakeRelativeTo(GetExeDir());
+ 	return fn.GetFullPath();
+@@ -15,6 +28,23 @@ wxString ToRelative(const wxString& absPath)
+ 
+ wxString ToAbsolute(const wxString& path)
+ {
++#ifdef __APPLE__
++	// MSP: where the game looks (see getExistingDataPath): Application Support,
++	// then the app's Resources
++	if (wxFileName(path).IsRelative())
++	{
++		const std::filesystem::path relative(path.ToStdString(wxConvUTF8));
++		const auto locations = MspDataLocations(relative);
++		std::error_code ec;
++		for (const auto& location : locations)
++			if (std::filesystem::exists(location, ec))
++				return wxString::FromUTF8(location.string());
++		const std::filesystem::path resource = MspResourcesDir() / relative;
++		if (locations.empty() || std::filesystem::exists(resource, ec))
++			return wxString::FromUTF8(resource.string());
++		return wxString::FromUTF8(locations.front().string());
++	}
++#endif
+ 	wxFileName fn(path);
+ 	if (fn.IsRelative())
+ 		fn.MakeAbsolute(GetExeDir());
+@@ -23,8 +53,22 @@ wxString ToAbsolute(const wxString& path)
+ 
+ bool LaunchGame(const wxString& args)
+ {
++#ifdef __APPLE__
++	// MSP: remc2 next to the launcher in the app; the path has spaces
++	wxArrayString argList = wxCmdLineParser::ConvertStringToArgs(args);
++	argList.Insert(GetExeDir() + "/remc2", 0);
++	std::vector<const char*> argv;
++	std::vector<wxScopedCharBuffer> buffers;
++	for (const auto& arg : argList)
++		buffers.push_back(arg.utf8_str());
++	for (const auto& buffer : buffers)
++		argv.push_back(buffer.data());
++	argv.push_back(nullptr);
++	long pid = wxExecute(argv.data(), wxEXEC_ASYNC);
++#else
+ 	// Launch remc2.exe detached (wxEXEC_ASYNC = fire-and-forget)
+ 	long pid = wxExecute("remc2.exe " + args, wxEXEC_ASYNC);
++#endif
+ 	if (pid == 0) {
+ 		wxMessageBox("Failed to launch Magic Carpet HD.\n"
+ 			"Make sure it is in the same directory as this application.",
+@@ -32,4 +76,48 @@ bool LaunchGame(const wxString& args)
+ 		return false;
+ 	}
+ 	return true;
+-}
+\ No newline at end of file
++}
++#ifdef __APPLE__
++wxString GetImagesDir()
++{
++	return wxString::FromUTF8((MspResourcesDir() / "images").string());
++}
++
++wxString GetConfigFile()
++{
++	const std::filesystem::path config = MspAppSupportDir("MagicCarpet2") / "config.json";
++	std::error_code ec;
++	if (!std::filesystem::exists(config, ec))
++		std::filesystem::copy_file(MspResourcesDir() / "config.json", config, ec);
++	return wxString::FromUTF8(config.string());
++}
++
++void PrepareGameData()
++{
++	std::unique_ptr<wxBusyInfo> busy;
++	wxString errors;
++	MspPrepareGameData([&](const std::string& message) {
++		const wxString text = wxString::FromUTF8(message);
++		if (text.StartsWith("Extracting the CD image "))
++		{
++			busy.reset();
++			busy = std::make_unique<wxBusyInfo>("Extracting the game's CD image...");
++		}
++		else
++			errors += (errors.empty() ? "" : "\n") + text;
++	});
++	busy.reset();
++	if (!errors.empty())
++		wxMessageBox(errors, "Magic Carpet HD", wxOK | wxICON_ERROR);
++}
++
++void ShowMissingDataMessage()
++{
++	wxMessageBox(wxString::FromUTF8(MspMissingDataText()), "Magic Carpet HD", wxOK | wxICON_INFORMATION);
++	std::vector<const char*> folders = { "MagicCarpet2" };
++	if (kMspMc1Enabled)
++		folders.push_back("MagicCarpet");
++	for (const char* folder : folders)
++		wxExecute("open \"" + wxString::FromUTF8(MspAppSupportDir(folder).string()) + "\"", wxEXEC_ASYNC);
++}
++#endif
+diff --git a/remc2-configurator/PathHelpers.h b/remc2-configurator/PathHelpers.h
+index 4203a4a0..94c6aff5 100644
+--- a/remc2-configurator/PathHelpers.h
++++ b/remc2-configurator/PathHelpers.h
+@@ -18,3 +18,14 @@ wxString ToAbsolute(const wxString& path);
+ 
+ bool LaunchGame(const wxString& args);
+ 
++#ifdef __APPLE__
++// MSP: the folder of the launcher's pictures (the app's Resources)
++wxString GetImagesDir();
++// MSP: config.json in Application Support, made from the app's one
++wxString GetConfigFile();
++// MSP: extracts the GOG CD images not extracted yet
++void PrepareGameData();
++// MSP: says where the games' files go, and opens those folders
++void ShowMissingDataMessage();
++#endif
++
+diff --git a/remc2-configurator/Remc2ConfiguratorApp.cpp b/remc2-configurator/Remc2ConfiguratorApp.cpp
+index fb9ac9bf..ac6d1a35 100644
+--- a/remc2-configurator/Remc2ConfiguratorApp.cpp
++++ b/remc2-configurator/Remc2ConfiguratorApp.cpp
+@@ -8,9 +8,19 @@ public:
+ 
+ bool Remc2ConfiguratorApp::OnInit()
+ {
++#ifdef __APPLE__
++	// MSP: config.json in Application Support, the CD images extracted first
++	PrepareGameData();
++	MainFrame* frame = new MainFrame("Magic Carpet HD", GetConfigFile().ToStdString());
++#else
+ 	MainFrame* frame = new MainFrame("Magic Carpet HD Configurator", "Config.json");
++#endif
+ 	frame->SetMinSize(wxSize(430, 630));
+ 	frame->Show();
++#ifdef __APPLE__
++	if (!frame->AnyGamePlayable())
++		ShowMissingDataMessage();
++#endif
+ 	return true;
+ }
+ 
+diff --git a/remc2-editor/CMakeLists.txt b/remc2-editor/CMakeLists.txt
+index dc70f396..839d3856 100644
+--- a/remc2-editor/CMakeLists.txt
++++ b/remc2-editor/CMakeLists.txt
+@@ -101,6 +101,7 @@ set(SOURCE_FILES_EDITOR
+     "../remc2/portability/fcaseopen.cpp"
+     "../remc2/portability/fcaseopen.h"
+     "../remc2/portability/port_filesystem.cpp"
++    "../remc2/portability/msp_macos.cpp"
+     "../remc2/portability/port_filesystem.h"
+     "../remc2/portability/InputRecorder.cpp"
+     "../remc2/portability/InputRecorder.h"
+diff --git a/remc2-regression-test/CMakeLists.txt b/remc2-regression-test/CMakeLists.txt
+index 5214c128..c26f7c67 100644
+--- a/remc2-regression-test/CMakeLists.txt
++++ b/remc2-regression-test/CMakeLists.txt
+@@ -97,6 +97,7 @@ set(SOURCE_FILES_REGRESSIONTESTS
+     "../remc2/portability/fcaseopen.cpp"
+     "../remc2/portability/fcaseopen.h"
+     "../remc2/portability/port_filesystem.cpp"
++    "../remc2/portability/msp_macos.cpp"
+     "../remc2/portability/port_filesystem.h"
+     "../remc2/portability/InputRecorder.cpp"
+     "../remc2/portability/InputRecorder.h"
+diff --git a/remc2-unit-test/CMakeLists.txt b/remc2-unit-test/CMakeLists.txt
+index 25dda162..3e746f4c 100644
+--- a/remc2-unit-test/CMakeLists.txt
++++ b/remc2-unit-test/CMakeLists.txt
+@@ -111,6 +111,7 @@ set(SOURCE_FILES_UNITTESTS_DEPENDENCIES
+     "../remc2/portability/fcaseopen.cpp"
+     "../remc2/portability/fcaseopen.h"
+     "../remc2/portability/port_filesystem.cpp"
++    "../remc2/portability/msp_macos.cpp"
+     "../remc2/portability/port_filesystem.h"
+     "../remc2/portability/InputRecorder.cpp"
+     "../remc2/portability/InputRecorder.h"
+diff --git a/remc2/CMakeLists.txt b/remc2/CMakeLists.txt
+index 1a435e82..c1788e51 100644
+--- a/remc2/CMakeLists.txt
++++ b/remc2/CMakeLists.txt
+@@ -198,6 +198,8 @@ set(SOURCE_FILES__portability
+     "portability/port_net.h"
+     "portability/port_filesystem.cpp"
+     "portability/port_filesystem.h"
++    "portability/msp_macos.cpp"
++    "portability/msp_macos.h"
+     "portability/InputRecorder.cpp"
+     "portability/InputRecorder.h"
+     "portability/port_outputs.cpp"
+diff --git a/remc2/engine/read_config.cpp b/remc2/engine/read_config.cpp
+index b4a24d09..485786aa 100644
+--- a/remc2/engine/read_config.cpp
++++ b/remc2/engine/read_config.cpp
+@@ -20,6 +20,9 @@
+ #endif
+ 
+ #include "../portability/port_filesystem.h"
++#ifdef __APPLE__
++#include "../portability/msp_macos.h"
++#endif
+ #include "../portability/port_sdl_sound.h"
+ #include "../portability/port_time.h"
+ 
+@@ -132,6 +135,10 @@ std::string findConfigFile() {
+ 		config_locations.push_back(CommandLineParams.GetConfigFilePath());
+ 	}
+ 	else {
++#ifdef __APPLE__
++		// MSP: a config.json in Application Support overrides the app's one
++		config_locations.push_back((MspAppSupportDir("MagicCarpet2") / "config.json").string());
++#endif
+ #if defined(__linux__) || defined(__APPLE__)
+ 		auto env_home_dir = std::getenv("HOME");
+ 		auto env_xdg_config_home_dir = std::getenv("XDG_CONFIG_HOME");
+@@ -155,6 +162,9 @@ std::string findConfigFile() {
+ 		}
+ #endif //__linux__
+ 		config_locations.push_back(get_exe_path() + "/config.json");
++#ifdef __APPLE__
++		config_locations.push_back((MspResourcesDir() / "config.json").string());
++#endif
+ 	}
+ 	std::string configfile;
+ 	// first location at which an configfile can be found is chosen
+diff --git a/remc2/portability/msp_macos.cpp b/remc2/portability/msp_macos.cpp
+new file mode 100644
+index 00000000..12a75f91
+--- /dev/null
++++ b/remc2/portability/msp_macos.cpp
+@@ -0,0 +1,416 @@
++// Mac Source Ports: see msp_macos.h
++#ifdef __APPLE__
++#include "msp_macos.h"
++
++#include <mach-o/dyld.h>
++#include <strings.h>
++#include <algorithm>
++#include <climits>
++#include <cstdint>
++#include <cstdlib>
++#include <cstring>
++#include <fstream>
++#include <regex>
++#include <system_error>
++
++namespace fs = std::filesystem;
++
++namespace
++{
++	struct GameFolder
++	{
++		const char* configPrefix;//the first folder of the paths in config.json
++		const char* appSupport;//its folder in Application Support
++	};
++	const GameFolder kGameFolders[] = {
++		{ "MC2", "MagicCarpet2" },
++		{ "MC1", "MagicCarpet" },
++	};
++
++	std::string Lower(std::string s)
++	{
++		for (auto& c : s)
++			c = (char)tolower((unsigned char)c);
++		return s;
++	}
++}
++
++fs::path MspAppSupportDir(const char* folder)
++{
++	const char* home = std::getenv("HOME");
++	fs::path dir = fs::path(home ? home : "") / "Library" / "Application Support" / folder;
++	std::error_code ec;
++	fs::create_directories(dir, ec);
++	return dir;
++}
++
++fs::path MspResourcesDir()
++{
++	char exe[PATH_MAX];
++	uint32_t size = sizeof(exe);
++	if (_NSGetExecutablePath(exe, &size) != 0)
++		return fs::path();
++	char real[PATH_MAX];
++	const fs::path macos = fs::path(realpath(exe, real) ? real : exe).parent_path();
++	const fs::path resources = macos.parent_path() / "Resources";
++	std::error_code ec;
++	if (macos.filename() == "MacOS" && fs::is_directory(resources, ec))
++		return resources;
++	return macos;
++}
++
++std::vector<fs::path> MspDataLocations(const fs::path& path)
++{
++	std::vector<fs::path> locations;
++	if (path.empty() || path.is_absolute())
++		return locations;
++	auto it = path.begin();
++	const std::string prefix = it->string();
++	for (const auto& game : kGameFolders)
++	{
++		if (strcasecmp(prefix.c_str(), game.configPrefix) != 0)
++			continue;
++		fs::path rest;
++		for (++it; it != path.end(); ++it)
++			rest /= *it;
++		const fs::path root = MspAppSupportDir(game.appSupport);
++		locations.push_back(root / rest);
++		// Magic Carpet 2's GOG folders as they are (GAME/NETHERW)
++		if (strcmp(game.configPrefix, "MC2") == 0)
++			locations.push_back(root / "GAME" / rest);
++	}
++	return locations;
++}
++
++fs::path MspConfigPath(const fs::path& absolutePath)
++{
++	const fs::path path = absolutePath.lexically_normal();
++	auto relativeTo = [&](const fs::path& base, fs::path& out) {
++		const fs::path rel = path.lexically_relative(base.lexically_normal());
++		if (rel.empty() || *rel.begin() == "..")
++			return false;
++		out = rel;
++		return true;
++	};
++	fs::path rel;
++	for (const auto& game : kGameFolders)
++		if (relativeTo(MspAppSupportDir(game.appSupport), rel))
++			return fs::path(game.configPrefix) / rel;
++	if (relativeTo(MspResourcesDir(), rel))
++		return rel;
++	return absolutePath;
++}
++
++namespace
++{
++	struct CueTrack
++	{
++		int number = 0;
++		bool audio = false;
++		long long start = 0;//INDEX 01, in sectors from the start of the file
++	};
++
++	// the tracks of a cue sheet (GOG's game.ins), for its one FILE
++	std::vector<CueTrack> ReadCue(const fs::path& cue)
++	{
++		std::vector<CueTrack> tracks;
++		std::ifstream in(cue);
++		std::string line;
++		const std::regex trackRe(R"(^\s*TRACK\s+(\d+)\s+(\S+))", std::regex::icase);
++		const std::regex indexRe(R"(^\s*INDEX\s+01\s+(\d+):(\d+):(\d+))", std::regex::icase);
++		std::smatch m;
++		while (std::getline(in, line))
++		{
++			if (std::regex_search(line, m, trackRe))
++			{
++				CueTrack t;
++				t.number = std::stoi(m[1]);
++				t.audio = Lower(m[2]) == "audio";
++				tracks.push_back(t);
++			}
++			else if (!tracks.empty() && std::regex_search(line, m, indexRe))
++				tracks.back().start = (std::stoll(m[1]) * 60 + std::stoll(m[2])) * 75 + std::stoll(m[3]);
++		}
++		return tracks;
++	}
++
++	uint32_t Le32(const uint8_t* p)
++	{
++		return p[0] | (p[1] << 8) | (p[2] << 16) | ((uint32_t)p[3] << 24);
++	}
++
++	// The ISO 9660 file system of a CD image of 2048 byte sectors, or of raw
++	// 2352 byte ones (mode 1, or mode 2 form 1), its data track first
++	class Iso9660
++	{
++	public:
++		explicit Iso9660(std::ifstream& image) : m_image(image)
++		{
++			struct Layout { int size, offset; };
++			for (const Layout layout : { Layout{ 2048, 0 }, Layout{ 2352, 16 }, Layout{ 2352, 24 } })
++			{
++				m_sectorSize = layout.size;
++				m_dataOffset = layout.offset;
++				std::vector<uint8_t> pvd;
++				if (ReadSectors(16, 1, pvd) && pvd[0] == 1 && memcmp(&pvd[1], "CD001", 5) == 0)
++				{
++					m_rootExtent = Le32(&pvd[156 + 2]);
++					m_rootLength = Le32(&pvd[156 + 10]);
++					m_valid = true;
++					return;
++				}
++			}
++		}
++
++		bool Valid() const { return m_valid; }
++
++		// the folder of the CD (or all of it when empty) to target
++		bool Extract(const std::string& folder, const fs::path& target)
++		{
++			uint32_t extent = m_rootExtent, length = m_rootLength;
++			if (!folder.empty())
++			{
++				bool found = false;
++				ForEachRecord(extent, length, [&](const std::string& name, bool isDir, uint32_t e, uint32_t l) {
++					if (isDir && !found && strcasecmp(name.c_str(), folder.c_str()) == 0)
++					{
++						extent = e;
++						length = l;
++						found = true;
++					}
++					return true;
++				});
++				if (!found)
++					return false;
++			}
++			return ExtractDirectory(extent, length, target, 0);
++		}
++
++	private:
++		bool ReadSectors(uint32_t lba, uint32_t count, std::vector<uint8_t>& out)
++		{
++			out.resize((size_t)count * 2048);
++			for (uint32_t i = 0; i < count; i++)
++			{
++				m_image.seekg((long long)(lba + i) * m_sectorSize + m_dataOffset);
++				if (!m_image.read((char*)out.data() + (size_t)i * 2048, 2048))
++				{
++					m_image.clear();
++					return false;
++				}
++			}
++			return true;
++		}
++
++		template <typename F>
++		bool ForEachRecord(uint32_t extent, uint32_t length, F f)
++		{
++			std::vector<uint8_t> dir;
++			if (!ReadSectors(extent, (length + 2047) / 2048, dir))
++				return false;
++			size_t pos = 0;
++			while (pos < length)
++			{
++				const uint8_t recordLength = dir[pos];
++				if (recordLength == 0)
++				{
++					pos = (pos / 2048 + 1) * 2048;//records don't cross sectors
++					continue;
++				}
++				const uint8_t* r = &dir[pos];
++				const uint8_t nameLength = r[32];
++				const bool isDir = (r[25] & 0x02) != 0;
++				pos += recordLength;
++				if (nameLength == 1 && (r[33] == 0 || r[33] == 1))
++					continue;//the directory itself and its parent
++				std::string name((const char*)&r[33], nameLength);
++				if (!isDir)
++				{
++					if (auto semi = name.find(';'); semi != std::string::npos)
++						name.erase(semi);
++					if (!name.empty() && name.back() == '.')
++						name.pop_back();
++				}
++				if (name.empty() || name == "." || name == ".." || name.find('/') != std::string::npos)
++					continue;
++				if (!f(name, isDir, Le32(&r[2]), Le32(&r[10])))
++					return false;
++			}
++			return true;
++		}
++
++		bool ExtractDirectory(uint32_t extent, uint32_t length, const fs::path& target, int depth)
++		{
++			if (depth > 16)
++				return false;
++			std::error_code ec;
++			fs::create_directories(target, ec);
++			return ForEachRecord(extent, length, [&](const std::string& name, bool isDir, uint32_t e, uint32_t l) {
++				return isDir ? ExtractDirectory(e, l, target / name, depth + 1) : ExtractFile(e, l, target / name);
++			});
++		}
++
++		bool ExtractFile(uint32_t extent, uint32_t size, const fs::path& file)
++		{
++			std::ofstream out(file, std::ios::binary);
++			std::vector<uint8_t> data;
++			for (uint32_t done = 0; done < size;)
++			{
++				const uint32_t sectors = std::min<uint32_t>((size - done + 2047) / 2048, 256);
++				if (!ReadSectors(extent + done / 2048, sectors, data))
++					return false;
++				const uint32_t n = std::min<uint32_t>(size - done, sectors * 2048);
++				out.write((const char*)data.data(), n);
++				done += n;
++			}
++			return (bool)out;
++		}
++
++		std::ifstream& m_image;
++		int m_sectorSize = 2048;
++		int m_dataOffset = 0;
++		uint32_t m_rootExtent = 0, m_rootLength = 0;
++		bool m_valid = false;
++	};
++
++	bool WriteWav(const fs::path& file, std::ifstream& image, long long begin, long long end)
++	{
++		std::ofstream out(file, std::ios::binary);
++		const uint32_t size = (uint32_t)(end - begin);
++		auto put32 = [&](uint32_t v) { out.write((const char*)&v, 4); };
++		auto put16 = [&](uint16_t v) { out.write((const char*)&v, 2); };
++		out.write("RIFF", 4); put32(36 + size); out.write("WAVEfmt ", 8);
++		put32(16); put16(1); put16(2); put32(44100); put32(44100 * 4); put16(4); put16(16);
++		out.write("data", 4); put32(size);
++		std::vector<char> buffer(2352 * 256);
++		image.seekg(begin);
++		for (long long left = size; left > 0;)
++		{
++			const auto n = (std::streamsize)std::min<long long>(left, buffer.size());
++			if (!image.read(buffer.data(), n))
++				return false;
++			out.write(buffer.data(), n);
++			left -= n;
++		}
++		return (bool)out;
++	}
++
++	// a file of the folder, matched without case
++	fs::path FindFile(const fs::path& folder, const char* name)
++	{
++		std::error_code ec;
++		for (fs::directory_iterator it(folder, ec), end; !ec && it != end; it.increment(ec))
++			if (strcasecmp(it->path().filename().c_str(), name) == 0)
++				return it->path();
++		return fs::path();
++	}
++
++	// Extracts the image (its folder, or all of it) to root/CD_Files, and with
++	// the cue sheet its audio tracks to CD_Files/SPEECH/TRACK01.WAV... numbered
++	// from the first audio track (CD track 2), as remc2's own speech files are
++	void ExtractCdImage(const fs::path& root, const fs::path& image, const fs::path& cue, const std::string& folder,
++		const std::function<void(const std::string&)>& log)
++	{
++		const fs::path cdFiles = root / "CD_Files";
++		std::ifstream in(image, std::ios::binary);
++		Iso9660 iso(in);
++		if (!in || !iso.Valid())
++		{
++			log("Can't read the CD image " + image.string());
++			return;
++		}
++
++		log("Extracting the CD image " + image.string() + " to " + cdFiles.string());
++		const fs::path temp = root / "CD_Files.extracting";
++		std::error_code ec;
++		fs::remove_all(temp, ec);
++		if (!iso.Extract(folder, temp))
++		{
++			log("Extracting the CD image failed");
++			fs::remove_all(temp, ec);
++			return;
++		}
++
++		if (!cue.empty())
++		{
++			const std::vector<CueTrack> tracks = ReadCue(cue);
++			in.clear();
++			in.seekg(0, std::ios::end);
++			const long long imageSize = in.tellg();
++			const fs::path speech = temp / "SPEECH";
++			fs::create_directories(speech, ec);
++			int audioTrack = 0;
++			for (size_t i = 0; i < tracks.size(); i++)
++			{
++				if (!tracks[i].audio)
++					continue;
++				char name[16];
++				snprintf(name, sizeof(name), "TRACK%02d.WAV", ++audioTrack);
++				const long long begin = tracks[i].start * 2352;
++				const long long end = i + 1 < tracks.size() ? tracks[i + 1].start * 2352 : imageSize;
++				if (!WriteWav(speech / name, in, begin, std::max(begin, end)))
++					log(std::string("Can't extract the audio track ") + name);
++			}
++		}
++
++		fs::rename(temp, cdFiles, ec);
++		if (ec)
++			log("Can't move " + temp.string() + " to " + cdFiles.string() + ": " + ec.message());
++	}
++}
++
++void MspPrepareGameData(const std::function<void(const std::string&)>& log)
++{
++	std::error_code ec;
++
++	// Magic Carpet 2: game.gog and game.ins next to GAME (or in it)
++	{
++		const fs::path root = MspAppSupportDir("MagicCarpet2");
++		if (!fs::is_directory(root / "CD_Files" / "DATA", ec))
++		{
++			for (const fs::path& folder : { root, root / "GAME" })
++			{
++				const fs::path image = FindFile(folder, "game.gog");
++				const fs::path cue = FindFile(folder, "game.ins");
++				if (!image.empty() && !cue.empty())
++				{
++					ExtractCdImage(root, image, cue, "", log);
++					break;
++				}
++			}
++		}
++	}
++
++	// Magic Carpet / Hidden Worlds: CARPET.CD/game.gog, its CARPET folder
++	if (kMspMc1Enabled)
++	{
++		const fs::path root = MspAppSupportDir("MagicCarpet");
++		if (!fs::is_directory(root / "CD_Files" / "DATA", ec))
++		{
++			for (const fs::path& folder : { root / "CARPET.CD", root })
++			{
++				const fs::path image = FindFile(folder, "game.gog");
++				if (!image.empty())
++				{
++					ExtractCdImage(root, image, fs::path(), "CARPET", log);
++					break;
++				}
++			}
++		}
++	}
++}
++
++std::string MspMissingDataText()
++{
++	std::string text = kMspMc1Enabled ? "The games' files go in your Application Support folder:\n\n"
++		: "The game's files go in your Application Support folder:\n\n";
++	text += "Magic Carpet 2 (GOG's Magic Carpet 2: The Netherworlds): its GAME folder, "
++		"game.gog and game.ins go in\n" + MspAppSupportDir("MagicCarpet2").string() + "\n\n";
++	if (kMspMc1Enabled)
++		text += "Magic Carpet and Hidden Worlds (GOG's Magic Carpet Plus): its CARPET.CD folder goes in\n" +
++			MspAppSupportDir("MagicCarpet").string() + "\n\n";
++	text += "They're in the folder GOG installed the game to, or extract the Windows installer with "
++		"innoextract. The CD images are extracted the first time the game starts.";
++	return text;
++}
++#endif
+diff --git a/remc2/portability/msp_macos.h b/remc2/portability/msp_macos.h
+new file mode 100644
+index 00000000..83df9e2c
+--- /dev/null
++++ b/remc2/portability/msp_macos.h
+@@ -0,0 +1,53 @@
++#pragma once
++// Mac Source Ports: where the macOS build finds its files. Shared by the game
++// and the launcher (remc2-configurator), so it uses neither SDL nor spdlog.
++//
++// The files the game ships with (fonts, shaders, config.json, images, the
++// enhanced assets) are in the app bundle's Resources folder. The original
++// games go in ~/Library/Application Support:
++//
++//   MagicCarpet2  Magic Carpet 2 (GOG): the GAME folder (or GAME/NETHERW),
++//                 game.gog and game.ins. game.gog is extracted to CD_Files,
++//                 its audio tracks (the speech) to CD_Files/SPEECH.
++//   MagicCarpet   Magic Carpet / Hidden Worlds (GOG Magic Carpet Plus): the
++//                 CARPET.CD folder. The CARPET folder of its game.gog is
++//                 extracted to CD_Files.
++//
++// config.json (made from the app's one by the launcher) and the log are in
++// MagicCarpet2. The paths of config.json are mapped there: "MC2/NETHERW" is
++// MagicCarpet2/NETHERW or MagicCarpet2/GAME/NETHERW, "MC1/CARPET.CD" is
++// MagicCarpet/CARPET.CD.
++#ifdef __APPLE__
++#include <filesystem>
++#include <functional>
++#include <string>
++#include <vector>
++
++// Magic Carpet / Hidden Worlds (remc1) is still being ported upstream (the
++// creatures, the icons of the frame and the sounds are stubs, see
++// remc1/docs/handover.md), so the app shows Magic Carpet 2 only. 1 shows
++// the Play buttons of MC1 and Hidden Worlds and extracts their CD image.
++#define MSP_MC1_ENABLED 0
++constexpr bool kMspMc1Enabled = MSP_MC1_ENABLED;
++
++// ~/Library/Application Support/<folder>, created when missing
++std::filesystem::path MspAppSupportDir(const char* folder);
++
++// <app>/Contents/Resources (or the executable's folder outside an app)
++std::filesystem::path MspResourcesDir();
++
++// The Application Support locations of a relative config.json path such as
++// "MC2/NETHERW" (none for other paths)
++std::vector<std::filesystem::path> MspDataLocations(const std::filesystem::path& path);
++
++// The config.json path for a folder in Application Support or the app, e.g.
++// MagicCarpet2/GAME/NETHERW -> MC2/GAME/NETHERW (else the path as it is)
++std::filesystem::path MspConfigPath(const std::filesystem::path& absolutePath);
++
++// Extracts the GOG CD images found in Application Support (see above) that
++// aren't extracted yet. log gets what is done and what went wrong.
++void MspPrepareGameData(const std::function<void(const std::string&)>& log);
++
++// The text telling the player where the files of the games go
++std::string MspMissingDataText();
++#endif
+diff --git a/remc2/portability/port_filesystem.cpp b/remc2/portability/port_filesystem.cpp
+index d1abb560..f77c9131 100644
+--- a/remc2/portability/port_filesystem.cpp
++++ b/remc2/portability/port_filesystem.cpp
+@@ -30,6 +30,7 @@ spdlog::logger* Logger = nullptr;
+ #endif
+ 
+ #ifdef __APPLE__
++	#include "msp_macos.h"
+ 	#include <mach-o/dyld.h>
+ 	#include <stdlib.h>
+ 	#include <climits>
+@@ -63,7 +64,12 @@ spdlog::level::level_enum GetLoggingLevelFromString(const char* levelStr)
+ 
+ void InitializeLogging(spdlog::level::level_enum level)
+ {
++#ifdef __APPLE__
++	// MSP: next to the game in Application Support, not in the app
++	InitializeLogging(level, (MspAppSupportDir("MagicCarpet2") / "log.txt").string().c_str());
++#else
+ 	InitializeLogging(level, "log.txt");
++#endif
+ }
+ 
+ void InitializeLogging(spdlog::level::level_enum level, const char* logFileName)
+@@ -472,6 +478,11 @@ std::string getExistingDataPath(std::filesystem::path path)
+ 	if (path.is_absolute())//e.g. the packed game data of the regression tests
+ 		return std::filesystem::exists(path) ? path.string() : std::string();
+ 	std::vector<std::string> file_locations;
++#ifdef __APPLE__
++	// MSP: the original game in Application Support, see msp_macos.h
++	for (const auto& location : MspDataLocations(path))
++		file_locations.push_back(location.string());
++#endif
+ #if defined(__linux__) || defined(__APPLE__)
+ 	auto env_home_dir = std::getenv("HOME");
+ 	auto env_xdg_data_home_dir = std::getenv("XDG_DATA_HOME");
+@@ -497,6 +508,10 @@ std::string getExistingDataPath(std::filesystem::path path)
+ 	}
+ #endif //__linux__
+ 	file_locations.push_back(get_exe_path() + "/" + path.string());
++#ifdef __APPLE__
++	// MSP: the files the game ships with are in the app's Resources
++	file_locations.push_back((MspResourcesDir() / path).string());
++#endif
+ 
+ 	std::string file_found;
+ 
+diff --git a/remc2/portability/port_sdl_vga_mouse.cpp b/remc2/portability/port_sdl_vga_mouse.cpp
+index db3ce58b..8c9fca26 100644
+--- a/remc2/portability/port_sdl_vga_mouse.cpp
++++ b/remc2/portability/port_sdl_vga_mouse.cpp
+@@ -267,6 +267,17 @@ void CreateWindowAndSurfaces(const SDL_Rect& display, int gameResWidth, int game
+ 
+ 	ToggleFullscreen(!startWindowed);
+ 
++#ifdef __APPLE__
++	// MSP: SDL's Metal (or OpenGL) renderer remakes the window without
++	// SDL_WINDOW_VULKAN, after which no Vulkan surface can be made for it.
++	// The Vulkan renderer doesn't draw with SDL's renderer, so don't make one.
++	if (useVulkan)
++	{
++		m_renderer = nullptr;
++		CreateRenderSurfaces(gameResWidth, gameResHeight);
++		return;
++	}
++#endif
+ 	m_renderer =
+ 		SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED |
+ 			SDL_RENDERER_TARGETTEXTURE);
+diff --git a/remc2/sub_main.cpp b/remc2/sub_main.cpp
+index 0d2c2d30..5d652130 100644
+--- a/remc2/sub_main.cpp
++++ b/remc2/sub_main.cpp
+@@ -51,6 +51,9 @@ after NetworkCancel_748F7 not changed
+ #include <filesystem>
+ #include "./engine/EventsFunctions.h"
+ #include "engine/Vr.h"
++#ifdef __APPLE__
++#include "portability/msp_macos.h"
++#endif
+ 
+ InputRecorder* m_InputRecorder = nullptr;
+ Scene m_CurrentScene = Scene::PREAMBLE_MENU;
+@@ -615,8 +618,27 @@ int sub_main(int argc, char** argv, char**  /*envp*/)//236F70
+ 			gameFolder = packedDir + "/NETHERW";
+ 			cdFolder = packedDir + "/CD_Files";
+ 		}
++#ifdef __APPLE__
++		else
++		{
++			// MSP: game.gog extracted to CD_Files on the first run (the launcher
++			// does it first, this is for the game started on its own)
++			MspPrepareGameData([](const std::string& message) { Logger->info("{}", message); });
++		}
++#endif
+ 		gameDataPath = GetSubDirectoryPath(gameFolder.c_str());
+ 		cdDataPath = GetSubDirectoryPath(cdFolder.c_str());
++#ifdef __APPLE__
++		if (!PackedGameData() && (gameDataPath.empty() || cdDataPath.empty()))
++		{
++			Logger->error("Game data not found: {} {}", gameFolder, cdFolder);
++			const std::string text = "Magic Carpet 2's game files weren't found.\n\n" + MspMissingDataText();
++			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Magic Carpet 2", text.c_str(), nullptr);
++			const std::string open = "open \"" + MspAppSupportDir("MagicCarpet2").string() + "\"";
++			system(open.c_str());
++			exit(1);
++		}
++#endif
+ 		highResGraphicsPath = GetSubDirectoryPath(highResGraphicsFolder.c_str());
+ 		fixedMenuGraphicsPath = GetSubDirectoryPath(fixedMenuGraphicsFolder.c_str());
+ 
