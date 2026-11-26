@@ -1,0 +1,7 @@
+[
+    {
+        "filenameGlob": "OpenApoc-*.dmg",
+        "sourcePortStub": "openapoc",
+        "buildType": 1
+    }
+]

@@ -1,0 +1,145 @@
+diff --git a/framework/framework.cpp b/framework/framework.cpp
+index 9cc79a00..37835720 100644
+--- a/framework/framework.cpp
++++ b/framework/framework.cpp
+@@ -20,6 +20,7 @@
+ #include <algorithm>
+ #include <array>
+ #include <chrono>
++#include <cstring>
+ #include <fstream>
+ #include <list>
+ #include <map>
+@@ -53,7 +54,39 @@ namespace OpenApoc
+ 
+ UString Framework::getDataDir() const { return Options::dataPathOption.get(); }
+ 
++#ifdef __APPLE__
++// The configured CD path (by default ~/Library/Application Support/OpenApoc/cd.iso),
++// or if that doesn't exist, the other names the CD image goes by in that folder:
++// GOG ships it as XCOM.cue + XCOM.BIN (in a "CD" subfolder), Steam as cd.iso
++static UString resolveCDPath()
++{
++	const UString configured = Options::cdPathOption.get();
++	std::error_code ec;
++	if (fs::exists(configured, ec))
++		return configured;
++
++	const fs::path dir = fs::path(configured).parent_path();
++	for (const fs::path &candidate :
++	     {dir / "cd.iso", dir / "XCOM.cue", dir / "xcom.cue", dir / "CD" / "XCOM.cue",
++	      dir / "CD" / "xcom.cue", fs::path("./data/cd.iso")})
++	{
++		if (fs::exists(candidate, ec))
++			return candidate.string();
++	}
++	// any other cue sheet in the folder
++	for (auto it = fs::directory_iterator(dir, ec); !ec && it != fs::directory_iterator();
++	     it.increment(ec))
++	{
++		auto ext = it->path().extension().string();
++		if (ext == ".cue" || ext == ".CUE")
++			return it->path().string();
++	}
++	return configured;
++}
++UString Framework::getCDPath() const { return resolveCDPath(); }
++#else
+ UString Framework::getCDPath() const { return Options::cdPathOption.get(); }
++#endif
+ 
+ Framework *Framework::instance = nullptr;
+ class FrameworkPrivate
+@@ -128,7 +161,10 @@ Framework::Framework(const UString programName, bool createWindow)
+ 		// FIXME: How to check we're being run from the app bundle and not directly from the
+ 		// terminal? On my testing (macos 10.15.1 19B88) it seems to have a "/" working directory,
+ 		// which is unlikely in terminal use, so use that?
+-		if (fs::current_path() == "/")
++		// Launched from inside an app bundle (Finder or Terminal), always use the bundle's
++		// Resources, where the data folder is
++		if (fs::current_path() == "/" ||
++		    (basePath && strstr(basePath, ".app/Contents/Resources") != nullptr))
+ 		{
+ 			LogWarning("Setting working directory to \"{0}\"", basePath);
+ 			chdir(basePath);
+@@ -201,7 +237,7 @@ Framework::Framework(const UString programName, bool createWindow)
+ 	boost::locale::generator gen;
+ 
+ 	std::vector<UString> resourcePaths;
+-	resourcePaths.push_back(Options::cdPathOption.get());
++	resourcePaths.push_back(getCDPath());
+ 	resourcePaths.push_back(Options::dataPathOption.get());
+ 
+ 	for (auto &path : resourcePaths)
+@@ -243,6 +279,22 @@ Framework::Framework(const UString programName, bool createWindow)
+ 	{
+ 		LogError("Failed to open \"music\" from the CD - likely the cd couldn't be loaded or paths "
+ 		         "are incorrect if using an extracted CD image");
++#ifdef __APPLE__
++		if (createWindow)
++		{
++			UString message =
++			    "OpenApoc needs the files from the original X-COM: Apocalypse CD.\n\n"
++			    "Copy one of these into the folder\n" +
++			    fs::path(Options::cdPathOption.get()).parent_path().string() +
++			    "\n\n"
++			    "- GOG: XCOM.cue and XCOM.BIN (from the game's CD folder)\n"
++			    "- Steam or your own CD image: cd.iso\n\n"
++			    "then start OpenApoc again.";
++			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "X-COM: Apocalypse data not found",
++			                         message.c_str(), nullptr);
++			exit(1);
++		}
++#endif
+ 	}
+ 
+ 	auto testFile2 = this->data->fs.open("filedoesntexist");
+diff --git a/framework/options.cpp b/framework/options.cpp
+index af080e34..f4ffa1e5 100644
+--- a/framework/options.cpp
++++ b/framework/options.cpp
+@@ -1,6 +1,7 @@
+ #include "framework/options.h"
+ #include "framework/logger.h"
+ #include "library/strings_format.h"
++#include <cstdlib>
+ 
+ namespace
+ {
+@@ -194,10 +195,26 @@ void dumpOptionsToLog()
+ #define RENDERERS "GLES_3_0:GL_2_0"
+ #endif
+ 
++#ifdef __APPLE__
++// The app bundle is read-only, so on macOS the CD image (or GOG's XCOM.cue and
++// XCOM.BIN) and saved games live in ~/Library/Application Support/OpenApoc,
++// the same folder as settings.conf and log.txt
++static UString macAppSupportDir()
++{
++	const char *home = getenv("HOME");
++	return UString(home ? home : ".") + "/Library/Application Support/OpenApoc";
++}
++#define DEFAULT_CD_PATH (macAppSupportDir() + "/cd.iso")
++#define DEFAULT_SAVE_DIR (macAppSupportDir() + "/saves")
++#else
++#define DEFAULT_CD_PATH "./data/cd.iso"
++#define DEFAULT_SAVE_DIR "./saves"
++#endif
++
+ ConfigOptionString dataPathOption("Framework", "Data", tr("The path containing OpenApoc data"),
+                                   "./data");
+ ConfigOptionString cdPathOption("Framework", "CD", tr("The path to the XCom:Apocalypse CD"),
+-                                "./data/cd.iso");
++                                DEFAULT_CD_PATH);
+ ConfigOptionInt threadPoolSizeOption(
+     "Framework", "ThreadPoolSize",
+     tr("The number of threads to spawn for the threadpool (0 = queried num_cores)"), 0);
+@@ -515,7 +532,7 @@ ConfigOptionString defaultTooltipFont("Forms", "TooltipFont", tr("The default to
+                                       "smallset");
+ 
+ ConfigOptionString saveDirOption("Game.Save", "Directory", tr("Directory containing saved games"),
+-                                 "./saves");
++                                 DEFAULT_SAVE_DIR);
+ ConfigOptionBool packSaveOption("Game.Save", "Pack", tr("Pack saved games into a zip"), true);
+ 
+ ConfigOptionBool skipIntroOption("Game", "SkipIntro", tr("Skip intro video"), false);
